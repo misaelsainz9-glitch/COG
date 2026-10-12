@@ -6,8 +6,9 @@ import threading
 import queue
 from motor import ROOT,export_pdf
 from sencillo import basic_generate
+from firma_canvas import signature_dialog
 
-app=tk.Tk();app.title('SASISOPA — Llenado básico');app.geometry('820x760')
+app=tk.Tk();app.title('SASISOPA — Llenado básico');app.geometry('1060x760')
 notifications=queue.Queue()
 def poll_notifications():
  try:
@@ -32,13 +33,35 @@ canvas.bind_all('<MouseWheel>',lambda e:canvas.yview_scroll(int(-e.delta/120),'u
 ttk.Label(f,text='Completa los campos y genera las siete plantillas',font=('Segoe UI',15,'bold')).pack(anchor='w')
 ttk.Label(f,text='Fecha, estación, nombres y puestos. Revisa los textos y la distribución de los documentos antes de utilizarlos.',wraplength=760).pack(anchor='w',pady=8)
 fields={}
-for label,default in [('Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),('Número de estación (ej. E-02585)',''),('Nombre o razón social de la estación','')]:
+for label,default in [('Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),('Número de estación (ej. E-02585)',''),('Nombre o razón social de la estación',''),('Dirección de la estación',''),('Revisión del encabezado (opcional)',''),('Fecha revisión (dd/mm/aaaa, opcional)','')]:
  row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');v=tk.StringVar(value=default);fields[label]=v;ttk.Entry(row,textvariable=v).pack(side='left',fill='x',expand=True)
+logo=tk.StringVar()
+row=ttk.Frame(f);row.pack(fill='x',pady=4)
+ttk.Label(row,text='Logo de la estación (PNG/JPG)',width=38).pack(side='left')
+ttk.Entry(row,textvariable=logo).pack(side='left',fill='x',expand=True)
+def choose_logo():
+ path=filedialog.askopenfilename(title='Seleccionar logo',filetypes=[('Imágenes','*.png *.jpg *.jpeg')])
+ if path:logo.set(path)
+ttk.Button(row,text='Elegir',command=choose_logo).pack(side='right')
 ttk.Label(f,text='Personal: máximo 6 para este lote; deja las filas restantes vacías.',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=10)
 grid=ttk.Frame(f);grid.pack(fill='x');ttk.Label(grid,text='Nombre completo').grid(row=0,column=1);ttk.Label(grid,text='Puesto').grid(row=0,column=2)
 people=[]
+ttk.Label(grid,text='Firma (opcional)').grid(row=0,column=3)
 for i in range(6):
- name=tk.StringVar();role=tk.StringVar();people.append((name,role));ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0);ttk.Entry(grid,textvariable=name,width=52).grid(row=i+1,column=1,sticky='ew',padx=3,pady=2);ttk.Entry(grid,textvariable=role,width=35).grid(row=i+1,column=2,sticky='ew',padx=3)
+ name=tk.StringVar();role=tk.StringVar();signature=tk.StringVar();people.append((name,role,signature))
+ ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0)
+ ttk.Entry(grid,textvariable=name,width=32).grid(row=i+1,column=1,sticky='ew',padx=3,pady=2)
+ ttk.Entry(grid,textvariable=role,width=22).grid(row=i+1,column=2,sticky='ew',padx=3)
+ actions=ttk.Frame(grid);actions.grid(row=i+1,column=3,sticky='w')
+ def choose_signature(v=signature):
+  path=filedialog.askopenfilename(title='Seleccionar firma',filetypes=[('Imágenes','*.png *.jpg *.jpeg')])
+  if path:v.set(path)
+ ttk.Button(actions,text='Subir',width=7,command=choose_signature).pack(side='left')
+ ttk.Button(actions,text='Dibujar',width=8,command=lambda v=signature:signature_dialog(app,v.set)).pack(side='left')
+ ttk.Button(actions,text='Quitar',width=6,command=lambda v=signature:v.set('')).pack(side='left')
+ indicator=tk.StringVar(value='Sin firma')
+ signature.trace_add('write',lambda *args,v=signature,ind=indicator:ind.set('Firma lista' if v.get() else 'Sin firma'))
+ ttk.Label(actions,textvariable=indicator,width=10).pack(side='left',padx=2)
 grid.columnconfigure(1,weight=1);grid.columnconfigure(2,weight=1)
 rep=tk.StringVar(value='1');sec=tk.StringVar(value='1')
 for label,var in [('Fila del representante / responsable',rep),('Fila del secretario',sec)]:
@@ -56,13 +79,19 @@ def generate():
  try:
   if not all(p.get().strip() for p in paths):raise ValueError('Selecciona ambas carpetas.')
   date=datetime.strptime(fields['Fecha (dd/mm/aaaa)'].get().strip(),'%d/%m/%Y')
-  indexes=[i for i,(n,p) in enumerate(people) if n.get().strip() or p.get().strip()]
+  indexes=[i for i,(n,p,sig) in enumerate(people) if n.get().strip() or p.get().strip() or sig.get().strip()]
   if int(rep.get())-1 not in indexes or int(sec.get())-1 not in indexes:raise ValueError('El representante y el secretario deben señalar filas con personal.')
-  data=[{'nombre':people[i][0].get().strip(),'puesto':people[i][1].get().strip()} for i in indexes]
+  data=[{'nombre':people[i][0].get().strip(),'puesto':people[i][1].get().strip(),'firma':people[i][2].get().strip()} for i in indexes]
   args=(paths[0].get(),Path(paths[1].get())/datetime.now().strftime('%Y%m%d_%H%M%S_%f'),date,fields['Número de estación (ej. E-02585)'].get(),fields['Nombre o razón social de la estación'].get(),data,indexes.index(int(rep.get())-1),indexes.index(int(sec.get())-1))
+  revision_value=fields['Fecha revisión (dd/mm/aaaa, opcional)'].get().strip()
+  options={'address':fields['Dirección de la estación'].get().strip(),'logo':logo.get().strip(),
+           'revision':fields['Revisión del encabezado (opcional)'].get().strip(),
+           'revision_date':datetime.strptime(revision_value,'%d/%m/%Y') if revision_value else None,
+           'signatures':any(p['firma'] for p in data)}
   if not messagebox.askokcancel('Revisar contenido fijo',
-      'Se cambiarán fecha, estación, nombres y puestos.\n'
-      'El domicilio, correos, teléfonos, cargos SASISOPA, horarios, temas y acuerdos seguirán como en las plantillas.\n'
+      'Se cambiarán los campos y las imágenes que capturaste.\n'
+      'Los campos sin captura, contactos, cargos SASISOPA, horarios, temas y acuerdos conservarán los datos originales.\n'
+      'Las firmas seleccionadas se insertarán solo en los espacios definidos: acuse, difusión y nota.\n'
       'La misma lista se usará como asistentes y receptores en los siete documentos.\n\n'
       'Continúa solo si esos datos y esas participaciones son correctos. '
       'Los textos largos pueden cambiar la paginación.'):
@@ -73,7 +102,7 @@ def generate():
  def work():
   result=[]
   try:
-   result=basic_generate(*args)
+   result=basic_generate(*args,**options)
    if want_pdf:export_pdf(result)
    msg=f'Se generaron {len(result)} Word en:\n{args[1]}\n\nRevisa textos, paginación y firmas en Word.'
    notifications.put(lambda:messagebox.showinfo('Listo',msg))

@@ -1,3 +1,9 @@
+NUEVO: el formulario básico permite dirección, logo y revisión del encabezado.
+Para cada persona puedes Subir una firma PNG/JPG o Dibujarla y guardar su PNG.
+Las firmas se insertan en los espacios existentes de acuse, difusión y nota.
+Las otras cuatro plantillas necesitan definir una ubicación adicional de firmas.
+Ejecuta Instalar.bat nuevamente al actualizar para instalar Pillow.
+
 ACTUALIZACIÓN: consulta REVISION.md antes de usar documentos definitivos.
 El modo básico requiere las siete plantillas ORIGINALES sin editar y admite 6 personas.
 No uses documentos ya generados como plantillas. Conserva el Excel como catálogo.

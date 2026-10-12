@@ -29,14 +29,15 @@ def catalog():
         return entries
     finally:w.close()
 
-def basic_generate(templates,out,day,station,company,people,representative,secretary):
+def basic_generate(templates,out,day,station,company,people,representative,secretary,*,address="",logo="",revision="",revision_date=None,signatures=False):
     if not station.strip() or not company.strip():raise ValueError('Completa el número y el nombre de la estación.')
     if not people or any(not p['nombre'].strip() or not p['puesto'].strip() for p in people):raise ValueError('Completa nombre y puesto de cada persona incluida.')
     if representative not in range(len(people)) or secretary not in range(len(people)):raise ValueError('Selecciona representante y secretario de la lista de personal.')
     fecha(day)
+    if revision_date is not None:fecha(revision_date)
     if len({p['nombre'].strip().casefold() for p in people})!=len(people):
         raise ValueError('Hay nombres de personal duplicados; revisa las filas.')
-    for value in [station,company]+[p[k] for p in people for k in ('nombre','puesto')]:
+    for value in [station,company,address,revision]+[p[k] for p in people for k in ('nombre','puesto')]:
         if any(ord(c)<32 for c in value):raise ValueError('Los campos no deben contener saltos de línea ni caracteres de control.')
     manifest=ROOT/'plantillas_compatibles.json'
     if not manifest.is_file():raise ValueError('Falta plantillas_compatibles.json. Extrae todo el ZIP del programa.')
@@ -99,6 +100,9 @@ def basic_generate(templates,out,day,station,company,people,representative,secre
                 if p.text.strip()=='Representante Técnico':
                     if i:cell_like_paragraph(ps[i-1],rep['nombre'])
                     cell_like_paragraph(p,rep['puesto'])
+        from personalizacion import apply_header,apply_signatures
+        apply_header(doc,address,logo,revision,revision_date)
+        if signatures:apply_signatures(doc,pid,people,representative)
         slug=re.sub(r'[^A-Za-z0-9_-]','_',station.strip())[:60]
         prepared.append((f'{pid}_{slug}_{day:%Y%m%d}.docx',doc))
     out=Path(out)

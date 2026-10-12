@@ -6,3 +6,5 @@ plantillas/*
 !plantillas/.gitkeep
 !plantillas/LEEME.txt
 ~$*
+datos_locales/
+firmas/

@@ -58,3 +58,15 @@ Se corrigió también la escritura del modo avanzado: si falla un documento se r
 Se añadieron mensajes claros cuando falta el Excel, falta la hoja Plantillas, un nombre de plantilla está vacío o falta el archivo de compatibilidad. Se cerró explícitamente el libro después de leer los datos del modo avanzado. Cinco nuevas pruebas comprueban estos casos y la conservación de archivos anteriores. El total actual es de 20 pruebas aprobadas sin omisiones con las siete plantillas locales.
 
 No se han descubierto otros bloqueos en los caminos ejecutados. La ejecución real en Windows, el PDF con Word y la inspección visual continúan pendientes; las pruebas aquí no permiten certificar esas capacidades.
+
+## Encabezados y firmas — actualización más reciente
+
+El formulario básico ahora permite dirección y logo; el logo se sustituye en el encabezado manteniendo su proporción dentro del espacio original. También permite número de revisión y fecha de revisión opcionales; el formato original presenta mes/año, y la nota informativa no tiene ese bloque. Las fechas históricas de los bloques de elaboración/revisión del cuerpo se conservan.
+
+Cada persona puede seleccionar una firma PNG/JPG o dibujarla con el mouse. El dibujo se guarda en un PNG transparente en la ubicación que elija el usuario. Se rechaza un dibujo vacío y una imagen inválida. La captura no toma una imagen de la pantalla. Las firmas permanecen como archivos locales y se insertan como imágenes.
+
+Los destinos actualmente implementados son: seis receptores y quien entrega en P01, seis asistentes en P04 y representante de la nota P03. P02, P05, P06 y P07 no tienen campo explícito de firma: está pendiente acordar su ubicación. No se cambia una columna de teléfono o correo para insertar una firma.
+
+Las afirmaciones anteriores sobre domicilio y logo fijos quedan actualizadas: ahora se conservan únicamente cuando esos campos se dejan vacíos. Los nuevos controles pertenecen al modo básico; el avanzado conserva su flujo de Excel. La interfaz de dibujo, el posicionamiento visual en Word y el PDF real siguen pendientes de prueba en Windows.
+
+La última ejecución terminó con **27 pruebas aprobadas, sin omisiones**. Se agregaron pruebas de dibujo vacío, límites de coordenadas, PNG con transparencia, sustitución de logo con proporción, dirección/revisión, firmas en los espacios previstos, conservación de párrafos/filas, imágenes ausentes/incorrectas y modo sin imágenes de firma. Se utilizaron datos e imágenes ficticios, sin publicar los documentos o firmas reales.

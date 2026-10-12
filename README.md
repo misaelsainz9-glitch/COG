@@ -1,55 +1,44 @@
 # Generador SASISOPA para Windows
 
-Primera versión de una aplicación de escritorio que rellena siete plantillas Word desde una base Excel. Genera copias de los documentos y puede exportarlas a PDF usando Microsoft Word.
+Aplicación para rellenar siete plantillas Word mediante un formulario: fecha, estación, personal, encabezados y firmas como imágenes. Genera copias nuevas y permite exportar a PDF con Microsoft Word de escritorio.
 
 ## Descargar y ejecutar
 
-1. En GitHub, selecciona **Code → Download ZIP**, o descarga [el ZIP de main](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip).
-2. Extrae todo el archivo ZIP.
-3. Instala **Python 3.12 o posterior** desde [python.org](https://www.python.org/downloads/windows/). Microsoft Word de escritorio es necesario para exportar PDF.
-4. Copia tus **siete documentos Word originales** a la carpeta `plantillas`. Conserva los nombres exactos indicados en la hoja **Plantillas** del Excel. Los documentos originales no se publican en este repositorio.
-5. Ejecuta **Instalar.bat** una vez para instalar las dependencias.
-6. Ejecuta **Iniciar.bat**: se abrirá el modo básico, sin necesidad de editar Excel.
-7. Introduce fecha, número y nombre de estación, y los nombres y puestos del personal. Selecciona las filas del representante/responsable y del secretario.
-8. Elige la carpeta de salida y pulsa **Generar los siete documentos**. Puedes activar PDF si tienes Word instalado.
-9. Abre los resultados en Word y revisa contenido, tablas y saltos de página antes de utilizarlos.
+1. Selecciona **Code → Download ZIP** o [descarga el ZIP de main](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip).
+2. Extrae todo el archivo. Conserva el Excel y el archivo JSON incluidos: el formulario los necesita como catálogo y comprobación de plantillas.
+3. Instala Python 3.12 o posterior desde [python.org](https://www.python.org/downloads/windows/). La disponibilidad de las dependencias se comprobó para Python 3.12 y Windows x64.
+4. Copia los **siete Word originales sin modificar** en `plantillas`, con los nombres de la hoja **Plantillas** del Excel.
+5. Ejecuta **Instalar.bat**. Si actualizaste una versión anterior, ejecútalo nuevamente para instalar la dependencia de dibujo.
+6. Ejecuta **Iniciar.bat**. Completa fecha, número/nombre de estación y hasta seis personas con sus puestos.
+7. Introduce la dirección y selecciona el logo PNG/JPG. Los campos vacíos conservan el dato original. Número y fecha de revisión son opcionales; los encabezados existentes muestran mes y año de revisión, y la nota no tiene ese bloque.
+8. Para cada persona usa **Subir** para seleccionar una firma PNG/JPG, **Dibujar** para capturarla con el mouse o **Quitar** para dejar el espacio sin imagen. Al dibujar, pulsa **Guardar y usar** y elige dónde guardar su PNG.
+9. Selecciona representante/responsable y secretario, la carpeta de salida y, opcionalmente, PDF. Pulsa **Generar los siete documentos**.
+10. Revisa en Word contenido, imágenes, paginación y los PDF antes de utilizar los documentos.
 
-El modo básico conserva los horarios, temas, acuerdos y demás contenido de las plantillas. Aplica la misma fecha y lista de personal a los siete documentos; el representante seleccionado figura como convocante, facilitador y responsable de agenda. Comprueba que estas asignaciones correspondan a tu operación.
+Las plantillas originales, logos y firmas reales no se incluyen en GitHub. Las imágenes se seleccionan o guardan localmente; las firmas capturadas son imágenes insertadas en Word.
 
-El modo avanzado original sigue disponible ejecutando `.venv\Scripts\python.exe programa.py`; usa el Excel y permite eventos y contenidos distintos. Consulta **LEEME.txt** para ese modo.
+## Alcance y límites
 
-## Límites y comprobaciones
+La fecha y lista de personal son comunes a los siete documentos. El representante elegido figura como convocante, facilitador y responsable de agenda. Revisa que corresponda a las reuniones y entregas reales.
 
-El motor se probó generando las siete plantillas con datos ficticios; se verificaron las cantidades de filas y los archivos de imágenes, y que los originales permanecieran intactos. Se comprobaron los bloqueos de sobrescritura y exceso de asistentes. El modo avanzado también bloquea eventos sin revisar. El modo básico requiere revisión manual del contenido conservado de las plantillas.
+Logo y firmas se ajustan proporcionalmente a sus espacios. Las firmas se insertan en los campos existentes del acuse (receptores y entrega), la difusión (asistentes) y la nota informativa (representante). Las otras cuatro plantillas requieren acordar una ubicación adicional para firmas; esta versión conserva su estructura y no inserta un bloque nuevo.
 
-La interfaz Windows, la exportación a PDF mediante Word y la apariencia visual final **siguen pendientes de validación en Windows**. Los textos largos pueden cambiar la paginación. El programa no amplía las tablas si se supera su capacidad, no genera firmas ni inventa acuerdos o asistencias.
+Correos, teléfonos, cargos SASISOPA, horarios, temas, acuerdos y texto de la nota se conservan. Dirección, logo y revisión también se conservan si no se capturan cambios. El formulario no guarda sus datos para la siguiente sesión; los PNG de firmas sí quedan en la ubicación elegida.
 
-Esta entrega incluye código Python y lanzadores `.bat`; no es un instalador `.exe`. Los datos de operación se procesan localmente. Internet se necesita para instalar las dependencias.
+Los textos largos o las imágenes de firma pueden cambiar la altura de líneas y la paginación. La versión admite solamente las siete plantillas originales; las modificadas se rechazan antes de generar. Se conserva la cantidad de filas, los párrafos existentes del plan y las fechas históricas de elaboración/revisión.
 
-## Revisión de esta versión
+El modo avanzado sigue disponible ejecutando `.venv\Scripts\python.exe programa.py`; usa el Excel. Los nuevos controles de encabezados y firmas corresponden al formulario básico. Consulta **LEEME.txt** para el modo avanzado.
 
-Se corrigió la inicialización de COM para la exportación PDF desde el hilo de trabajo. Ahora se comprueba que Word realmente haya creado cada PDF y se libera la conexión incluso cuando falla. Estas comprobaciones se probaron con una simulación de COM; no sustituyen una prueba con Microsoft Word real.
+## Validación
 
-La ventana tiene desplazamiento vertical para pantallas pequeñas. Se rechazan nombres duplicados, carpetas vacías, catálogos incompletos y campos con saltos de línea. El instalador verifica Python 3.12 o posterior.
+La última ejecución completó **27 pruebas sin fallos ni omisiones** con las siete plantillas reales y datos/imágenes ficticios. Incluye reemplazos, estructura de filas y párrafos, imágenes, encabezados, fechas, logos y firmas, capacidad, duplicados, protección contra sobrescritura, fallos de guardado, captura PNG y limpieza de COM simulada.
 
-**Datos que siguen fijos:** domicilio de la estación, correos, teléfonos, cargos SASISOPA, horarios, temas, acuerdos y logotipos. El modo básico conserva esos datos del documento original. La nota informativa mantiene su afirmación original de que no hubo cambios; cambiar fecha o nombre no verifica esa afirmación. La aplicación muestra esta limitación antes de generar.
+**Pendiente en Windows:** instalación desde cero, formulario, dibujo con mouse, Word, PDF real y revisión visual de los siete resultados. La disponibilidad de las dependencias no demuestra ejecución real en Windows.
 
-La misma fecha y lista se aplican a reuniones, asistentes y receptores; confirma que corresponda. Algunas plantillas solo tienen espacio para seis personas: el lote completo se bloquea si una plantilla no admite la lista. Los recuentos asociados al personal se recalculan cuando corresponde. Las fechas históricas de elaboración/revisión permanecen fijas.
-
-**Validación pendiente en Windows:** instalación desde cero, interfaz con escalado de pantalla, exportación con Word, encabezados visibles, fuentes, textos largos, alturas de filas y saltos de página. Esta versión es para pruebas, no una garantía de apariencia idéntica.
-
-### Pruebas reproducibles
-
-Después de instalar dependencias y colocar los siete Word originales en `plantillas`:
+Con las dependencias y los Word originales locales puedes ejecutar:
 
 ```bat
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-En la revisión anterior se ejecutaron seis pruebas y todas pasaron: generación de los siete documentos, preservación de filas/medios/fechas históricas, actualización de encabezados, rechazo de exceso de personal y duplicados, bloqueo de sobrescritura y limpieza de COM ante fallos. Sin las plantillas locales, las pruebas de documentos se omiten explícitamente; las pruebas simuladas de COM siguen ejecutándose.
-
-## Revisión a fondo
-
-Consulta [REVISION.md](REVISION.md) para los problemas corregidos, alcance por campo y comprobaciones pendientes. La última ejecución completó **20 pruebas sin fallos ni omisiones** con las siete plantillas locales.
-
-El modo básico exige los siete Word originales sin modificar y admite seis personas por lote. Rellena los espacios existentes del plan de sesión sin acumular párrafos vacíos, conserva los dibujos y no deja un lote Word incompleto si falla la escritura. Los nombres de salida incluyen estación y fecha. No elimina datos fijos de contacto o acuerdos de los originales: requieren revisión humana. La ventana aún necesita una prueba real en Windows.
+Sin los originales, las pruebas que los necesitan se omiten explícitamente. Consulta [REVISION.md](REVISION.md) para el informe técnico.
