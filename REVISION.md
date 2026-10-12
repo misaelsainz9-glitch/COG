@@ -40,7 +40,7 @@ El formulario básico no guarda su captura para la siguiente sesión. Guardar/ca
 
 ## Evidencia y límites
 
-- Se ejecutaron 15 pruebas automáticas y todas pasaron, sin omisiones, usando las siete plantillas reales y datos ficticios.
+- Se ejecutaron 20 pruebas automáticas y todas pasaron, sin omisiones, usando las siete plantillas reales y datos ficticios.
 - Cubren generación, filas, imágenes, encabezados, fechas históricas, objetivos fijos, capacidad, duplicados, sobrescritura, párrafos del plan, año bisiesto, nombres de salida, plantillas modificadas, fallo de escritura, reemplazos entre segmentos, dibujos dentro de campos, cantidades enteras y limpieza de COM simulada.
 - También se volvió a generar el conjunto de siete documentos del modo avanzado con una base ficticia.
 - Se descargaron correctamente las dependencias binarias y sus dependencias transitivas para Windows x64 con Python 3.12. Esto confirma su disponibilidad, no una instalación o ejecución real en Windows.
@@ -50,3 +50,11 @@ El formulario básico no guarda su captura para la siguiente sesión. Guardar/ca
 ## Cómo probar en Windows
 
 Descarga una copia nueva del repositorio y extrae todo. Coloca los siete Word originales sin modificar en `plantillas`. Instala Python (3.12 es la versión usada para comprobar las dependencias) y ejecuta `Instalar.bat`, luego `Iniciar.bat`. Primero usa datos ficticios con nombres cortos; después prueba nombres largos y revisa los siete Word y PDF en Word. Conserva los documentos originales aparte.
+
+## Revisión adicional
+
+Se corrigió también la escritura del modo avanzado: si falla un documento se retiran solo los archivos nuevos de ese lote, conservando los archivos previos de la carpeta. Se usa creación exclusiva para evitar sobrescrituras incluso si un archivo aparece después de validar los nombres.
+
+Se añadieron mensajes claros cuando falta el Excel, falta la hoja Plantillas, un nombre de plantilla está vacío o falta el archivo de compatibilidad. Se cerró explícitamente el libro después de leer los datos del modo avanzado. Cinco nuevas pruebas comprueban estos casos y la conservación de archivos anteriores. El total actual es de 20 pruebas aprobadas sin omisiones con las siete plantillas locales.
+
+No se han descubierto otros bloqueos en los caminos ejecutados. La ejecución real en Windows, el PDF con Word y la inspección visual continúan pendientes; las pruebas aquí no permiten certificar esas capacidades.

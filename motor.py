@@ -77,11 +77,18 @@ def replace(doc,old,new):
 
 class Base:
     def __init__(self,path):
-        w=load_workbook(path,data_only=True)
+        try:
+            w=load_workbook(path,data_only=True)
+        except FileNotFoundError:
+            raise ValueError('No se encuentra el Excel. Selecciona Base_SASISOPA.xlsx o tu copia de datos.') from None
         self.data={}
-        for s in w:
-            rows=list(s.values);headers=rows[0]
-            self.data[s.title]=[dict(zip(headers,r)) for r in rows[1:] if any(v is not None for v in r)]
+        try:
+            for sheet in w:
+                rows=list(sheet.values)
+                if not rows:continue
+                headers=rows[0]
+                self.data[sheet.title]=[dict(zip(headers,r)) for r in rows[1:] if any(v is not None for v in r)]
+        finally:w.close()
     def rows(self,s,key=None,value=None):
         if s not in self.data:raise ValueError(f'Falta la hoja {s}.')
         return [r for r in self.data[s] if key is None or r.get(key)==value]
@@ -202,8 +209,18 @@ class Base:
         out=Path(out);out.mkdir(parents=True,exist_ok=True)
         paths=[out/(name+'.docx') for name,_ in prepared]
         if any(p.exists() for p in paths):raise ValueError('Ya existe un documento de salida. Elige una carpeta nueva para no sobrescribirlo.')
-        for p,(_,doc) in zip(paths,prepared):doc.save(p)
+        created=[]
+        try:
+            for p,(_,doc) in zip(paths,prepared):
+                # Exclusive creation also prevents overwrite if a file appears after validation.
+                with p.open('xb') as stream:
+                    created.append(p)
+                    doc.save(stream)
+        except Exception:
+            for p in created:p.unlink(missing_ok=True)
+            raise
         return paths
+
 
 def cell_like_paragraph(p,value):
     from docx.oxml.ns import qn

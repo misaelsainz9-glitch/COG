@@ -11,12 +11,21 @@ from motor import ROOT,cell,cells,replace,cell_like_paragraph,fecha,MESES,fill_s
 # Filenames are read from the supplied catalog, never from user-controlled paths.
 def catalog():
     from openpyxl import load_workbook
-    w=load_workbook(ROOT/'Base_SASISOPA.xlsx',read_only=True,data_only=True)
+    path=ROOT/'Base_SASISOPA.xlsx'
+    if not path.is_file():
+        raise ValueError('Falta Base_SASISOPA.xlsx en la carpeta del programa. Extrae todo el ZIP; el modo básico también necesita su catálogo.')
+    w=load_workbook(path,read_only=True,data_only=True)
     try:
-        entries=[(r[0],r[1]) for r in list(w['Plantillas'].values)[1:] if r[0]]
+        if 'Plantillas' not in w.sheetnames:raise ValueError('El Excel no contiene la hoja Plantillas. Usa el catálogo incluido en el programa.')
+        rows=list(w['Plantillas'].values)
+        if not rows or tuple(rows[0][:2])!=('plantilla_id','archivo_word'):
+            raise ValueError('No cambies los encabezados plantilla_id y archivo_word de la hoja Plantillas.')
+        entries=[(r[0],r[1]) for r in rows[1:] if r[0]]
         if len(entries)!=7 or {r[0] for r in entries}!={f'P{i:02}' for i in range(1,8)}:
             raise ValueError('El catálogo debe contener exactamente las siete plantillas P01 a P07.')
-        if len({r[1] for r in entries})!=7:raise ValueError('Hay archivos de plantilla duplicados.')
+        if any(not isinstance(filename,str) or not filename.strip() for _,filename in entries):
+            raise ValueError('Hay un nombre de archivo vacío o no válido en la hoja Plantillas.')
+        if len({r[1].casefold() for r in entries})!=7:raise ValueError('Hay archivos de plantilla duplicados.')
         return entries
     finally:w.close()
 
@@ -29,7 +38,9 @@ def basic_generate(templates,out,day,station,company,people,representative,secre
         raise ValueError('Hay nombres de personal duplicados; revisa las filas.')
     for value in [station,company]+[p[k] for p in people for k in ('nombre','puesto')]:
         if any(ord(c)<32 for c in value):raise ValueError('Los campos no deben contener saltos de línea ni caracteres de control.')
-    expected=json.loads((ROOT/'plantillas_compatibles.json').read_text(encoding='utf-8'))
+    manifest=ROOT/'plantillas_compatibles.json'
+    if not manifest.is_file():raise ValueError('Falta plantillas_compatibles.json. Extrae todo el ZIP del programa.')
+    expected=json.loads(manifest.read_text(encoding='utf-8'))
     rep=people[representative];sec=people[secretary];prepared=[]
     for pid,filename in catalog():
         if Path(filename).name!=filename:raise ValueError('Nombre de plantilla no válido.')
