@@ -193,14 +193,23 @@ def cell_like_paragraph(p,value):
     else:p.add_run(text(value))
 
 def export_pdf(paths):
+    import pythoncom
     import win32com.client
-    word=win32com.client.DispatchEx('Word.Application')
-    word.Visible=False
+    pythoncom.CoInitialize()
+    word=None
     try:
+        word=win32com.client.DispatchEx('Word.Application')
+        word.Visible=False
         for path in paths:
             pdf=path.with_suffix('.pdf')
             if pdf.exists():raise ValueError('El PDF ya existe: '+pdf.name)
             doc=word.Documents.Open(str(path.resolve()),ReadOnly=True,AddToRecentFiles=False)
-            try:doc.ExportAsFixedFormat(str(pdf.resolve()),17)
+            try:
+                doc.ExportAsFixedFormat(str(pdf.resolve()),17)
+                if not pdf.is_file() or pdf.stat().st_size==0:
+                    raise RuntimeError('Word no creó el PDF: '+pdf.name)
             finally:doc.Close(False)
-    finally:word.Quit()
+    finally:
+        try:
+            if word is not None:word.Quit()
+        finally:pythoncom.CoUninitialize()

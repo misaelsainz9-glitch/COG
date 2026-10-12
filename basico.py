@@ -7,7 +7,15 @@ from motor import ROOT,export_pdf
 from sencillo import basic_generate
 
 app=tk.Tk();app.title('SASISOPA — Llenado básico');app.geometry('820x760')
-f=ttk.Frame(app,padding=18);f.pack(fill='both',expand=True)
+# Scroll keeps the Generate button reachable on small screens and with Windows scaling.
+canvas=tk.Canvas(app,highlightthickness=0)
+scroll=ttk.Scrollbar(app,orient='vertical',command=canvas.yview)
+scroll.pack(side='right',fill='y');canvas.pack(side='left',fill='both',expand=True)
+canvas.configure(yscrollcommand=scroll.set)
+f=ttk.Frame(canvas,padding=18);window=canvas.create_window((0,0),window=f,anchor='nw')
+f.bind('<Configure>',lambda e:canvas.configure(scrollregion=canvas.bbox('all')))
+canvas.bind('<Configure>',lambda e:canvas.itemconfigure(window,width=e.width))
+canvas.bind_all('<MouseWheel>',lambda e:canvas.yview_scroll(int(-e.delta/120),'units'))
 ttk.Label(f,text='Completa los campos y genera las siete plantillas',font=('Segoe UI',15,'bold')).pack(anchor='w')
 ttk.Label(f,text='Fecha, estación, nombres y puestos. Revisa los textos y la distribución de los documentos antes de utilizarlos.',wraplength=760).pack(anchor='w',pady=8)
 fields={}
@@ -33,11 +41,19 @@ pdf=tk.BooleanVar();ttk.Checkbutton(f,text='Crear también PDF con Word',variabl
 status=tk.StringVar(value='Las plantillas originales se conservan.');ttk.Label(f,textvariable=status).pack(anchor='w')
 def generate():
  try:
+  if not all(p.get().strip() for p in paths):raise ValueError('Selecciona ambas carpetas.')
   date=datetime.strptime(fields['Fecha (dd/mm/aaaa)'].get().strip(),'%d/%m/%Y')
   indexes=[i for i,(n,p) in enumerate(people) if n.get().strip() or p.get().strip()]
   if int(rep.get())-1 not in indexes or int(sec.get())-1 not in indexes:raise ValueError('El representante y el secretario deben señalar filas con personal.')
   data=[{'nombre':people[i][0].get().strip(),'puesto':people[i][1].get().strip()} for i in indexes]
   args=(paths[0].get(),Path(paths[1].get())/datetime.now().strftime('%Y%m%d_%H%M%S_%f'),date,fields['Número de estación (ej. E-02585)'].get(),fields['Nombre o razón social de la estación'].get(),data,indexes.index(int(rep.get())-1),indexes.index(int(sec.get())-1))
+  if not messagebox.askokcancel('Revisar contenido fijo',
+      'Se cambiarán fecha, estación, nombres y puestos.\n'
+      'El domicilio, correos, teléfonos, cargos SASISOPA, horarios, temas y acuerdos seguirán como en las plantillas.\n'
+      'La misma lista se usará como asistentes y receptores en los siete documentos.\n\n'
+      'Continúa solo si esos datos y esas participaciones son correctos. '
+      'Los textos largos pueden cambiar la paginación.'):
+   return
   want_pdf=pdf.get()
  except Exception as exc:messagebox.showerror('Revisa los campos',str(exc));return
  button.config(state='disabled');status.set('Generando…')
