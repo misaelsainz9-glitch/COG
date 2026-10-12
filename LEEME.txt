@@ -1,3 +1,13 @@
+MODO BÁSICO (predeterminado)
+Ejecuta Iniciar.bat y captura fecha, número/nombre de estación, nombres y puestos.
+Selecciona representante/responsable y secretario por su número de fila.
+La fecha y el personal se aplican a los siete Word. Los temas, horarios y acuerdos se conservan.
+Revisa que el contenido fijo siga siendo correcto para la nueva fecha y el nuevo personal.
+No necesitas completar el Excel para este modo.
+
+MODO AVANZADO (opcional)
+Ejecuta .venv\Scripts\python.exe programa.py y sigue las instrucciones siguientes.
+
 SASISOPA para Windows — primera versión
 
 REQUISITOS

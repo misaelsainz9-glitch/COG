@@ -5,5 +5,5 @@ if not exist .venv\Scripts\python.exe (
  pause
  exit /b 1
 )
-.venv\Scripts\python.exe programa.py
+.venv\Scripts\python.exe basico.py
 if errorlevel 1 pause
