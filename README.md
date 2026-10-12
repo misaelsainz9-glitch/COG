@@ -46,4 +46,10 @@ Después de instalar dependencias y colocar los siete Word originales en `planti
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Se ejecutaron seis pruebas y todas pasaron: generación de los siete documentos, preservación de filas/medios/fechas históricas, actualización de encabezados, rechazo de exceso de personal y duplicados, bloqueo de sobrescritura y limpieza de COM ante fallos. Sin las plantillas locales, las pruebas de documentos se omiten explícitamente; las pruebas simuladas de COM siguen ejecutándose.
+En la revisión anterior se ejecutaron seis pruebas y todas pasaron: generación de los siete documentos, preservación de filas/medios/fechas históricas, actualización de encabezados, rechazo de exceso de personal y duplicados, bloqueo de sobrescritura y limpieza de COM ante fallos. Sin las plantillas locales, las pruebas de documentos se omiten explícitamente; las pruebas simuladas de COM siguen ejecutándose.
+
+## Revisión a fondo
+
+Consulta [REVISION.md](REVISION.md) para los problemas corregidos, alcance por campo y comprobaciones pendientes. La última ejecución completó **15 pruebas sin fallos ni omisiones** con las siete plantillas locales.
+
+El modo básico exige los siete Word originales sin modificar y admite seis personas por lote. Rellena los espacios existentes del plan de sesión sin acumular párrafos vacíos, conserva los dibujos y no deja un lote Word incompleto si falla la escritura. Los nombres de salida incluyen estación y fecha. No elimina datos fijos de contacto o acuerdos de los originales: requieren revisión humana. La ventana aún necesita una prueba real en Windows.

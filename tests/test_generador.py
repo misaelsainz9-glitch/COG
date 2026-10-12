@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from docx import Document
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from sencillo import basic_generate
+from sencillo import basic_generate,catalog
 from motor import export_pdf
 
 class BasicTests(unittest.TestCase):
@@ -30,7 +30,8 @@ class BasicTests(unittest.TestCase):
         paths=self.generate();self.assertEqual(len(paths),7)
         for path in paths:
             with self.subTest(path=path.name):
-                d=Document(path);o=Document(self.templates/path.name)
+                d=Document(path);source_name=dict(catalog())[path.name.split('_')[0]]
+                o=Document(self.templates/source_name)
                 self.assertEqual([len(t.rows) for t in d.tables],[len(t.rows) for t in o.tables])
                 self.assertEqual(len(d.sections),len(o.sections))
                 body='\n'.join(p.text for p in d.paragraphs)+'\n'+'\n'.join(c.text for t in d.tables for r in t.rows for c in r.cells)
@@ -42,7 +43,7 @@ class BasicTests(unittest.TestCase):
                 for t in o.tables:
                     if len(t.rows)>=3 and t.rows[0].cells[0].text=='Tipo de Reunión:':
                         self.assertIn(t.rows[2].cells[1].text,body)
-                with zipfile.ZipFile(path) as z,zipfile.ZipFile(self.templates/path.name) as original:
+                with zipfile.ZipFile(path) as z,zipfile.ZipFile(self.templates/source_name) as original:
                     for name in original.namelist():
                         if name.startswith('word/media/'):self.assertEqual(z.read(name),original.read(name))
                     header=b''.join(z.read(n) for n in z.namelist() if n.startswith('word/header') and n.endswith('.xml'))

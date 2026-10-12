@@ -3,10 +3,23 @@ from tkinter import ttk,filedialog,messagebox
 from pathlib import Path
 from datetime import datetime
 import threading
+import queue
 from motor import ROOT,export_pdf
 from sencillo import basic_generate
 
 app=tk.Tk();app.title('SASISOPA — Llenado básico');app.geometry('820x760')
+notifications=queue.Queue()
+def poll_notifications():
+ try:
+  while True:notifications.get_nowait()()
+ except queue.Empty:pass
+ app.after(100,poll_notifications)
+app.after(100,poll_notifications)
+def close_window():
+ if 'button' in globals() and str(button.cget('state'))=='disabled':
+  messagebox.showinfo('Generación en curso','Espera a que termine la generación antes de cerrar.')
+ else:app.destroy()
+app.protocol('WM_DELETE_WINDOW',close_window)
 # Scroll keeps the Generate button reachable on small screens and with Windows scaling.
 canvas=tk.Canvas(app,highlightthickness=0)
 scroll=ttk.Scrollbar(app,orient='vertical',command=canvas.yview)
@@ -21,15 +34,15 @@ ttk.Label(f,text='Fecha, estación, nombres y puestos. Revisa los textos y la di
 fields={}
 for label,default in [('Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),('Número de estación (ej. E-02585)',''),('Nombre o razón social de la estación','')]:
  row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');v=tk.StringVar(value=default);fields[label]=v;ttk.Entry(row,textvariable=v).pack(side='left',fill='x',expand=True)
-ttk.Label(f,text='Personal: completa las filas necesarias; deja las demás vacías.',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=10)
+ttk.Label(f,text='Personal: máximo 6 para este lote; deja las filas restantes vacías.',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=10)
 grid=ttk.Frame(f);grid.pack(fill='x');ttk.Label(grid,text='Nombre completo').grid(row=0,column=1);ttk.Label(grid,text='Puesto').grid(row=0,column=2)
 people=[]
-for i in range(10):
+for i in range(6):
  name=tk.StringVar();role=tk.StringVar();people.append((name,role));ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0);ttk.Entry(grid,textvariable=name,width=52).grid(row=i+1,column=1,sticky='ew',padx=3,pady=2);ttk.Entry(grid,textvariable=role,width=35).grid(row=i+1,column=2,sticky='ew',padx=3)
 grid.columnconfigure(1,weight=1);grid.columnconfigure(2,weight=1)
 rep=tk.StringVar(value='1');sec=tk.StringVar(value='1')
 for label,var in [('Fila del representante / responsable',rep),('Fila del secretario',sec)]:
- row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,11)],state='readonly',width=6).pack(side='left')
+ row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,7)],state='readonly',width=6).pack(side='left')
 paths=[]
 for label,default in [('Carpeta de plantillas',str(ROOT/'plantillas')),('Guardar documentos en',str(ROOT/'salidas'))]:
  row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=25).pack(side='left');var=tk.StringVar(value=default);paths.append(var);ttk.Entry(row,textvariable=var).pack(side='left',fill='x',expand=True)
@@ -63,12 +76,12 @@ def generate():
    result=basic_generate(*args)
    if want_pdf:export_pdf(result)
    msg=f'Se generaron {len(result)} Word en:\n{args[1]}\n\nRevisa textos, paginación y firmas en Word.'
-   app.after(0,lambda:messagebox.showinfo('Listo',msg))
+   notifications.put(lambda:messagebox.showinfo('Listo',msg))
   except Exception as exc:
    msg=str(exc)
    if result:msg+='\nLos Word están en '+str(args[1])+'. El PDF no terminó.'
-   app.after(0,lambda m=msg:messagebox.showerror('No se completó',m))
-  finally:app.after(0,lambda:(button.config(state='normal'),status.set('Listo.')))
- threading.Thread(target=work,daemon=True).start()
+   notifications.put(lambda m=msg:messagebox.showerror('No se completó',m))
+  finally:notifications.put(lambda:(button.config(state='normal'),status.set('Listo.')))
+ threading.Thread(target=work,daemon=False).start()
 button=ttk.Button(f,text='Generar los siete documentos',command=generate);button.pack(anchor='w',pady=8)
 if __name__=='__main__':app.mainloop()

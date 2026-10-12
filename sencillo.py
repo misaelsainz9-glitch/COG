@@ -2,8 +2,11 @@
 from pathlib import Path
 from datetime import datetime
 import re
+import json
+import hashlib
+import shutil
 from docx import Document
-from motor import ROOT,cell,cells,replace,cell_like_paragraph,fecha,MESES
+from motor import ROOT,cell,cells,replace,cell_like_paragraph,fecha,MESES,fill_session_people
 
 # Filenames are read from the supplied catalog, never from user-controlled paths.
 def catalog():
@@ -26,11 +29,14 @@ def basic_generate(templates,out,day,station,company,people,representative,secre
         raise ValueError('Hay nombres de personal duplicados; revisa las filas.')
     for value in [station,company]+[p[k] for p in people for k in ('nombre','puesto')]:
         if any(ord(c)<32 for c in value):raise ValueError('Los campos no deben contener saltos de línea ni caracteres de control.')
+    expected=json.loads((ROOT/'plantillas_compatibles.json').read_text(encoding='utf-8'))
     rep=people[representative];sec=people[secretary];prepared=[]
     for pid,filename in catalog():
         if Path(filename).name!=filename:raise ValueError('Nombre de plantilla no válido.')
         path=Path(templates)/filename
         if not path.is_file():raise ValueError('Falta la plantilla: '+filename)
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=expected.get(pid):
+            raise ValueError('La plantilla fue modificada o no corresponde a la versión admitida: '+filename+'\nCopia el Word original del ZIP; no uses un documento generado.')
         doc=Document(path)
         replace(doc,'E-02585',station.strip())
         # These are operational dates in the originals. Historical approval dates remain fixed.
@@ -69,11 +75,7 @@ def basic_generate(templates,out,day,station,company,people,representative,secre
         if pid=='P02':
             if len(people)>10:raise ValueError('El plan admite hasta 10 personas.')
             table=doc.tables[1];c=table.cell(3,1)
-            original=c.text
-            # Retain the original material description after the numbered list.
-            match=re.search(r'(RECIBIERON[^\n]*)',original,re.I)
-            suffix='\n\n'+match.group(1) if match else ''
-            cell(c,f'Todo el personal de la estación {station}\n\n'+'\n\n'.join(f'{i}. {p["nombre"]}' for i,p in enumerate(people,1))+suffix)
+            fill_session_people(c,station,[p['nombre'] for p in people])
             cell(table.cell(4,3),len(people))
         elif pid=='P01':
             c=doc.tables[2].cell(0,0)
@@ -86,11 +88,16 @@ def basic_generate(templates,out,day,station,company,people,representative,secre
                 if p.text.strip()=='Representante Técnico':
                     if i:cell_like_paragraph(ps[i-1],rep['nombre'])
                     cell_like_paragraph(p,rep['puesto'])
-        prepared.append((filename,doc))
+        slug=re.sub(r'[^A-Za-z0-9_-]','_',station.strip())[:60]
+        prepared.append((f'{pid}_{slug}_{day:%Y%m%d}.docx',doc))
     out=Path(out)
     if out.exists():raise ValueError('La carpeta del lote ya existe; no se sobrescribirá.')
     out.mkdir(parents=True)
     result=[]
-    for filename,doc in prepared:
-        path=out/filename;doc.save(path);result.append(path)
+    try:
+        for filename,doc in prepared:
+            path=out/filename;doc.save(path);result.append(path)
+    except Exception:
+        shutil.rmtree(out)
+        raise
     return result

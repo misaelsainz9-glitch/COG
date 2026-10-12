@@ -1,3 +1,7 @@
+ACTUALIZACIÓN: consulta REVISION.md antes de usar documentos definitivos.
+El modo básico requiere las siete plantillas ORIGINALES sin editar y admite 6 personas.
+No uses documentos ya generados como plantillas. Conserva el Excel como catálogo.
+
 MODO BÁSICO (predeterminado)
 Ejecuta Iniciar.bat y captura fecha, número/nombre de estación, nombres y puestos.
 Selecciona representante/responsable y secretario por su número de fila.

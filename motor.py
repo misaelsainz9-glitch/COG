@@ -15,18 +15,31 @@ def required(row,key):
     if v is None or not str(v).strip(): raise ValueError(f'Falta {key}.')
     return v
 
+def positive_integer(value,label):
+    from decimal import Decimal,InvalidOperation
+    try:
+        number=Decimal(str(value))
+        if not number.is_finite() or number!=number.to_integral_value() or number<=0:
+            raise ValueError
+        return int(number)
+    except (InvalidOperation,ValueError,TypeError):
+        raise ValueError(f'{label} debe ser un número entero positivo.') from None
+
+
 def fecha(v):
     if not isinstance(v,(date,datetime)): raise ValueError('Introduce fechas de Excel reales, no texto.')
     return v.strftime('%d/%m/%Y')
 
 def cell(c,value):
-    # Retain cell properties and paragraph/run styles; do not recreate tables.
-    ps=c.paragraphs
-    for p in ps:
-        for r in p.runs:r.text=''
-    p=ps[0]
-    if p.runs:p.runs[0].text=text(value)
-    else:p.add_run(text(value))
+    # Reuse existing paragraphs rather than combining new line breaks with old blank paragraphs.
+    lines=text(value).split('\n')
+    paragraphs=c.paragraphs
+    for i,p in enumerate(paragraphs):
+        content=lines[i] if i<len(lines) else ''
+        if i==len(paragraphs)-1 and len(lines)>len(paragraphs):
+            content='\n'.join(lines[i:])
+        cell_like_paragraph(p,content)
+
 
 def cells(row):
     out=[];seen=set()
@@ -42,22 +55,25 @@ def fill_rows(rows,values):
 def replace(doc,old,new):
     # Replacement across split runs while retaining unaffected run formatting.
     roots=[doc.element]
-    for sec in doc.sections:
-        roots += [sec.header._element,sec.footer._element,sec.first_page_header._element,sec.first_page_footer._element,sec.even_page_header._element,sec.even_page_footer._element]
+    for rel in doc.part.rels.values():
+        if rel.reltype.endswith(('/header','/footer')) and not rel.is_external:
+            root=rel.target_part.element
+            if all(root is not existing for existing in roots):roots.append(root)
     from docx.oxml.ns import qn
     for root in roots:
         for p in root.iter(qn('w:p')):
             ts=list(p.iter(qn('w:t')))
             combined=''.join(t.text or '' for t in ts)
-            while old in combined:
-                start=combined.index(old);end=start+len(old);pos=0;written=False
+            if not old:raise ValueError('El texto de búsqueda no debe estar vacío.')
+            spans=[m.span() for m in re.finditer(re.escape(old),combined)]
+            for start,end in reversed(spans):
+                pos=0;written=False
                 for t in ts:
                     value=t.text or '';a=pos;b=pos+len(value);pos=b
                     if b<=start or a>=end:continue
                     t.text=value[:max(0,start-a)]+(text(new) if not written else '')+value[max(0,end-a):]
                     t.set(qn('xml:space'),'preserve');written=True
-                combined=''.join(t.text or '' for t in ts)
-                if old in text(new):break
+
 
 class Base:
     def __init__(self,path):
@@ -111,7 +127,7 @@ class Base:
                         for i,r in enumerate(t.rows[5:role]):
                             cs=cells(r)
                             if i<len(ag):
-                                a=ag[i];vals=[required(a,'tema'),self.name(required(a,'responsable_id')),f'{required(a,"duracion_minutos")} MIN.']
+                                a=ag[i];vals=[required(a,'tema'),self.name(required(a,'responsable_id')),f'{positive_integer(required(a,"duracion_minutos"),"Duración")} MIN.']
                             else:vals=['','','']
                             for c,v in zip(cs[-3:],vals):cell(c,v)
                         if len(ag)>role-5:raise ValueError('La agenda excede la capacidad de la plantilla.')
@@ -133,10 +149,12 @@ class Base:
             s=self.one('Sesiones','evento_id',e['evento_id']);t=doc.tables[1]
             if not people:raise ValueError('No hay asistentes confirmados.')
             if len(people)>10:raise ValueError('El plan admite hasta 10 participantes.')
-            cell(t.cell(0,1),fecha(day));cell(t.cell(0,2),f'Duración: {required(s,"duracion_minutos")} MIN.');cell(t.cell(0,3),'Lugar: '+required(e,'lugar'))
+            cell(t.cell(0,1),fecha(day));cell(t.cell(0,2),f'Duración: {positive_integer(required(s,"duracion_minutos"),"Duración")} MIN.');cell(t.cell(0,3),'Lugar: '+required(e,'lugar'))
             for row,key,source in [(1,'tema',e),(2,'objetivo_general',s),(5,'contenido_tematico',s)]:cell(t.cell(row,1),required(source,key))
-            cell(t.cell(3,1),f'Todo el personal de la estación {station}\n\n'+'\n\n'.join(f'{i}. {required(x,"nombre_completo")}' for i,x in enumerate(people,1))+'\n\n'+text(s.get('material_entregado')))
-            cell(t.cell(4,1),required(s,'numero_sesiones'));cell(t.cell(4,3),len(people));cell(t.cell(6,1),self.name(required(s,'instructor_id')));cell(t.cell(8,1),text(s.get('evaluacion_diagnostica')))
+            fill_session_people(t.cell(3,1),station,[required(x,'nombre_completo') for x in people])
+            for paragraph in t.cell(3,1).paragraphs:
+                if paragraph.text.startswith('RECIBIERON'):cell_like_paragraph(paragraph,text(s.get('material_entregado')))
+            cell(t.cell(4,1),positive_integer(required(s,'numero_sesiones'),'Número de sesiones'));cell(t.cell(4,3),len(people));cell(t.cell(6,1),self.name(required(s,'instructor_id')));cell(t.cell(8,1),text(s.get('evaluacion_diagnostica')))
         elif pid=='P03':
             n=self.one('Notas','evento_id',e['evento_id'])
             if n.get('confirmada')!='Sí':raise ValueError('La nota debe estar confirmada.')
@@ -156,13 +174,13 @@ class Base:
             replace(doc,'No controlada.',text(required(a,'tipo_copia'))+'.')
             ds=sorted(self.rows('Documentos_Entregados','acuse_id',a['acuse_id']),key=lambda x:x.get('orden') or 0)
             if not ds:raise ValueError('Faltan documentos entregados.')
-            fill_rows(doc.tables[0].rows[1:-1],[[i,text(x.get('codigo')),text(x.get('revision')),required(x,'nombre_documento'),required(x,'numero_hojas')] for i,x in enumerate(ds,1)])
-            cell(doc.tables[0].rows[-1].cells[-1],sum(int(required(x,'numero_hojas')) for x in ds))
+            fill_rows(doc.tables[0].rows[1:-1],[[i,text(x.get('codigo')),text(x.get('revision')),required(x,'nombre_documento'),positive_integer(required(x,'numero_hojas'),'Número de hojas')] for i,x in enumerate(ds,1)])
+            cell(doc.tables[0].rows[-1].cells[-1],sum(positive_integer(required(x,'numero_hojas'),'Número de hojas') for x in ds))
             rs=self.rows('Recepciones','acuse_id',a['acuse_id'])
             if not rs or any(x.get('recepcion_confirmada')!='Sí' for x in rs):raise ValueError('Faltan recepciones confirmadas.')
             vals=[]
             for x in rs:
-                person=self.person(x['persona_id']);copies=int(required(x,'cantidad_copias'))
+                person=self.person(x['persona_id']);copies=positive_integer(required(x,'cantidad_copias'),'Cantidad de copias')
                 if copies<=0:raise ValueError('Las copias deben ser positivas.')
                 vals.append([copies,required(person,'puesto'),required(person,'nombre_completo'),'',fecha(required(x,'fecha_recepcion'))])
             fill_rows(doc.tables[1].rows[1:-1],vals);cell(doc.tables[1].rows[-1].cells[0],'Total: '+str(sum(x[0] for x in vals)))
@@ -188,9 +206,35 @@ class Base:
         return paths
 
 def cell_like_paragraph(p,value):
-    for r in p.runs:r.text=''
-    if p.runs:p.runs[0].text=text(value)
-    else:p.add_run(text(value))
+    from docx.oxml.ns import qn
+    # Keep drawings and run properties; .text = '' on every run would remove drawings.
+    runs=p.runs
+    target=next((r for r in runs if r.text),None)
+    for r in runs:
+        for child in list(r._r):
+            if child.tag in {qn('w:t'),qn('w:tab'),qn('w:br'),qn('w:cr')}:
+                r._r.remove(child)
+    if text(value):
+        if target is None:
+            target=p.add_run()
+            if runs and runs[0]._r.rPr is not None:
+                from copy import deepcopy
+                target._r.insert(0,deepcopy(runs[0]._r.rPr))
+        if target is not None:
+            for i,line in enumerate(text(value).split('\n')):
+                if i:target._r.add_br()
+                target._r.add_t(line)
+
+
+def fill_session_people(c,station,people):
+    numbered=[p for p in c.paragraphs if re.match(r'^\s*\d+\.',p.text)]
+    if len(numbered)!=10 or not c.paragraphs[0].text.startswith('Todo el personal de la estación'):
+        raise ValueError('El bloque de participantes del plan de sesión fue modificado.')
+    if len(people)>len(numbered):raise ValueError('El plan admite hasta 10 participantes.')
+    cell_like_paragraph(c.paragraphs[0],f'Todo el personal de la estación {station}')
+    for i,p in enumerate(numbered):
+        cell_like_paragraph(p,f'{i+1}. '+(people[i] if i<len(people) else ''))
+
 
 def export_pdf(paths):
     import pythoncom
