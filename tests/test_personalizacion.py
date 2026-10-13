@@ -48,7 +48,10 @@ class BrandingTests(unittest.TestCase):
                     header=''.join(t.text or '' for t in root.iter(qn('w:t')))
                     if not header.strip():continue  # Original first/even-page headers may be intentionally empty.
                     self.assertIn('DIRECCIÓN FICTICIA 100',header)
-                    if pid!='P03':self.assertIn('MAYO2027',header)
+                    if pid!='P03':
+                        self.assertIn('MAYO2027',header)
+                        self.assertIn('.R3',header)
+                        self.assertNotIn('.R0',header)
                     for drawing in root.iter(qn('w:drawing')):
                         for blip in drawing.iter(qn('a:blip')):
                             part=rel.target_part.related_parts[blip.get(qn('r:embed'))]
@@ -71,6 +74,16 @@ class BrandingTests(unittest.TestCase):
     def test_invalid_image_rejected_before_outputs(self):
         bad=self.root/'falsa.png';bad.write_text('not an image')
         with self.assertRaisesRegex(ValueError,'No se puede leer'):self.run_batch(logo=str(bad))
+        self.assertFalse((self.root/'lote').exists())
+    def test_corrupt_png_pixel_data_rejected_before_outputs(self):
+        damaged=self.root/'dañada.png'
+        data=bytearray(self.logo.read_bytes())
+        data[data.index(b'IDAT')+5]^=1
+        damaged.write_bytes(data)
+        with self.assertRaisesRegex(ValueError,'No se puede leer'):self.run_batch(logo=str(damaged))
+        self.assertFalse((self.root/'lote').exists())
+    def test_invalid_revision_rejected_without_outputs(self):
+        with self.assertRaisesRegex(ValueError,'número entero'):self.run_batch(revision='3.5')
         self.assertFalse((self.root/'lote').exists())
     def test_no_signature_selection_keeps_original_blank_fields(self):
         paths=self.run_batch(signatures=False)

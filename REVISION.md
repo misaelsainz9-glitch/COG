@@ -70,3 +70,13 @@ Los destinos actualmente implementados son: seis receptores y quien entrega en P
 Las afirmaciones anteriores sobre domicilio y logo fijos quedan actualizadas: ahora se conservan únicamente cuando esos campos se dejan vacíos. Los nuevos controles pertenecen al modo básico; el avanzado conserva su flujo de Excel. La interfaz de dibujo, el posicionamiento visual en Word y el PDF real siguen pendientes de prueba en Windows.
 
 La última ejecución terminó con **27 pruebas aprobadas, sin omisiones**. Se agregaron pruebas de dibujo vacío, límites de coordenadas, PNG con transparencia, sustitución de logo con proporción, dirección/revisión, firmas en los espacios previstos, conservación de párrafos/filas, imágenes ausentes/incorrectas y modo sin imágenes de firma. Se utilizaron datos e imágenes ficticios, sin publicar los documentos o firmas reales.
+
+## Revisión del encabezado e integridad de imágenes
+
+Se reprodujo y corrigió una imagen PNG con datos dañados que antes pasaba la lectura de metadatos. Ahora se verifica su integridad y se decodifica antes de insertarla como logo o firma. Una imagen dañada se rechaza antes de guardar el lote.
+
+Se corrigió la incoherencia entre el número de revisión visible y el código documental: introducir revisión 3 actualiza tanto el número como el sufijo `.R3`. Se aceptan enteros no negativos; un valor como 3.5 se rechaza. La nota informativa no tiene bloque de revisión y conserva ese diseño.
+
+La última ejecución terminó con **29 pruebas aprobadas, sin omisiones**, con las siete plantillas locales. Incluye las pruebas nuevas que reproducen el PNG dañado y la revisión inválida, además de comprobar el sufijo de revisión en los códigos.
+
+Se confirmó la preferencia del usuario por firmas únicamente en los espacios existentes. No queda pendiente agregar bloques a las otras cuatro plantillas: se mantienen sin ellos. La instalación y el dibujo con mouse en Windows, la exportación real con Word y la inspección visual siguen sin ejecutarse en este entorno.

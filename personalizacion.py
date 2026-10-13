@@ -1,5 +1,7 @@
 """Encabezados y firmas en los espacios existentes de las plantillas."""
 from pathlib import Path
+import re
+from PIL import Image as PILImage
 from docx.image.image import Image
 from docx.oxml.ns import qn
 from docx.shared import Cm
@@ -11,7 +13,10 @@ def validated_image(path,label):
     if not path.is_file():raise ValueError(f'No se encuentra {label}: {path.name}')
     if path.suffix.lower() not in ('.png','.jpg','.jpeg'):
         raise ValueError(f'{label}: usa PNG o JPG.')
-    try:image=Image.from_file(str(path))
+    try:
+        with PILImage.open(path) as probe:probe.verify()
+        with PILImage.open(path) as probe:probe.load()
+        image=Image.from_file(str(path))
     except Exception as exc:raise ValueError(f'No se puede leer {label}; selecciona una imagen PNG o JPG válida.') from exc
     if image.px_width<=0 or image.px_height<=0:raise ValueError(f'{label}: dimensiones no válidas.')
     return path,image
@@ -23,6 +28,10 @@ def fit(image,width,height):
 
 
 def apply_header(doc,address='',logo='',revision='',revision_date=None):
+    revision=revision.strip()
+    if revision and not re.fullmatch(r'[0-9]+',revision):
+        raise ValueError('La revisión del encabezado debe ser un número entero, por ejemplo 0, 1 o 2.')
+    if revision:revision=str(int(revision))
     logo_image=validated_image(logo,'el logo') if logo else None
     count=0;addresses=0
     for rel in doc.part.rels.values():
@@ -38,6 +47,10 @@ def apply_header(doc,address='',logo='',revision='',revision_date=None):
                 addresses+=1
         if revision or revision_date:
             flat=list(root.iter(qn('w:t')))
+            if revision:
+                for node in flat:
+                    if node.text and re.search(r'\.R[0-9]+$',node.text):
+                        node.text=re.sub(r'\.R[0-9]+$',f'.R{revision}',node.text)
             for i,node in enumerate(flat):
                 if node.text=='REVISIÓN:' and i+1<len(flat):
                     if revision:flat[i+1].text=revision.strip()
