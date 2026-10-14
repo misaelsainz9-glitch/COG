@@ -42,3 +42,9 @@ Con las dependencias y los Word originales locales puedes ejecutar:
 ```
 
 Sin los originales, las pruebas que los necesitan se omiten explícitamente. Consulta [REVISION.md](REVISION.md) para el informe técnico.
+
+## Vista ilustrativa
+
+Este es un diseño propuesto, generado como ilustración; no es una captura de la aplicación actual ni una prueba de funcionamiento en Windows.
+
+![Diseño propuesto de la pantalla SASISOPA](docs/diseno-propuesto.png)
