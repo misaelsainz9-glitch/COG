@@ -1,3 +1,11 @@
+# ACTUALIZACIÓN: CONSERVAR CAMPOS SIN CAPTURA
+
+Los campos vacíos ahora conservan el original: fecha de reunión opcional sin precarga, puestos independientes de nombres y filas sin compactar. La última suite pasó 38 pruebas y omitió tres grupos retirados de Word. Se añadieron pruebas de igualdad del texto y píxeles renderizados de las 14 páginas cuando todos los campos quedan vacíos, y de conservación selectiva de fechas, puestos y revisión.
+
+Las firmas anteriores se conservan si no cambia estación ni nombres; se retiran si cambia esa identidad. Las imágenes nuevas sustituyen las del representante en sus espacios. Las afirmaciones históricas de obligatoriedad de fechas/puestos y retiro incondicional de firmas quedan sustituidas por esta actualización.
+
+---
+
 # ESTADO ACTUAL: GENERACIÓN NATIVA DE POLÍTICA EN PDF
 
 El usuario confirmó que solo tiene el PDF. Se adaptó el programa para generar directamente una copia de PROCEDIMIENTO I.pdf de 14 páginas. Las siete plantillas anteriores siguen retiradas. El formulario permite cinco asistentes, encabezados, datos y firmas en listas y espacios del representante legal. No requiere Word para generar el PDF.

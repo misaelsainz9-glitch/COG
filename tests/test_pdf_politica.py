@@ -52,6 +52,33 @@ class PolicyPDFTests(unittest.TestCase):
                     if image['bbox'][1]>=500:
                         self.assertLessEqual(image['width'],1)
                         self.assertLessEqual(image['height'],1)
+    def test_all_blank_preserves_original_visible_pages(self):
+        path=generate_pdf(self.templates,self.root/'salidas',None,'','',[],0,0)[0]
+        with fitz.open(path) as out,fitz.open(self.source) as original:
+            for i in range(14):
+                self.assertEqual(out[i].get_text(),original[i].get_text())
+                self.assertEqual(out[i].get_pixmap(matrix=fitz.Matrix(.6,.6)).samples,original[i].get_pixmap(matrix=fitz.Matrix(.6,.6)).samples)
+    def test_blank_dates_positions_revision_and_rows_keep_original(self):
+        rows=[{'nombre':'','puesto':''},{'nombre':'SEGUNDA PERSONA','puesto':''}]
+        path=generate_pdf(self.templates,self.root/'salidas',None,'E-99999','EMPRESA FICTICIA',rows,0,0)[0]
+        with fitz.open(path) as out,fitz.open(self.source) as original:
+            for i in (9,12,13):
+                self.assertIn('SEGUNDA PERSONA',out[i].get_text())
+                self.assertEqual(out[i].get_text().count('Fecha: --/--/----'),original[i].get_text().count('Fecha: --/--/----'))
+                if i!=13:
+                    for word in ('Representante','Auxiliar','Jefe'):
+                        self.assertEqual(word in out[i].get_text(),word in original[i].get_text())
+            self.assertIn('.R0',out[1].get_text())
+            self.assertIn('2024',out[1].get_text())
+            inserted=out[9].search_for('SEGUNDA PERSONA')[0]
+            self.assertGreater(inserted.y0,346)
+            self.assertLess(inserted.y1,375)
+    def test_signature_only_keeps_original_text(self):
+        sig=self.root/'firma.png';signature_png([[(10,40),(110,80),(290,40)]]).save(sig)
+        rows=[{'nombre':'','puesto':'','firma':str(sig)}]
+        path=generate_pdf(self.templates,self.root/'salidas',None,'','',rows,0,0,signatures=True)[0]
+        with fitz.open(path) as out,fitz.open(self.source) as original:
+            for i in range(14):self.assertEqual(out[i].get_text(),original[i].get_text())
     def test_images_signatures_and_logo_fit_existing_spaces(self):
         logo=self.root/'logo.png';Image.new('RGB',(100,100),'blue').save(logo)
         sig=self.root/'firma.png';signature_png([[(10,40),(110,80),(290,40)]]).save(sig)

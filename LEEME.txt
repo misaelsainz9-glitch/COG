@@ -1,3 +1,5 @@
+CAMPOS VACÍOS: conservan el contenido original. Fechas, revisión y puestos son opcionales.
+
 SASISOPA — nueva base de Política en PDF
 
 La base activa es PROCEDIMIENTO I.pdf, de 14 páginas, del ZIP 1. POLITICA.

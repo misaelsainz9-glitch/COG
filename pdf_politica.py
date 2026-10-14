@@ -38,13 +38,13 @@ def box_text(page,rect,text,label,size=9,align=0):
 
 
 def generate_pdf(templates,out,day,station,company,people,representative,secretary,*,address='',logo='',revision='',revision_date=None,signatures=False):
-    if not isinstance(day,(date,datetime)):raise ValueError('Introduce una fecha válida.')
-    station=station.strip();company=company.strip()
-    if not re.fullmatch(r'E-\d{5}',station):raise ValueError('El número de estación debe tener el formato E-00000.')
-    if not company or not people or len(people)>5:raise ValueError('Completa la estación y entre una y cinco personas; las listas del PDF tienen cinco filas.')
-    if any(not p['nombre'].strip() or not p['puesto'].strip() for p in people):raise ValueError('Completa nombre y puesto de cada persona.')
-    if len({p['nombre'].strip().casefold() for p in people})!=len(people):raise ValueError('Hay nombres de personal duplicados.')
-    if representative not in range(len(people)) or secretary not in range(len(people)):raise ValueError('Selecciona responsables incluidos en el personal.')
+    if day is not None and not isinstance(day,(date,datetime)):raise ValueError('Introduce una fecha válida.')
+    station=station.strip();company=company.strip();address=address.strip();revision=revision.strip()
+    if station and not re.fullmatch(r'E-\d{5}',station):raise ValueError('El número de estación debe tener el formato E-00000.')
+    if len(people)>5:raise ValueError('Las listas del PDF tienen cinco filas.')
+    names=[p['nombre'].strip().casefold() for p in people if p['nombre'].strip()]
+    if len(set(names))!=len(names):raise ValueError('Hay nombres de personal duplicados.')
+    if people and (representative not in range(len(people)) or secretary not in range(len(people))):raise ValueError('Selecciona filas válidas de personal.')
     for value in [station,company,address,revision]+[p[k] for p in people for k in ('nombre','puesto')]:
         if any(ord(c)<32 for c in value):raise ValueError('Los campos no deben contener caracteres de control.')
     if revision and not re.fullmatch(r'[0-9]+',revision):raise ValueError('La revisión debe ser un entero no negativo.')
@@ -60,7 +60,8 @@ def generate_pdf(templates,out,day,station,company,people,representative,secreta
     if hashlib.sha256(source.read_bytes()).hexdigest()!=metadata['sha256']:raise ValueError('El PDF fue modificado o no es el original de 14 páginas. Copia el archivo del ZIP recibido.')
     out=Path(out)
     if out.exists():raise ValueError('La carpeta del lote ya existe; no se sobrescribirá.')
-    rep=people[representative];secret=people[secretary]
+    rep=people[representative] if people else {'nombre':'','puesto':''}
+    secret=people[secretary] if people else {'nombre':'','puesto':''}
     with fitz.open(source) as doc:
         if len(doc)!=14:raise ValueError('La base debe tener 14 páginas.')
         original=[spans(p) for p in doc]
@@ -74,12 +75,23 @@ def generate_pdf(templates,out,day,station,company,people,representative,secreta
             for item in page.get_images():
                 xref=item[0];rects=page.get_image_rects(xref)
                 if xref!=logo_xref and rects and all(r.y0>=500 for r in rects):removed.add(xref)
-        for xref in removed:doc[0].delete_image(xref)
+        # Prior signing images must not follow a changed station or signer identity.
+        identity_changed=bool(station or company or any(names))
+        if identity_changed:
+            for xref in removed:doc[0].delete_image(xref)
         if logo:doc[0].delete_image(logo_xref)
+        if signatures and rep.get('firma') and not identity_changed:
+            for page_index,owner_box in [(0,fitz.Rect(376,530,459,595)),(10,fitz.Rect(276,551,350,609))]:
+                owner_page=doc[page_index]
+                for item in owner_page.get_images():
+                    if item[0]==logo_xref:continue
+                    for rect in owner_page.get_image_rects(item[0]):
+                        if rect.intersects(owner_box):owner_page.add_redact_annot(rect,fill=None,cross_out=False)
+                owner_page.apply_redactions(images=1,graphics=0,text=1)
         for index,page in enumerate(doc):
             operations=[];extra=[]
             def field(rect,value,label,size=9,align=0):
-                operations.append((fitz.Rect(rect),value,label,size,align))
+                if value.strip():operations.append((fitz.Rect(rect),value,label,size,align))
             if index==0:
                 company_box=fitz.Rect(175,343,440,361)
                 field(company_box,company,'Nombre de estación',11,1)
@@ -95,9 +107,11 @@ def generate_pdf(templates,out,day,station,company,people,representative,secreta
             # Rebuild only spans whose identity/code changes; retain the surrounding body.
             for span in original[index]:
                 rect=fitz.Rect(span['bbox']);text=span['text']
-                if rect.intersects(company_box) or address and rect.intersects(address_box):continue
-                value=re.sub(r'E-?'+old_digits,station,text)
-                if index==10:value=value.replace(old_digits,station[2:]).replace(cover_company,company)
+                if company and rect.intersects(company_box) or address and rect.intersects(address_box):continue
+                value=re.sub(r'E-?'+old_digits,station,text) if station else text
+                if index==10:
+                    if station:value=value.replace(old_digits,station[2:])
+                    if company:value=value.replace(cover_company,company)
                 if revision:value=re.sub(r'\.R0\b',f'.R{revision}',value)
                 if value!=text:field(rect,value,'Identidad/código',span['size'])
             if revision:
@@ -116,7 +130,7 @@ def generate_pdf(templates,out,day,station,company,people,representative,secreta
             if logo:
                 rects=logo_rectangles[index]
                 for rect in rects:extra.append(('image',rect,logo))
-            if index in (8,9,11,12,13):
+            if day is not None and index in (8,9,11,12,13):
                 date_span=next(s for s in original[index] if s['text'].strip()=='Fecha:' and 150<s['bbox'][1]<260)
                 y=date_span['bbox'][1]
                 field((150,y,229,y+16),day.strftime('%d/%m/%Y'),'Fecha reunión',9)
@@ -159,7 +173,8 @@ def generate_pdf(templates,out,day,station,company,people,representative,secreta
         doc.set_metadata({})
         blob=doc.tobytes(garbage=4,deflate=True)
     out.mkdir(parents=True)
-    target=out/f'POL-I_{station}_{day:%Y%m%d}.pdf'
+    date_label=day.strftime('%Y%m%d') if day is not None else 'fecha_original'
+    target=out/f'POL-I_{station or ("E-"+old_digits)}_{date_label}.pdf'
     try:
         with target.open('xb') as stream:stream.write(blob)
     except Exception:

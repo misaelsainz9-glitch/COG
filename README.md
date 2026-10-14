@@ -7,7 +7,7 @@ Por solicitud del usuario, las siete plantillas Word anteriores se retiraron. La
 1. [Descarga el ZIP del programa](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo.
 2. Del ZIP que compartiste, entra en `1. POLITICA` y copia **PROCEDIMIENTO I.pdf** directamente dentro de `plantillas` del programa. No coloques los siete Word anteriores.
 3. Ejecuta **Instalar.bat** otra vez al actualizar: se agregó PyMuPDF. Se comprobó la disponibilidad de su dependencia para Windows x64 y Python 3.12.
-4. Ejecuta **Iniciar.bat**. Introduce número de estación con formato `E-00000`, razón social, dirección, fecha de reuniones y hasta **cinco personas** con sus puestos.
+4. Ejecuta **Iniciar.bat**. Captura solo los campos que quieras cambiar; deja los demás vacíos. El número de estación usa el formato `E-00000`, razón social, dirección, fecha de reuniones y hasta **cinco personas** con sus puestos.
 5. Elige quién figura como **representante legal / autoriza** y quién como secretario. La primera selección actualiza también el nombre de AUTORIZO de la portada y el representante legal de la política.
 6. Opcionalmente, selecciona logo, revisión y fecha de revisión. Usa **Subir** o **Dibujar** para las firmas.
 7. Pulsa **Generar documentos**. Se guarda un único PDF de **14 páginas**, conservando la geometría de las tablas.
@@ -24,7 +24,7 @@ Este modo no necesita Microsoft Word. Los datos se capturan en el formulario; el
 - Convocante/facilitador usan la selección de representante y Secretario usa su selección.
 - Firmas seleccionadas en las listas y en los espacios de autorización/representante legal existentes. **No se añaden bloques nuevos.** Los bloques genéricos ELABORÓ/REVISADO POR/APROBADO POR permanecen sin imágenes de firma; su asignación por roles no está implementada.
 
-El PDF original trae imágenes de firmas y sellos. Se retiran de las zonas de firma de la **copia generada**; el original permanece intacto. Las firmas seleccionadas son imágenes, no firmas digitales criptográficas.
+El PDF original trae imágenes de firmas y sellos. Se retiran de las zonas de firma de la **copia generada** cuando cambias estación o nombres; si no cambias esa identidad, se conservan. El original permanece intacto. Las firmas seleccionadas son imágenes, no firmas digitales criptográficas.
 
 Horarios, teléfono, temas, acuerdos, contenido del procedimiento, historial de actualización y fechas históricas de elaboración/revisión se conservan. La aplicación no verifica que los acuerdos se hayan realizado. Revisa esos datos antes de usar la copia.
 
@@ -38,7 +38,7 @@ Los PDF originales, resultados, logos, firmas y perfiles reales no se publican e
 
 ## Comprobaciones
 
-Se ejecutaron **35 pruebas aprobadas** con el PDF original local, incluyendo siete pruebas del nuevo llenado PDF. **Tres grupos de integración de Word se omiten explícitamente** porque sus plantillas se retiraron; sus resultados no validan este flujo.
+Se ejecutaron **38 pruebas aprobadas** con el PDF original local, incluyendo siete pruebas del nuevo llenado PDF. **Tres grupos de integración de Word se omiten explícitamente** porque sus plantillas se retiraron; sus resultados no validan este flujo.
 
 Se comprobó generación de 14 páginas, dimensiones y geometría/color de líneas de tablas, campos actualizados, imagen proporcional, firmas en sus espacios, retiro de imágenes antiguas, original intacto, exceso de asistentes, texto excesivo, PDF alterado y sobrescritura. Se inspeccionaron imágenes renderizadas de portada y difusión durante el desarrollo.
 
@@ -52,3 +52,9 @@ set "SASISOPA_NEW_PDF=%CD%\plantillas\PROCEDIMIENTO I.pdf"
 ```
 
 Consulta [REVISION.md](REVISION.md) para el historial. La [imagen del diseño](docs/diseno-propuesto.png) es una ilustración de referencia.
+
+## Campos vacíos: conservar el original
+
+Todos los campos de texto son opcionales. Si no capturas fecha de reunión, fecha de revisión, revisión, puesto, nombre o datos de estación, se conserva el contenido que ya tiene el PDF. La fecha de reunión ya no se precarga con el día actual. Las filas vacías se mantienen en su posición.
+
+Las firmas/sellos anteriores se conservan si no cambias estación ni nombres. Si esa identidad cambia, se retiran para evitar asociar firmas anteriores a personas o estaciones distintas. Una firma nueva seleccionada reemplaza la del representante en sus espacios. El logo original permanece si no seleccionas otro.

@@ -53,7 +53,7 @@ station_form=ttk.Frame(station_body);station_form.pack(side='left',fill='x',expa
 logo_box=ttk.Frame(station_body,padding=(18,0,0,0));logo_box.pack(side='right',fill='y')
 fields={}
 for label,display,default in [
- ('Fecha (dd/mm/aaaa)','Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),
+ ('Fecha (dd/mm/aaaa)','Fecha (dd/mm/aaaa)',''),
  ('Número de estación (ej. E-02585)','Número de estación',''),
  ('Nombre o razón social de la estación','Nombre de la estación',''),
  ('Dirección de la estación','Dirección',''),
@@ -83,7 +83,7 @@ def clear_logo():
  logo.set('');logo_preview.configure(image='',text='Tu logo aquí',width=22,height=7);logo_photo=None
 ttk.Button(logo_box,text='Elegir logo',command=choose_logo).pack(fill='x')
 ttk.Button(logo_box,text='Quitar logo',command=clear_logo).pack(fill='x',pady=(4,0))
-ttk.Label(station_section,text='Deja los campos opcionales vacíos para conservar el encabezado original. La revisión muestra mes y año.',style='Muted.TLabel',wraplength=900).pack(anchor='w',pady=(10,0))
+ttk.Label(station_section,text='Deja cualquier campo vacío para conservar su contenido original. La revisión muestra mes y año.',style='Muted.TLabel',wraplength=900).pack(anchor='w',pady=(10,0))
 personal_section=section('Personal y firmas')
 ttk.Label(personal_section,text='Hasta cinco asistentes. La persona elegida como representante legal también figura en AUTORIZO.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
 grid=ttk.Frame(personal_section);grid.pack(fill='x')
@@ -162,11 +162,10 @@ def generate():
  try:
   require_ready()
   if not all(p.get().strip() for p in paths):raise ValueError('Selecciona ambas carpetas.')
-  date=datetime.strptime(fields['Fecha (dd/mm/aaaa)'].get().strip(),'%d/%m/%Y')
-  indexes=[i for i,(n,p,sig) in enumerate(people) if n.get().strip() or p.get().strip() or sig.get().strip()]
-  if int(rep.get())-1 not in indexes or int(sec.get())-1 not in indexes:raise ValueError('El representante y el secretario deben señalar filas con personal.')
-  data=[{'nombre':people[i][0].get().strip(),'puesto':people[i][1].get().strip(),'firma':people[i][2].get().strip()} for i in indexes]
-  args=(paths[0].get(),Path(paths[1].get())/datetime.now().strftime('%Y%m%d_%H%M%S_%f'),date,fields['Número de estación (ej. E-02585)'].get(),fields['Nombre o razón social de la estación'].get(),data,indexes.index(int(rep.get())-1),indexes.index(int(sec.get())-1))
+  date_value=fields['Fecha (dd/mm/aaaa)'].get().strip()
+  date=datetime.strptime(date_value,'%d/%m/%Y') if date_value else None
+  data=[{'nombre':n.get().strip(),'puesto':p.get().strip(),'firma':sig.get().strip()} for n,p,sig in people]
+  args=(paths[0].get(),Path(paths[1].get())/datetime.now().strftime('%Y%m%d_%H%M%S_%f'),date,fields['Número de estación (ej. E-02585)'].get(),fields['Nombre o razón social de la estación'].get(),data,int(rep.get())-1,int(sec.get())-1)
   revision_value=fields['Fecha revisión (dd/mm/aaaa, opcional)'].get().strip()
   options={'address':fields['Dirección de la estación'].get().strip(),'logo':logo.get().strip(),
            'revision':fields['Revisión del encabezado (opcional)'].get().strip(),
@@ -175,8 +174,8 @@ def generate():
   if not messagebox.askokcancel('Revisar contenido fijo',
       'Se cambiarán los campos y las imágenes que capturaste.\n'
       'Los campos sin captura, horarios, temas y acuerdos conservarán los datos originales.\n'
-      'Las firmas se insertarán en las listas de asistentes y los espacios del representante legal. Las imágenes antiguas de firmas y sellos se retirarán de la copia.\n'
-      'La misma lista se usará en las tres listas de asistentes del PDF. Los bloques de elaboración, revisión y aprobación se dejan sin imágenes de firma.\n\n'
+      'Las firmas se insertarán en las listas de asistentes y los espacios del representante legal. Si cambias estación o nombres, las firmas y sellos anteriores se retiran de la copia.\n'
+      'Los datos capturados se aplicarán a las tres listas; las celdas vacías conservan su contenido. Los bloques de elaboración, revisión y aprobación no reciben firmas nuevas.\n\n'
       'Continúa solo si esos datos y esas participaciones son correctos. '
       'Los textos largos pueden cambiar la paginación.'):
    return
