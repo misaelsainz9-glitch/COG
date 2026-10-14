@@ -22,6 +22,8 @@ def signature_dialog(parent,on_saved):
     import tkinter as tk
     from tkinter import ttk,filedialog,messagebox
     dialog=tk.Toplevel(parent);dialog.title('Dibujar firma');dialog.transient(parent);dialog.grab_set()
+    dialog.configure(background='white')
+    dialog.resizable(False,False)
     ttk.Label(dialog,text='Dibuja con el mouse. Se guardará una imagen PNG con fondo transparente.').pack(padx=12,pady=8)
     canvas=tk.Canvas(dialog,width=600,height=200,bg='white',cursor='crosshair',highlightthickness=1)
     canvas.pack(padx=12,pady=8)
@@ -51,6 +53,6 @@ def signature_dialog(parent,on_saved):
         on_saved(path);dialog.destroy()
     row=ttk.Frame(dialog);row.pack(pady=10)
     ttk.Button(row,text='Borrar',command=clear).pack(side='left',padx=5)
-    ttk.Button(row,text='Guardar y usar',command=save).pack(side='left',padx=5)
+    ttk.Button(row,text='Guardar y usar',style='Primary.TButton',command=save).pack(side='left',padx=5)
     ttk.Button(row,text='Cancelar',command=dialog.destroy).pack(side='left',padx=5)
     return dialog

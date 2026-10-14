@@ -80,3 +80,7 @@ Se corrigió la incoherencia entre el número de revisión visible y el código 
 La última ejecución terminó con **29 pruebas aprobadas, sin omisiones**, con las siete plantillas locales. Incluye las pruebas nuevas que reproducen el PNG dañado y la revisión inválida, además de comprobar el sufijo de revisión en los códigos.
 
 Se confirmó la preferencia del usuario por firmas únicamente en los espacios existentes. No queda pendiente agregar bloques a las otras cuatro plantillas: se mantienen sin ellos. La instalación y el dibujo con mouse en Windows, la exportación real con Word y la inspección visual siguen sin ejecutarse en este entorno.
+
+## Adaptación visual aprobada
+
+Se añadió tema.py y se reorganizó el formulario básico en Datos de la estación, Personal y firmas y Configuración de archivos. Se añadió vista previa local del logo y validación inmediata de las imágenes seleccionadas. Las funciones de generación y sus destinos de firma no cambiaron. Se compiló la interfaz y las 29 pruebas existentes pasaron; la interacción y distribución gráfica en Windows permanecen pendientes de comprobación.

@@ -4,11 +4,15 @@ from pathlib import Path
 from datetime import datetime
 import threading
 import queue
+from PIL import Image as PILImage,ImageTk
 from motor import ROOT,export_pdf
 from sencillo import basic_generate
 from firma_canvas import signature_dialog
+from personalizacion import validated_image
+from tema import configure_theme,NAVY,BG
 
-app=tk.Tk();app.title('SASISOPA — Llenado básico');app.geometry('1060x760')
+app=tk.Tk();app.title('SASISOPA — Generador de documentos');app.geometry('1100x850');app.minsize(850,560)
+configure_theme(app)
 notifications=queue.Queue()
 def poll_notifications():
  try:
@@ -21,60 +25,107 @@ def close_window():
   messagebox.showinfo('Generación en curso','Espera a que termine la generación antes de cerrar.')
  else:app.destroy()
 app.protocol('WM_DELETE_WINDOW',close_window)
-# Scroll keeps the Generate button reachable on small screens and with Windows scaling.
-canvas=tk.Canvas(app,highlightthickness=0)
+header=tk.Frame(app,bg=NAVY)
+header.pack(fill='x')
+tk.Label(header,text='SASISOPA — Generador de documentos',font=('Segoe UI',19,'bold'),bg=NAVY,fg='white').pack(anchor='w',padx=24,pady=18)
+canvas=tk.Canvas(app,bg=BG,highlightthickness=0)
 scroll=ttk.Scrollbar(app,orient='vertical',command=canvas.yview)
 scroll.pack(side='right',fill='y');canvas.pack(side='left',fill='both',expand=True)
 canvas.configure(yscrollcommand=scroll.set)
-f=ttk.Frame(canvas,padding=18);window=canvas.create_window((0,0),window=f,anchor='nw')
+f=ttk.Frame(canvas,padding=18,style='Page.TFrame');window=canvas.create_window((0,0),window=f,anchor='nw')
 f.bind('<Configure>',lambda e:canvas.configure(scrollregion=canvas.bbox('all')))
 canvas.bind('<Configure>',lambda e:canvas.itemconfigure(window,width=e.width))
-canvas.bind_all('<MouseWheel>',lambda e:canvas.yview_scroll(int(-e.delta/120),'units'))
-ttk.Label(f,text='Completa los campos y genera las siete plantillas',font=('Segoe UI',15,'bold')).pack(anchor='w')
-ttk.Label(f,text='Fecha, estación, nombres y puestos. Revisa los textos y la distribución de los documentos antes de utilizarlos.',wraplength=760).pack(anchor='w',pady=8)
+def scroll_page(event):
+ if event.widget.winfo_toplevel()==app:
+  canvas.yview_scroll(int(-event.delta/120),'units')
+canvas.bind_all('<MouseWheel>',scroll_page)
+def section(title):
+ border=tk.Frame(f,bg='white',highlightbackground='#d2dee8',highlightthickness=1)
+ border.pack(fill='x',pady=(0,14))
+ inner=ttk.Frame(border,padding=18);inner.pack(fill='x')
+ ttk.Label(inner,text=title,style='Section.TLabel').pack(anchor='w',pady=(0,12))
+ return inner
+station_section=section('Datos de la estación')
+station_body=ttk.Frame(station_section);station_body.pack(fill='x')
+station_form=ttk.Frame(station_body);station_form.pack(side='left',fill='x',expand=True)
+logo_box=ttk.Frame(station_body,padding=(18,0,0,0));logo_box.pack(side='right',fill='y')
 fields={}
-for label,default in [('Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),('Número de estación (ej. E-02585)',''),('Nombre o razón social de la estación',''),('Dirección de la estación',''),('Revisión del encabezado (opcional)',''),('Fecha revisión (dd/mm/aaaa, opcional)','')]:
- row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');v=tk.StringVar(value=default);fields[label]=v;ttk.Entry(row,textvariable=v).pack(side='left',fill='x',expand=True)
-logo=tk.StringVar()
-row=ttk.Frame(f);row.pack(fill='x',pady=4)
-ttk.Label(row,text='Logo de la estación (PNG/JPG)',width=38).pack(side='left')
-ttk.Entry(row,textvariable=logo).pack(side='left',fill='x',expand=True)
+for label,display,default in [
+ ('Fecha (dd/mm/aaaa)','Fecha (dd/mm/aaaa)',datetime.now().strftime('%d/%m/%Y')),
+ ('Número de estación (ej. E-02585)','Número de estación',''),
+ ('Nombre o razón social de la estación','Nombre de la estación',''),
+ ('Dirección de la estación','Dirección',''),
+ ('Revisión del encabezado (opcional)','Revisión (opcional)',''),
+ ('Fecha revisión (dd/mm/aaaa, opcional)','Fecha revisión (opcional)','')]:
+ row=ttk.Frame(station_form);row.pack(fill='x',pady=3)
+ ttk.Label(row,text=display,width=25).pack(side='left')
+ v=tk.StringVar(value=default);fields[label]=v
+ ttk.Entry(row,textvariable=v).pack(side='left',fill='x',expand=True)
+logo=tk.StringVar();logo_photo=None
+logo_preview=tk.Label(logo_box,text='Tu logo aquí',width=22,height=7,bg='#f5f8fb',fg='#6b8192',relief='solid',bd=1)
+logo_preview.pack(pady=(4,10))
 def choose_logo():
+ global logo_photo
  path=filedialog.askopenfilename(title='Seleccionar logo',filetypes=[('Imágenes','*.png *.jpg *.jpeg')])
- if path:logo.set(path)
-ttk.Button(row,text='Elegir',command=choose_logo).pack(side='right')
-ttk.Label(f,text='Personal: máximo 6 para este lote; deja las filas restantes vacías.',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=10)
-grid=ttk.Frame(f);grid.pack(fill='x');ttk.Label(grid,text='Nombre completo').grid(row=0,column=1);ttk.Label(grid,text='Puesto').grid(row=0,column=2)
+ if not path:return
+ try:
+  validated_image(path,'el logo')
+  with PILImage.open(path) as source:
+   preview=source.convert('RGBA');preview.thumbnail((180,110))
+  logo_photo=ImageTk.PhotoImage(preview,master=app)
+ except Exception as exc:
+  messagebox.showerror('No se pudo cargar el logo',str(exc));return
+ logo.set(path);logo_preview.configure(image=logo_photo,text='',width=180,height=110)
+def clear_logo():
+ global logo_photo
+ logo.set('');logo_preview.configure(image='',text='Tu logo aquí',width=22,height=7);logo_photo=None
+ttk.Button(logo_box,text='Elegir logo',command=choose_logo).pack(fill='x')
+ttk.Button(logo_box,text='Quitar logo',command=clear_logo).pack(fill='x',pady=(4,0))
+ttk.Label(station_section,text='Deja los campos opcionales vacíos para conservar el encabezado original. La revisión muestra mes y año.',style='Muted.TLabel',wraplength=900).pack(anchor='w',pady=(10,0))
+personal_section=section('Personal y firmas')
+ttk.Label(personal_section,text='Hasta seis personas. Puedes subir una firma o dibujarla con el mouse.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
+grid=ttk.Frame(personal_section);grid.pack(fill='x')
+for col,label in [(0,'N.º'),(1,'Nombre completo'),(2,'Puesto'),(3,'Firma')]:
+ ttk.Label(grid,text=label,style='TableHeader.TLabel').grid(row=0,column=col,sticky='ew')
 people=[]
-ttk.Label(grid,text='Firma (opcional)').grid(row=0,column=3)
 for i in range(6):
  name=tk.StringVar();role=tk.StringVar();signature=tk.StringVar();people.append((name,role,signature))
- ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0)
- ttk.Entry(grid,textvariable=name,width=32).grid(row=i+1,column=1,sticky='ew',padx=3,pady=2)
- ttk.Entry(grid,textvariable=role,width=22).grid(row=i+1,column=2,sticky='ew',padx=3)
- actions=ttk.Frame(grid);actions.grid(row=i+1,column=3,sticky='w')
+ ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0,pady=8)
+ ttk.Entry(grid,textvariable=name,width=25).grid(row=i+1,column=1,sticky='ew',padx=4,pady=5)
+ ttk.Entry(grid,textvariable=role,width=18).grid(row=i+1,column=2,sticky='ew',padx=4)
+ actions=ttk.Frame(grid);actions.grid(row=i+1,column=3,sticky='w',padx=4)
  def choose_signature(v=signature):
   path=filedialog.askopenfilename(title='Seleccionar firma',filetypes=[('Imágenes','*.png *.jpg *.jpeg')])
-  if path:v.set(path)
- ttk.Button(actions,text='Subir',width=7,command=choose_signature).pack(side='left')
- ttk.Button(actions,text='Dibujar',width=8,command=lambda v=signature:signature_dialog(app,v.set)).pack(side='left')
- ttk.Button(actions,text='Quitar',width=6,command=lambda v=signature:v.set('')).pack(side='left')
+  if not path:return
+  try:validated_image(path,'la firma')
+  except Exception as exc:messagebox.showerror('No se pudo cargar la firma',str(exc));return
+  v.set(path)
+ ttk.Button(actions,text='Subir',width=6,command=choose_signature).pack(side='left',padx=2)
+ ttk.Button(actions,text='Dibujar',width=7,command=lambda v=signature:signature_dialog(app,v.set)).pack(side='left',padx=2)
+ ttk.Button(actions,text='Quitar',width=6,command=lambda v=signature:v.set('')).pack(side='left',padx=2)
  indicator=tk.StringVar(value='Sin firma')
  signature.trace_add('write',lambda *args,v=signature,ind=indicator:ind.set('Firma lista' if v.get() else 'Sin firma'))
- ttk.Label(actions,textvariable=indicator,width=10).pack(side='left',padx=2)
-grid.columnconfigure(1,weight=1);grid.columnconfigure(2,weight=1)
+ ttk.Label(actions,textvariable=indicator,style='Muted.TLabel',width=9).pack(side='left',padx=3)
+grid.columnconfigure(1,weight=2);grid.columnconfigure(2,weight=1)
 rep=tk.StringVar(value='1');sec=tk.StringVar(value='1')
-for label,var in [('Fila del representante / responsable',rep),('Fila del secretario',sec)]:
- row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=38).pack(side='left');ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,7)],state='readonly',width=6).pack(side='left')
+roles=ttk.Frame(personal_section);roles.pack(fill='x',pady=(10,0))
+for label,var in [('Fila del representante',rep),('Fila del secretario',sec)]:
+ row=ttk.Frame(roles);row.pack(side='left',padx=(0,20))
+ ttk.Label(row,text=label).pack(side='left',padx=(0,8))
+ ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,7)],state='readonly',width=4).pack(side='left')
+files_section=section('Configuración de archivos')
 paths=[]
 for label,default in [('Carpeta de plantillas',str(ROOT/'plantillas')),('Guardar documentos en',str(ROOT/'salidas'))]:
- row=ttk.Frame(f);row.pack(fill='x',pady=3);ttk.Label(row,text=label,width=25).pack(side='left');var=tk.StringVar(value=default);paths.append(var);ttk.Entry(row,textvariable=var).pack(side='left',fill='x',expand=True)
+ row=ttk.Frame(files_section);row.pack(fill='x',pady=4)
+ ttk.Label(row,text=label,width=25).pack(side='left')
+ var=tk.StringVar(value=default);paths.append(var)
+ ttk.Entry(row,textvariable=var).pack(side='left',fill='x',expand=True,padx=(0,8))
  def pick(v=var):
   p=filedialog.askdirectory()
   if p:v.set(p)
  ttk.Button(row,text='Elegir',command=pick).pack(side='right')
-pdf=tk.BooleanVar();ttk.Checkbutton(f,text='Crear también PDF con Word',variable=pdf).pack(anchor='w',pady=5)
-status=tk.StringVar(value='Las plantillas originales se conservan.');ttk.Label(f,textvariable=status).pack(anchor='w')
+pdf=tk.BooleanVar();ttk.Checkbutton(files_section,text='Crear también PDF con Word',variable=pdf).pack(anchor='w',pady=8)
+status=tk.StringVar(value='Las plantillas originales se conservan. Revisa los documentos generados en Word.')
 def generate():
  try:
   if not all(p.get().strip() for p in paths):raise ValueError('Selecciona ambas carpetas.')
@@ -112,5 +163,7 @@ def generate():
    notifications.put(lambda m=msg:messagebox.showerror('No se completó',m))
   finally:notifications.put(lambda:(button.config(state='normal'),status.set('Listo.')))
  threading.Thread(target=work,daemon=False).start()
-button=ttk.Button(f,text='Generar los siete documentos',command=generate);button.pack(anchor='w',pady=8)
+button=ttk.Button(files_section,text='Generar documentos',style='Primary.TButton',command=generate)
+button.pack(pady=(8,14))
+ttk.Label(files_section,textvariable=status,style='Muted.TLabel',wraplength=850).pack(anchor='w')
 if __name__=='__main__':app.mainloop()

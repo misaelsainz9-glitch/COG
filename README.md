@@ -48,3 +48,9 @@ Sin los originales, las pruebas que los necesitan se omiten explícitamente. Con
 Este es un diseño propuesto, generado como ilustración; no es una captura de la aplicación actual ni una prueba de funcionamiento en Windows.
 
 ![Diseño propuesto de la pantalla SASISOPA](docs/diseno-propuesto.png)
+
+## Pantalla adaptada al diseño elegido
+
+El formulario básico utiliza ahora una cabecera azul, secciones blancas, títulos y botón principal en verde azulado, tabla de personal y una vista previa del logo seleccionado. El cuadro de dibujo de firmas comparte ese estilo. Los controles de revisión y responsables se mantienen para conservar las funciones anteriores; la página tiene desplazamiento vertical para pantallas pequeñas.
+
+La imagen de arriba sigue siendo una ilustración de referencia. La interfaz implementada está inspirada en ella; no es una captura ni una garantía de apariencia idéntica en todas las versiones de Windows. La nueva interfaz se comprobó mediante compilación del código y se ejecutaron nuevamente las 29 pruebas de generación, pero aún necesita una prueba gráfica real en Windows.
