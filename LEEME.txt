@@ -1,3 +1,6 @@
+NUEVO: Guardar estación y Cargar estación permiten reutilizar los datos mediante archivos .sasisopa.
+El perfil incluye copias del logo y las firmas. La fecha de reunión se conserva aparte al cargarlo.
+
 NUEVO: el formulario básico permite dirección, logo y revisión del encabezado.
 Para cada persona puedes Subir una firma PNG/JPG o Dibujarla y guardar su PNG.
 Las firmas se insertan en los espacios existentes de acuse, difusión y nota.

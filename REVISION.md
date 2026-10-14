@@ -84,3 +84,11 @@ Se confirmó la preferencia del usuario por firmas únicamente en los espacios e
 ## Adaptación visual aprobada
 
 Se añadió tema.py y se reorganizó el formulario básico en Datos de la estación, Personal y firmas y Configuración de archivos. Se añadió vista previa local del logo y validación inmediata de las imágenes seleccionadas. Las funciones de generación y sus destinos de firma no cambiaron. Se compiló la interfaz y las 29 pruebas existentes pasaron; la interacción y distribución gráfica en Windows permanecen pendientes de comprobación.
+
+## Perfiles de estación
+
+Se añadieron los botones Guardar estación y Cargar estación. Cada perfil local `.sasisopa` contiene los datos del encabezado, seis filas de personal, las selecciones de representante/secretario y copias de logo/firmas. Se conservan las filas vacías, por lo que admite borradores. No conserva la fecha de reunión ni cambia carpetas de trabajo al cargarlo.
+
+El guardado escribe primero un archivo temporal y reemplaza el destino solo al terminar. La carga verifica el formato y las imágenes antes de recuperar archivos locales; no extrae rutas arbitrarias del ZIP. Se comprobaron ocho casos nuevos, incluyendo recuperación después de eliminar las imágenes originales y conservación de un perfil anterior cuando falla el guardado. **37 pruebas pasaron sin omisiones** con las plantillas locales. Esta actualización sustituye la limitación anterior de que el formulario no guardaba datos.
+
+Pendiente: interacción real con los diálogos Guardar/Cargar en Windows, además de Word/PDF y revisión visual de documentos.

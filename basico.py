@@ -10,6 +10,7 @@ from sencillo import basic_generate
 from firma_canvas import signature_dialog
 from personalizacion import validated_image
 from tema import configure_theme,NAVY,BG
+from perfiles import save_profile,load_profile,EVENT_DATE
 
 app=tk.Tk();app.title('SASISOPA — Generador de documentos');app.geometry('1100x850');app.minsize(850,560)
 configure_theme(app)
@@ -64,18 +65,18 @@ for label,display,default in [
 logo=tk.StringVar();logo_photo=None
 logo_preview=tk.Label(logo_box,text='Tu logo aquí',width=22,height=7,bg='#f5f8fb',fg='#6b8192',relief='solid',bd=1)
 logo_preview.pack(pady=(4,10))
-def choose_logo():
+def show_logo(path):
  global logo_photo
+ validated_image(path,'el logo')
+ with PILImage.open(path) as source:
+  preview=source.convert('RGBA');preview.thumbnail((180,110))
+ logo_photo=ImageTk.PhotoImage(preview,master=app)
+ logo.set(path);logo_preview.configure(image=logo_photo,text='',width=180,height=110)
+def choose_logo():
  path=filedialog.askopenfilename(title='Seleccionar logo',filetypes=[('Imágenes','*.png *.jpg *.jpeg')])
  if not path:return
- try:
-  validated_image(path,'el logo')
-  with PILImage.open(path) as source:
-   preview=source.convert('RGBA');preview.thumbnail((180,110))
-  logo_photo=ImageTk.PhotoImage(preview,master=app)
- except Exception as exc:
-  messagebox.showerror('No se pudo cargar el logo',str(exc));return
- logo.set(path);logo_preview.configure(image=logo_photo,text='',width=180,height=110)
+ try:show_logo(path)
+ except Exception as exc:messagebox.showerror('No se pudo cargar el logo',str(exc))
 def clear_logo():
  global logo_photo
  logo.set('');logo_preview.configure(image='',text='Tu logo aquí',width=22,height=7);logo_photo=None
@@ -113,6 +114,34 @@ for label,var in [('Fila del representante',rep),('Fila del secretario',sec)]:
  row=ttk.Frame(roles);row.pack(side='left',padx=(0,20))
  ttk.Label(row,text=label).pack(side='left',padx=(0,8))
  ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,7)],state='readonly',width=4).pack(side='left')
+profile_row=ttk.Frame(station_section);profile_row.pack(fill='x',pady=(12,0))
+def save_station():
+ path=filedialog.asksaveasfilename(title='Guardar datos de estación',defaultextension='.sasisopa',filetypes=[('Perfil SASISOPA','*.sasisopa')])
+ if not path:return
+ try:
+  state={'version':1,'fields':{k:v.get() for k,v in fields.items() if k!=EVENT_DATE},
+         'people':[{'nombre':n.get(),'puesto':p.get(),'firma':sig.get()} for n,p,sig in people],
+         'logo':logo.get(),'representative':int(rep.get())-1,'secretary':int(sec.get())-1}
+  save_profile(path,state)
+ except Exception as exc:messagebox.showerror('No se pudo guardar la estación',str(exc));return
+ status.set('Estación guardada con copias de su logo y firmas.')
+ messagebox.showinfo('Estación guardada','El archivo contiene los datos, logo y firmas. Puedes cargarlo en otra sesión. La fecha de reunión se captura por separado.')
+def load_station():
+ path=filedialog.askopenfilename(title='Cargar datos de estación',filetypes=[('Perfil SASISOPA','*.sasisopa')])
+ if not path:return
+ try:
+  state=load_profile(path,ROOT/'datos_locales'/'perfiles')
+  if state['logo']:show_logo(state['logo'])
+  else:clear_logo()
+ except Exception as exc:messagebox.showerror('No se pudo cargar la estación',str(exc));return
+ for k,value in state['fields'].items():fields[k].set(value)
+ for (n,p,sig),person in zip(people,state['people']):
+  n.set(person['nombre']);p.set(person['puesto']);sig.set(person['firma'])
+ rep.set(str(state['representative']+1));sec.set(str(state['secretary']+1))
+ status.set('Estación cargada. Revisa la fecha de reunión antes de generar.')
+ messagebox.showinfo('Estación cargada','Se recuperaron la estación, el personal, el logo y las firmas. La fecha de reunión actual se conserva: revísala antes de generar.')
+ttk.Button(profile_row,text='Guardar estación',command=save_station).pack(side='left',padx=(0,8))
+ttk.Button(profile_row,text='Cargar estación',command=load_station).pack(side='left')
 files_section=section('Configuración de archivos')
 paths=[]
 for label,default in [('Carpeta de plantillas',str(ROOT/'plantillas')),('Guardar documentos en',str(ROOT/'salidas'))]:

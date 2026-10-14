@@ -23,7 +23,7 @@ La fecha y lista de personal son comunes a los siete documentos. El representant
 
 Logo y firmas se ajustan proporcionalmente a sus espacios. Las firmas se insertan en los campos existentes del acuse (receptores y entrega), la difusión (asistentes) y la nota informativa (representante). Por tu elección, las otras cuatro plantillas conservan su estructura y no reciben bloques nuevos de firma.
 
-Correos, teléfonos, cargos SASISOPA, horarios, temas, acuerdos y texto de la nota se conservan. Dirección, logo y revisión también se conservan si no se capturan cambios. El formulario no guarda sus datos para la siguiente sesión; los PNG de firmas sí quedan en la ubicación elegida.
+Correos, teléfonos, cargos SASISOPA, horarios, temas, acuerdos y texto de la nota se conservan. Dirección, logo y revisión también se conservan si no se capturan cambios. Los botones **Guardar estación** y **Cargar estación** permiten recuperar los datos en otra sesión mediante un archivo `.sasisopa`. Incluye copias del logo y de las firmas, por lo que también puede trasladarse a otra computadora. La fecha de reunión y las carpetas de trabajo actuales no se reemplazan al cargarlo.
 
 Los textos largos o las imágenes de firma pueden cambiar la altura de líneas y la paginación. La versión admite solamente las siete plantillas originales; las modificadas se rechazan antes de generar. Se conserva la cantidad de filas, los párrafos existentes del plan y las fechas históricas de elaboración/revisión.
 
@@ -31,7 +31,7 @@ El modo avanzado sigue disponible ejecutando `.venv\Scripts\python.exe programa.
 
 ## Validación
 
-La última ejecución completó **29 pruebas sin fallos ni omisiones** con las siete plantillas reales y datos/imágenes ficticios. Incluye reemplazos, estructura de filas y párrafos, imágenes, encabezados, fechas, logos y firmas, capacidad, duplicados, protección contra sobrescritura, fallos de guardado, captura PNG y limpieza de COM simulada.
+La última ejecución completó **37 pruebas sin fallos ni omisiones** con las siete plantillas reales y datos/imágenes ficticios. Incluye reemplazos, estructura de filas y párrafos, imágenes, encabezados, fechas, logos y firmas, capacidad, duplicados, protección contra sobrescritura, fallos de guardado, captura PNG y limpieza de COM simulada.
 
 **Pendiente en Windows:** instalación desde cero, formulario, dibujo con mouse, Word, PDF real y revisión visual de los siete resultados. La disponibilidad de las dependencias no demuestra ejecución real en Windows.
 
@@ -54,3 +54,11 @@ Este es un diseño propuesto, generado como ilustración; no es una captura de l
 El formulario básico utiliza ahora una cabecera azul, secciones blancas, títulos y botón principal en verde azulado, tabla de personal y una vista previa del logo seleccionado. El cuadro de dibujo de firmas comparte ese estilo. Los controles de revisión y responsables se mantienen para conservar las funciones anteriores; la página tiene desplazamiento vertical para pantallas pequeñas.
 
 La imagen de arriba sigue siendo una ilustración de referencia. La interfaz implementada está inspirada en ella; no es una captura ni una garantía de apariencia idéntica en todas las versiones de Windows. La nueva interfaz se comprobó mediante compilación del código y se ejecutaron nuevamente las 29 pruebas de generación, pero aún necesita una prueba gráfica real en Windows.
+
+## Guardar y cargar estaciones
+
+Completa la estación y el personal, selecciona el logo y las firmas, y pulsa **Guardar estación**. Elige dónde guardar su archivo `.sasisopa`. Puedes guardar un archivo distinto para cada estación; también admite capturas incompletas para terminarlas después.
+
+En otra sesión pulsa **Cargar estación** y elige el archivo. Se recuperan los datos de encabezado, las seis filas de personal, los responsables, el logo y las firmas. **Revisa la fecha de reunión:** se conserva la fecha actual del formulario para evitar reutilizar una fecha guardada. Las imágenes incluidas se recuperan en `datos_locales/perfiles`, dentro de la carpeta del programa. Las carpetas de plantillas y salidas siguen siendo las elegidas en esta computadora.
+
+Los perfiles son archivos locales y no se suben a GitHub. La última validación pasó 37 pruebas, incluidas ocho sobre recuperación portátil de imágenes, borradores, fallos al guardar y perfiles incorrectos. Los botones nuevos aún necesitan probarse en Windows.
