@@ -1,60 +1,53 @@
-# SASISOPA — Política en PDF
+# SASISOPA — documentos PDF
 
-Por solicitud del usuario, las siete plantillas Word anteriores se retiraron. La nueva base es **PROCEDIMIENTO I.pdf**, del ZIP **1. POLITICA**: un archivo de 14 páginas con el procedimiento y sus formatos. El programa rellena una copia de ese PDF directamente, sin convertirlo a Word.
+La base activa es **SASISOPA1.zip**: tres PDF originales, **87 páginas** en total. Sustituye a las bases anteriores. El programa crea copias con los campos capturados, manteniendo las páginas, orientación y trazos de las tablas.
 
-## Descargar y usar
+## Descargar y usar en Windows
 
-1. [Descarga el ZIP del programa](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo.
-2. Del ZIP que compartiste, entra en `1. POLITICA` y copia **PROCEDIMIENTO I.pdf** directamente dentro de `plantillas` del programa. No coloques los siete Word anteriores.
-3. Ejecuta **Instalar.bat** otra vez al actualizar: se agregó PyMuPDF. Se comprobó la disponibilidad de su dependencia para Windows x64 y Python 3.12.
-4. Ejecuta **Iniciar.bat**. Captura solo los campos que quieras cambiar; deja los demás vacíos. El número de estación usa el formato `E-00000`, razón social, dirección, fecha de reuniones y hasta **cinco personas** con sus puestos.
-5. Elige quién figura como **representante legal / autoriza** y quién como secretario. La primera selección actualiza también el nombre de AUTORIZO de la portada y el representante legal de la política.
-6. Opcionalmente, selecciona logo, revisión y fecha de revisión. Usa **Subir** o **Dibujar** para las firmas.
-7. Pulsa **Generar documentos**. Se guarda un único PDF de **14 páginas**, conservando la geometría de las tablas.
-8. Abre la copia en un lector de PDF y revisa los campos, las firmas, los textos fijos y los espacios antes de utilizarla.
+1. [Descarga el programa](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo.
+2. Extrae tu **SASISOPA1.zip** y copia estos tres archivos directamente en la carpeta `plantillas` del programa, conservando sus nombres:
+   - `1 POLITICA.pdf` — 14 páginas.
+   - `2. ID DE PELIGROS.pdf` — 53 páginas.
+   - `3. REQUISITOS LEGALES.pdf` — 20 páginas.
+3. Con Python 3.12 o posterior instalado, ejecuta **Instalar.bat** y después **Iniciar.bat**. Este modo no necesita Microsoft Word.
+4. Captura solo los datos que quieras cambiar. **Los campos vacíos conservan el contenido original**, incluyendo fechas, puestos y revisión. El número de estación usa el formato `E-00000`.
+5. Selecciona representante legal/autoriza y secretario entre las cinco filas de personal. Puedes subir o dibujar firmas, elegir un logo y guardar/cargar un perfil de estación.
+6. Marca los documentos que quieras generar. Activa **Crear también un PDF con todos los documentos seleccionados** si quieres reunirlos en un archivo; seleccionando los tres tendrá 87 páginas.
+7. Pulsa **Generar documentos** y revisa las copias en un lector de PDF antes de utilizarlas. Cada lote se guarda en una carpeta nueva dentro de `salidas`.
 
-Este modo no necesita Microsoft Word. Los datos se capturan en el formulario; el Excel se conserva como catálogo. El modo Excel anterior se deshabilitó para evitar generar documentos con la base retirada.
+Los originales, resultados, logos, firmas y perfiles reales no se publican en GitHub. Debes copiar tus tres PDF a `plantillas` para usar esta base. El Excel se conserva como catálogo; este modo captura los datos en el formulario y no los importa desde Excel.
 
-## Campos y límites
+## Campos que cambian
 
-- Estación en encabezados, códigos y texto del procedimiento/política.
-- Razón social y dirección en portada y encabezados; logo proporcional dentro de su espacio.
-- Revisión y sufijo R de códigos; mes/año del encabezado y portada cuando se indica fecha de revisión.
-- Fecha común para las reuniones y las listas; nombres y puestos en las tres listas de cinco asistentes.
-- Convocante/facilitador usan la selección de representante y Secretario usa su selección.
-- Firmas seleccionadas en las listas y en los espacios de autorización/representante legal existentes. **No se añaden bloques nuevos.** Los bloques genéricos ELABORÓ/REVISADO POR/APROBADO POR permanecen sin imágenes de firma; su asignación por roles no está implementada.
+- Número de estación en encabezados, códigos y referencias de texto de los tres documentos.
+- Razón social y dirección en portadas y encabezados. La razón social también se actualiza en las referencias del cuerpo y las celdas de operador identificadas.
+- Logo proporcional dentro de sus espacios originales.
+- Número de revisión del encabezado y sufijo R de los códigos. Fecha de revisión como mes y año en portadas/encabezados.
+- Nombre de AUTORIZO en las portadas y del representante legal en la política. En Política, convocante/facilitador y secretario según las filas elegidas.
+- Fecha común para reuniones y listas de Política; nombres y puestos en sus tres listas de cinco asistentes. Las filas vacías conservan su posición y contenido.
+- Firmas cargadas o dibujadas en las listas y los espacios existentes del representante legal/autoriza. **No se crean bloques nuevos.** Los otros bloques históricos de elaboración/revisión/aprobación no reciben nuevas firmas.
 
-El PDF original trae imágenes de firmas y sellos. Se retiran de las zonas de firma de la **copia generada** cuando cambias estación o nombres; si no cambias esa identidad, se conservan. El original permanece intacto. Las firmas seleccionadas son imágenes, no firmas digitales criptográficas.
+Los PDF contienen firmas y sellos anteriores. Al capturar estación, razón social o nombres se retiran esas imágenes de la copia para evitar atribuirlas a una identidad distinta. Sin esos cambios, se conservan; una firma nueva del representante reemplaza la anterior en su espacio. Los diagramas y fotos técnicas se mantienen. El logo original permanece si no seleccionas otro.
 
-Horarios, teléfono, temas, acuerdos, contenido del procedimiento, historial de actualización y fechas históricas de elaboración/revisión se conservan. La aplicación no verifica que los acuerdos se hayan realizado. Revisa esos datos antes de usar la copia.
+Horarios, teléfonos, acuerdos, fechas históricas, historial de cambios, matrices de riesgo, requisitos y demás contenido técnico se conservan. Los nombres del equipo técnico del análisis de riesgo mantienen su contenido original; todavía no tienen una asignación por roles en el formulario. Esta versión no recalcula matrices ni determina obligaciones legales. Revisa el contenido fijo para tu estación.
 
-Los campos tienen espacios fijos: el texto se ajusta dentro de ellos y se rechaza si no cabe. Se usa una fuente estándar en los campos nuevos; no se garantiza identidad tipográfica con la fuente original. Se admite esta versión exacta del PDF; una base modificada se rechaza antes de guardar.
+Los espacios tienen tamaño fijo. El texto nuevo se ajusta dentro de ellos y se rechaza si no cabe; se utiliza una fuente estándar y no se garantiza identidad tipográfica. Se aceptan exclusivamente los tres originales de esta versión del ZIP, comprobados por su huella SHA-256. La preparación de todos los documentos termina antes de guardar el lote; un error no deja documentos incompletos.
 
-## Estaciones guardadas
+## Perfiles
 
-**Guardar estación** y **Cargar estación** conservan datos, logo y firmas en un archivo local `.sasisopa`. La fecha de reunión y las carpetas de trabajo se mantienen aparte. Un perfil anterior con una sexta persona se rechaza de forma explícita en este modo: no se descarta esa persona ni se modifica el perfil original.
+**Guardar estación/Cargar estación** conservan datos, logo y firmas en un archivo local `.sasisopa`. La fecha de reunión y las carpetas se mantienen aparte. Un perfil anterior con una sexta persona se rechaza explícitamente: no se descarta esa persona ni se modifica el perfil original.
 
-Los PDF originales, resultados, logos, firmas y perfiles reales no se publican en GitHub.
+## Verificación
 
-## Comprobaciones
+La suite completa aprobó 40 pruebas y omitió cuatro grupos de integración de bases retiradas. Las pruebas del motor PDF se ejecutan aquí en Linux con los tres originales privados. Comprueban copias exactas con todos los campos vacíos, cambios de identidad, conservación de campos selectivos, 87 páginas y sus tablas, orden del PDF unido, selección de documentos, imágenes, firmas, originales intactos y errores sin resultados parciales. Los grupos de integración de las bases retiradas se omiten explícitamente.
 
-Se ejecutaron **38 pruebas aprobadas** con el PDF original local, incluyendo siete pruebas del nuevo llenado PDF. **Tres grupos de integración de Word se omiten explícitamente** porque sus plantillas se retiraron; sus resultados no validan este flujo.
+**Pendiente:** instalación e interacción real con la ventana en Windows y revisión final del contenido por el usuario. Las pruebas del motor no equivalen a abrir la aplicación en Windows.
 
-Se comprobó generación de 14 páginas, dimensiones y geometría/color de líneas de tablas, campos actualizados, imagen proporcional, firmas en sus espacios, retiro de imágenes antiguas, original intacto, exceso de asistentes, texto excesivo, PDF alterado y sobrescritura. Se inspeccionaron imágenes renderizadas de portada y difusión durante el desarrollo.
-
-**Pendiente:** instalación e interacción real con la ventana en Windows y revisión visual de todas las páginas por el usuario. Las pruebas PDF se ejecutaron aquí en Linux; no equivalen a una prueba de Windows.
-
-Para ejecutar las pruebas del nuevo PDF local:
+Para ejecutar las pruebas con tus PDF locales:
 
 ```bat
-set "SASISOPA_NEW_PDF=%CD%\plantillas\PROCEDIMIENTO I.pdf"
+set "SASISOPA1_DIR=%CD%\plantillas"
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Consulta [REVISION.md](REVISION.md) para el historial. La [imagen del diseño](docs/diseno-propuesto.png) es una ilustración de referencia.
-
-## Campos vacíos: conservar el original
-
-Todos los campos de texto son opcionales. Si no capturas fecha de reunión, fecha de revisión, revisión, puesto, nombre o datos de estación, se conserva el contenido que ya tiene el PDF. La fecha de reunión ya no se precarga con el día actual. Las filas vacías se mantienen en su posición.
-
-Las firmas/sellos anteriores se conservan si no cambias estación ni nombres. Si esa identidad cambia, se retiran para evitar asociar firmas anteriores a personas o estaciones distintas. Una firma nueva seleccionada reemplaza la del representante en sus espacios. El logo original permanece si no seleccionas otro.
+Los siguientes ZIP se incorporarán como nuevos lotes calibrados al mismo catálogo. Copiar PDF adicionales a la carpeta no los adapta automáticamente. Las [imágenes del diseño](docs/diseno-propuesto.png) son ilustraciones de referencia y pueden mostrar una versión anterior.

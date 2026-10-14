@@ -1,4 +1,8 @@
-BASE ACTIVA: PROCEDIMIENTO I.pdf
-Copia aquí el archivo PDF original del ZIP 1. POLITICA, directamente en esta carpeta.
-El programa genera una copia PDF de 14 páginas. Los siete Word anteriores no se usan.
-Los originales privados no están incluidos en GitHub.
+BASE ACTIVA: SASISOPA1.zip, tres PDF originales.
+Copia directamente aquí, conservando exactamente estos nombres:
+1 POLITICA.pdf
+2. ID DE PELIGROS.pdf
+3. REQUISITOS LEGALES.pdf
+
+Son 14, 53 y 20 páginas: 87 en total. Puedes generar uno, varios o un PDF unido.
+Las bases anteriores ya no se usan. Los originales privados no están en GitHub.

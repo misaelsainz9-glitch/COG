@@ -7,7 +7,7 @@ import threading
 import queue
 from PIL import Image as PILImage,ImageTk
 from motor import ROOT
-from pdf_politica import generate_pdf
+from documentos_pdf import generate_documents
 from firma_canvas import signature_dialog
 from personalizacion import validated_image
 from tema import configure_theme,NAVY,BG
@@ -156,7 +156,14 @@ for label,default in [('Carpeta de plantillas',str(ROOT/'plantillas')),('Guardar
   p=filedialog.askdirectory()
   if p:v.set(p)
  ttk.Button(row,text='Elegir',command=pick).pack(side='right')
-ttk.Label(files_section,text='Salida: un PDF de 14 páginas. Este modo no necesita Microsoft Word.',style='Muted.TLabel').pack(anchor='w',pady=8)
+active=catalog_state()
+selection={}
+for template in active['templates']:
+ var=tk.BooleanVar(value=True);selection[template['id']]=var
+ ttk.Checkbutton(files_section,text=f"{template['title']} — {template['pages']} páginas",variable=var).pack(anchor='w',pady=3)
+merge_output=tk.BooleanVar(value=False)
+ttk.Checkbutton(files_section,text='Crear también un PDF con todos los documentos seleccionados',variable=merge_output).pack(anchor='w',pady=(8,0))
+ttk.Label(files_section,text='Base actual: tres PDF, 87 páginas. Este modo no necesita Microsoft Word.',style='Muted.TLabel').pack(anchor='w',pady=8)
 status=tk.StringVar(value='Las plantillas originales se conservan. Revisa la copia PDF antes de utilizarla.')
 def generate():
  try:
@@ -170,27 +177,29 @@ def generate():
   options={'address':fields['Dirección de la estación'].get().strip(),'logo':logo.get().strip(),
            'revision':fields['Revisión del encabezado (opcional)'].get().strip(),
            'revision_date':datetime.strptime(revision_value,'%d/%m/%Y') if revision_value else None,
-           'signatures':any(p['firma'] for p in data)}
+           'signatures':any(p['firma'] for p in data),
+           'selected':[key for key,var in selection.items() if var.get()],'merge':merge_output.get()}
+  if not options['selected']:raise ValueError('Selecciona al menos un documento.')
   if not messagebox.askokcancel('Revisar contenido fijo',
       'Se cambiarán los campos y las imágenes que capturaste.\n'
       'Los campos sin captura, horarios, temas y acuerdos conservarán los datos originales.\n'
-      'Las firmas se insertarán en las listas de asistentes y los espacios del representante legal. Si cambias estación o nombres, las firmas y sellos anteriores se retiran de la copia.\n'
-      'Los datos capturados se aplicarán a las tres listas; las celdas vacías conservan su contenido. Los bloques de elaboración, revisión y aprobación no reciben firmas nuevas.\n\n'
+      'Las firmas se insertarán en las listas de asistentes y los espacios del representante legal. Si capturas estación, razón social o nombres, las firmas y sellos anteriores se retiran de la copia.\n'
+      'Los datos capturados se aplicarán a las tres listas; las celdas vacías conservan su contenido. Las firmas del representante se colocan también en AUTORIZO de las portadas; los otros bloques de elaboración y aprobación no reciben firmas nuevas.\n\n'
       'Continúa solo si esos datos y esas participaciones son correctos. '
-      'Los textos largos pueden cambiar la paginación.'):
+      'Los textos que no caben en su espacio se rechazan.'):
    return
  except Exception as exc:messagebox.showerror('Revisa los campos',str(exc));return
  button.config(state='disabled');status.set('Generando…')
  def work():
   result=[]
   try:
-   result=generate_pdf(*args,**options)
-   msg=f'Se generó el PDF de 14 páginas en:\n{args[1]}\n\nRevisa textos, campos y firmas en tu lector de PDF.'
+   result=generate_documents(*args,**options)
+   msg=f'Se generaron {len(result)} archivos PDF en:\n{args[1]}\n\nRevisa textos, campos y firmas en tu lector de PDF.'
    notifications.put(lambda:messagebox.showinfo('Listo',msg))
   except Exception as exc:
    msg=str(exc)
    notifications.put(lambda m=msg:messagebox.showerror('No se completó',m))
-  finally:notifications.put(lambda:(button.config(state='normal'),status.set('Listo.')))
+  finally:notifications.put(lambda done=bool(result):(button.config(state='normal'),status.set('Listo.' if done else 'No se completó la generación.')))
  threading.Thread(target=work,daemon=False).start()
 button=ttk.Button(files_section,text='Generar documentos',style='Primary.TButton',command=generate)
 button.pack(pady=(8,14))

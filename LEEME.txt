@@ -1,24 +1,25 @@
-CAMPOS VACÍOS: conservan el contenido original. Fechas, revisión y puestos son opcionales.
+SASISOPA — base SASISOPA1: tres PDF, 87 páginas.
 
-SASISOPA — nueva base de Política en PDF
+Copia los originales de SASISOPA1.zip directamente dentro de plantillas:
+1 POLITICA.pdf (14 páginas)
+2. ID DE PELIGROS.pdf (53 páginas)
+3. REQUISITOS LEGALES.pdf (20 páginas)
 
-La base activa es PROCEDIMIENTO I.pdf, de 14 páginas, del ZIP 1. POLITICA.
-Copia ese archivo directamente en plantillas. Los siete Word anteriores se retiraron.
+Ejecuta Instalar.bat y después Iniciar.bat en Windows con Python 3.12 o posterior.
+No se necesita Word. El Excel sirve como catálogo; los datos se capturan en pantalla.
 
-Ejecuta Instalar.bat nuevamente y después Iniciar.bat. No se necesita Microsoft Word
-para este modo. El programa genera una copia PDF manteniendo las 14 páginas y tablas.
+Los campos vacíos conservan el original. Captura solo lo que quieras cambiar:
+estación, razón social, dirección, fechas, revisión, nombres y puestos.
+Puedes subir logo, subir o dibujar firmas y guardar/cargar datos de estación.
+Hasta cinco asistentes. Selecciona representante legal/autoriza y secretario.
 
-Completa estación, razón social, dirección, fecha y hasta cinco asistentes.
-Selecciona representante legal/autoriza y secretario. Puedes cambiar logo y revisión.
-Puedes subir firmas PNG/JPG o dibujarlas con el mouse.
+Marca uno o varios documentos. Puedes crear también un PDF unido con todos los
+seleccionados; los tres suman 87 páginas. Se guardan copias en una carpeta nueva.
 
-Se rellenan las tres listas y las firmas se insertan solo en sus espacios y los del
-representante legal. Las imágenes antiguas de firmas/sellos se retiran de la copia.
-Los bloques ELABORO/REVISADO/APROBADO se conservan sin imágenes de firma.
-Los horarios, acuerdos, contenidos y fechas históricas permanecen y requieren revisión.
+Las firmas se colocan solo en espacios existentes de listas y del representante.
+Al capturar una identidad nueva se retiran las firmas/sellos anteriores de la copia.
+Los campos históricos y el contenido técnico permanecen y requieren revisión.
+Los textos que no caben se rechazan. Los originales permanecen intactos.
 
-Usa Guardar estación/Cargar estación para reutilizar los datos. Los perfiles de seis
-personas no se cargan en este modo de cinco filas; conserva el perfil anterior.
-
-Revisa todo el resultado en tu lector de PDF antes de utilizarlo. La ventana Windows
-sigue pendiente de prueba real. Consulta README.md y REVISION.md.
+La instalación y ventana en Windows siguen pendientes de prueba real.
+Consulta README.md para los campos, límites y comprobaciones.

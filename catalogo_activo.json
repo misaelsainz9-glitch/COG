@@ -1,15 +1,31 @@
 {
-  "version": 1,
+  "version": 2,
   "status": "ready_pdf",
-  "message": "Base activa: PROCEDIMIENTO I.pdf. Genera una copia PDF de 14 páginas; máximo cinco asistentes. Revisa los textos fijos y las firmas antes de usarla.",
+  "message": "Base SASISOPA1: tres PDF, 87 páginas. Los campos vacíos conservan el original.",
   "templates": [
     {
-      "id": "POL-I",
-      "filename": "PROCEDIMIENTO I.pdf",
+      "id": "POL-01",
+      "filename": "1 POLITICA.pdf",
+      "title": "Política",
       "format": "pdf",
       "pages": 14,
-      "sha256": "9d45e4e889d97f2c1248165c6f9acf9f70fe25db89bc872a3748c0c74ff2f7a0",
-      "title": "I. Política — procedimiento y formatos"
+      "sha256": "5cac7882ec24a071b6bffebbbe82e10dcbe596e6e19dfe30c94b1b9d7d692ad0"
+    },
+    {
+      "id": "PEL-02",
+      "filename": "2. ID DE PELIGROS.pdf",
+      "title": "Identificación de peligros",
+      "format": "pdf",
+      "pages": 53,
+      "sha256": "c643da1fece606396fc35c65a2368a5597d86d38d1691ad6d13fca0fdaef95a6"
+    },
+    {
+      "id": "LEG-03",
+      "filename": "3. REQUISITOS LEGALES.pdf",
+      "title": "Requisitos legales",
+      "format": "pdf",
+      "pages": 20,
+      "sha256": "ce19fa58e9ce5113719a36cfedfc4040f30a8662007e0990561eacf4f468a3f8"
     }
   ]
 }

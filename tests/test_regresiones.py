@@ -51,7 +51,7 @@ class TemplateRegressionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from catalogo_activo import catalog_state
-        if catalog_state()['status']!='ready':raise unittest.SkipTest('El catálogo anterior de Word fue retirado; la nueva base está pendiente de adaptar.')
+        if catalog_state()['status']!='ready':raise unittest.SkipTest('Las plantillas Word se retiraron; la base PDF se prueba en test_documentos_pdf.')
         cls.source=Path(os.environ.get('SASISOPA_TEST_TEMPLATES','plantillas'))
         if len(list(cls.source.glob('*.docx')))!=7:raise unittest.SkipTest('Faltan plantillas locales.')
     def setUp(self):

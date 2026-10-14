@@ -1,4 +1,4 @@
-"""Llenado específico del PDF original de Política; mantiene 14 páginas."""
+"""Utilidades de texto PDF y generador legado de la base retirada de Política."""
 from pathlib import Path
 from datetime import date,datetime
 import hashlib
@@ -19,12 +19,17 @@ def box_text(page,rect,text,label,size=9,align=0):
     except UnicodeEncodeError:raise ValueError(f'{label}: utiliza caracteres latinos compatibles con la fuente del PDF.') from None
     rect=fitz.Rect(rect)
     font=fitz.Font('helv')
-    single=min(size,(rect.height-.2)/(font.ascender-font.descender))
+    glyphs=[font.glyph_bbox(ord(c)) for c in text if c not in ('\n','\r')]
+    top=max((g.y1 for g in glyphs),default=font.ascender)
+    bottom=min((g.y0 for g in glyphs),default=font.descender)
+    single=min(size,(rect.height-.05)/max(.1,top-bottom))
     while single>=6:
         width=font.text_length(text,fontsize=single)
-        if '\n' not in text and width<=rect.width:
-            x=rect.x0+(rect.width-width)*(0.5 if align==1 else 1 if align==2 else 0)
-            page.insert_text((x,rect.y0+font.ascender*single),text,fontname='helv',fontsize=single)
+        left=min(0,glyphs[0].x0*single) if glyphs else 0
+        if '\n' not in text and width-left<=rect.width:
+            x=rect.x0-left+(rect.width-width+left)*(0.5 if align==1 else 1 if align==2 else 0)
+            baseline=rect.y0+(rect.height-(top-bottom)*single)/2+top*single
+            page.insert_text((x,baseline),text,fontname='helv',fontsize=single)
             return
         single-=.25
     with fitz.open() as trial:
@@ -38,6 +43,7 @@ def box_text(page,rect,text,label,size=9,align=0):
 
 
 def generate_pdf(templates,out,day,station,company,people,representative,secretary,*,address='',logo='',revision='',revision_date=None,signatures=False):
+    if catalog_state()['templates'][0]['id']!='POL-I':raise ValueError('Esta base fue retirada. Usa documentos_pdf.generate_documents para SASISOPA1.')
     if day is not None and not isinstance(day,(date,datetime)):raise ValueError('Introduce una fecha válida.')
     station=station.strip();company=company.strip();address=address.strip();revision=revision.strip()
     if station and not re.fullmatch(r'E-\d{5}',station):raise ValueError('El número de estación debe tener el formato E-00000.')

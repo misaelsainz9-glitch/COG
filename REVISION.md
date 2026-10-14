@@ -1,3 +1,19 @@
+# BASE ACTIVA: SASISOPA1 — TRES PDF, 87 PÁGINAS
+
+Se reemplazó el catálogo anterior por Política (14 páginas), Identificación de peligros (53) y Requisitos legales (20). La interfaz selecciona uno o varios documentos y permite crear también un PDF unificado en orden del catálogo. El Excel se actualizó como catálogo; la captura activa se hace en el formulario.
+
+Los mapas se calibraron sobre los tres originales recibidos y contienen geometría/códigos estructurales, no el contenido privado del PDF. Se verifica SHA-256 antes de editar. Los originales y los resultados reales permanecen fuera de GitHub. Las copias locales de los originales están excluidas de Git.
+
+Se verificaron las 87 páginas: orientación y dimensiones, trazos vectoriales de las tablas, cambio de estación/empresa y conservación de cada carácter sin editar en su posición. Se corrigieron referencias corporativas y códigos divididos en distintos fragmentos de fuente, la selección del nombre de AUTORIZO y límites de dirección/firma que podían alcanzar títulos o etiquetas cercanas. Se revisaron renderizados de portadas, asistencia, matriz y requisitos.
+
+La suite completa terminó con 40 pruebas aprobadas y cuatro grupos de integración omitidos explícitamente (tres de Word y el PDF de Política retirado). Las pruebas actuales incluyen copias idénticas byte por byte con todos los campos vacíos, conservación selectiva de fechas/puestos/revisión/filas, selección, unión de 87 páginas, originales intactos, logo proporcional, firmas en los espacios existentes, diagramas conservados, entradas inválidas, fuentes faltantes/alteradas y limpieza del lote ante error de escritura.
+
+Las firmas/sellos antiguos se retiran de la copia al capturar estación, empresa o nombres; se mantienen sin esos cambios. Las firmas nuevas se colocan en las listas de Política y en los espacios del representante/autoriza existentes. Los otros bloques históricos de elaboración/revisión/aprobación y los nombres del equipo técnico del análisis de riesgo se conservan: no existe aún una asignación de personas a esos roles técnicos.
+
+La instalación y la interacción de la ventana en Windows siguen pendientes de prueba real. Las pruebas se ejecutaron aquí en Linux. Los informes que siguen son históricos y sus catálogos/resultados no describen esta base activa.
+
+---
+
 # ACTUALIZACIÓN: CONSERVAR CAMPOS SIN CAPTURA
 
 Los campos vacíos ahora conservan el original: fecha de reunión opcional sin precarga, puestos independientes de nombres y filas sin compactar. La última suite pasó 38 pruebas y omitió tres grupos retirados de Word. Se añadieron pruebas de igualdad del texto y píxeles renderizados de las 14 páginas cuando todos los campos quedan vacíos, y de conservación selectiva de fechas, puestos y revisión.

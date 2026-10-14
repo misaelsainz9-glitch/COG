@@ -17,7 +17,7 @@ class BasicTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from catalogo_activo import catalog_state
-        if catalog_state()['status']!='ready':raise unittest.SkipTest('El catálogo anterior de Word fue retirado; la nueva base está pendiente de adaptar.')
+        if catalog_state()['status']!='ready':raise unittest.SkipTest('Las plantillas Word se retiraron; la base PDF se prueba en test_documentos_pdf.')
         cls.templates=Path(os.environ.get('SASISOPA_TEST_TEMPLATES','plantillas'))
         if len(list(cls.templates.glob('*.docx')))!=7:
             raise unittest.SkipTest('Se requieren las siete plantillas locales; no están publicadas.')

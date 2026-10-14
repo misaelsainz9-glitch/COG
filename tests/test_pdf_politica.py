@@ -15,6 +15,8 @@ from firma_canvas import signature_png
 class PolicyPDFTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from catalogo_activo import catalog_state
+        if catalog_state()['templates'][0]['id']!='POL-I':raise unittest.SkipTest('La base de Política anterior fue retirada; prueba documentos_pdf para SASISOPA1.')
         filename=os.environ.get('SASISOPA_NEW_PDF')
         if not filename:raise unittest.SkipTest('El PDF original es privado; indica SASISOPA_NEW_PDF.')
         cls.source=Path(filename)
