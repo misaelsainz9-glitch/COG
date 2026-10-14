@@ -1,3 +1,4 @@
+from catalogo_activo import catalog_state,require_ready
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog,messagebox,ttk
@@ -33,6 +34,8 @@ for label,var,choose in [('Archivo Excel',excel,lambda:filedialog.askopenfilenam
 ttk.Checkbutton(frame,text='Crear también PDF usando Microsoft Word',variable=pdf).pack(anchor='w',pady=8)
 status=tk.StringVar(value='Revisa las fechas, los asistentes y los acuerdos antes de generar.')
 def run():
+ try:require_ready()
+ except ValueError as exc:messagebox.showinfo('Nueva base documental',str(exc));return
  path=excel.get();folder=dest.get();want_pdf=pdf.get()
  if not path or not folder:messagebox.showerror('Faltan datos','Elige el Excel y la carpeta de salida.');return
  button.config(state='disabled');status.set('Validando y generando…')
@@ -52,4 +55,8 @@ def run():
  threading.Thread(target=worker,daemon=False).start()
 button=ttk.Button(frame,text='Generar documentos',command=run);button.pack(anchor='w',pady=8)
 ttk.Label(frame,textvariable=status,wraplength=650).pack(anchor='w')
+active=catalog_state()
+if active['status']!='ready':
+ button.config(state='disabled',text='Llenado pendiente de adaptar')
+ status.set(active['message'])
 if __name__=='__main__':app.mainloop()

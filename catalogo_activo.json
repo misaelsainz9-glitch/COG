@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "status": "pending_mapping",
+  "message": "Nueva base: PROCEDIMIENTO I.pdf (14 páginas). El llenado de esta plantilla todavía está pendiente de adaptar. Guarda los datos de tu estación; la generación se habilitará después de configurar los campos del nuevo documento.",
+  "templates": [
+    {
+      "id": "POL-I",
+      "filename": "PROCEDIMIENTO I.pdf",
+      "format": "pdf",
+      "pages": 14,
+      "sha256": "9d45e4e889d97f2c1248165c6f9acf9f70fe25db89bc872a3748c0c74ff2f7a0",
+      "title": "I. Política — procedimiento y formatos"
+    }
+  ]
+}

@@ -1,3 +1,13 @@
+# ESTADO ACTUAL: NUEVA BASE PDF
+
+El catálogo anterior fue retirado por solicitud del usuario. Ahora solo se registra POL-I, PROCEDIMIENTO I.pdf, del ZIP 1. POLITICA. El original tiene 14 páginas, no contiene campos rellenables ni archivos Word.
+
+El llenado de la nueva base no está habilitado ni validado. Se deshabilitó el botón de generación en ambos formularios mientras se confirma el formato de trabajo y se preparan los campos. Se conservaron los perfiles y la interfaz. No se publicó el PDF privado.
+
+Las comprobaciones actuales cubren la identidad/páginas/ausencia de campos del PDF, el retiro del catálogo anterior y el bloqueo de generación. Las pruebas de utilidades/perfiles permanecen; tres grupos que dependían de las plantillas antiguas ahora se omiten explícitamente. Los resultados siguientes son históricos y no prueban la automatización del nuevo PDF.
+
+---
+
 # Revisión técnica del generador
 
 ## Resultado

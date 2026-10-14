@@ -1,66 +1,17 @@
-NUEVO: Guardar estación y Cargar estación permiten reutilizar los datos mediante archivos .sasisopa.
-El perfil incluye copias del logo y las firmas. La fecha de reunión se conserva aparte al cargarlo.
+NUEVA BASE SASISOPA: I. POLITICA
 
-NUEVO: el formulario básico permite dirección, logo y revisión del encabezado.
-Para cada persona puedes Subir una firma PNG/JPG o Dibujarla y guardar su PNG.
-Las firmas se insertan en los espacios existentes de acuse, difusión y nota.
-Las otras cuatro plantillas se conservan sin bloques nuevos de firma, según tu elección.
-Ejecuta Instalar.bat nuevamente al actualizar para instalar Pillow.
+El usuario pidió retirar las siete plantillas anteriores y comenzar con el nuevo ZIP.
+El ZIP recibido contiene PROCEDIMIENTO I.pdf, de 14 páginas y sin campos rellenables.
 
-ACTUALIZACIÓN: consulta REVISION.md antes de usar documentos definitivos.
-El modo básico requiere las siete plantillas ORIGINALES sin editar y admite 6 personas.
-No uses documentos ya generados como plantillas. Conserva el Excel como catálogo.
+Copia ese PDF en plantillas. No hace falta colocar los siete Word anteriores.
+El original no se incluye en GitHub.
 
-MODO BÁSICO (predeterminado)
-Ejecuta Iniciar.bat y captura fecha, número/nombre de estación, nombres y puestos.
-Selecciona representante/responsable y secretario por su número de fila.
-La fecha y el personal se aplican a los siete Word. Los temas, horarios y acuerdos se conservan.
-Revisa que el contenido fijo siga siendo correcto para la nueva fecha y el nuevo personal.
-No necesitas completar el Excel para este modo.
+La aplicación conserva sus perfiles, logo y captura de firmas. La generación permanece
+DESHABILITADA hasta adaptar el llenado del nuevo documento. No está lista para generar
+este PDF todavía.
 
-MODO AVANZADO (opcional)
-Ejecuta .venv\Scripts\python.exe programa.py y sigue las instrucciones siguientes.
+Está pendiente confirmar si tienes la versión Word original. Si solo existe PDF,
+hay que preparar y validar el mapeo de sus campos.
 
-SASISOPA para Windows — primera versión
-
-REQUISITOS
-Windows, Python 3.12 o posterior (python.org) y Word de escritorio para exportar PDF.
-Esta entrega es código ejecutable con lanzadores .bat, no un instalador .exe.
-No requiere subir tus datos a un servidor. Internet se necesita para instalar las dependencias.
-
-INICIO
-1. Descarga el ZIP desde GitHub y extrae todo a una carpeta de tu computadora.
-   Copia tus siete Word originales en plantillas, conservando sus nombres.
-2. Ejecuta Instalar.bat una vez.
-3. Completa Base_SASISOPA.xlsx siguiendo Instrucciones. Los ejemplos son ficticios.
-4. En Eventos coloca estado_revision = Revisado después de revisar los datos.
-5. En Generar agrega una fila por documento: plantilla_id, evento_id, nombre_salida y generar = Sí.
-   Para P01 también necesitas acuse_id.
-6. Guarda y cierra Excel. Ejecuta Iniciar.bat, elige el Excel y la carpeta de salida.
-7. Genera, abre los documentos en Word y revisa contenido, paginación y espacios de firma.
-
-RELACIONES
-Personal.estacion_id y Eventos.estacion_id apuntan a Estaciones.
-Asistentes enlaza persona_id con evento_id. Solo se incluyen asistencias Confirmadas.
-Agenda y Acuerdos usan evento_id. Los acuerdos deben tener confirmado = Sí.
-Sesiones requiere objetivo_general, contenido_tematico, instructor_id y duración.
-Notas requiere texto_nota escrito y confirmado; el programa no inventa la conclusión.
-Acuses enlaza con Documentos_Entregados y Recepciones mediante acuse_id.
-Cada identificador principal debe ser único.
-Puedes reutilizar un evento entre plantillas solo cuando sus datos realmente sean los mismos.
-Los documentos originales tienen reuniones con objetivos y horarios distintos: normalmente requieren eventos separados.
-
-PROTECCIÓN DE PLANTILLAS
-Los originales de plantillas no se sobrescriben; cada lote usa una carpeta nueva.
-Se conservan tablas, imágenes, secciones y propiedades de formato. El texto nuevo usa
-el formato inicial de cada campo; textos largos pueden modificar saltos de página.
-No se agregan filas cuando se supera la capacidad original: aparece un error.
-La versión admite únicamente las siete plantillas suministradas y su estructura original.
-No cambies tablas en ellas sin adaptar el programa.
-Las fechas históricas de elaboración/revisión de 2018 se conservan.
-No se generan firmas. No se deducen asistencias, cambios de personal o acuerdos.
-
-VALIDACIÓN
-El motor se probó en este entorno generando las siete plantillas con datos ficticios.
-La interfaz Windows y la exportación COM a PDF necesitan probarse en tu computadora;
-este entorno no dispone de Windows ni Microsoft Word.
+Descarga el programa, extrae todo y ejecuta Instalar.bat e Iniciar.bat para usar
+el formulario y guardar los datos de estación. Consulta README.md y REVISION.md.

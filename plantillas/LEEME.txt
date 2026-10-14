@@ -1,3 +1,6 @@
-Coloca aquí los siete archivos Word originales del ZIP que compartiste.
-Conserva exactamente sus nombres: el catálogo está en la hoja Plantillas del Excel.
-Estos documentos no están incluidos en GitHub.
+NUEVA BASE
+Copia aquí PROCEDIMIENTO I.pdf del ZIP 1. POLITICA.
+Las siete plantillas anteriores ya no forman parte del catálogo activo.
+El nuevo PDF tiene 14 páginas y no tiene campos rellenables.
+La generación está pendiente de adaptar al PDF o al Word original, si lo tienes.
+No se incluye el documento original en GitHub.

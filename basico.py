@@ -1,3 +1,4 @@
+from catalogo_activo import catalog_state,require_ready
 import tkinter as tk
 from tkinter import ttk,filedialog,messagebox
 from pathlib import Path
@@ -84,7 +85,7 @@ ttk.Button(logo_box,text='Elegir logo',command=choose_logo).pack(fill='x')
 ttk.Button(logo_box,text='Quitar logo',command=clear_logo).pack(fill='x',pady=(4,0))
 ttk.Label(station_section,text='Deja los campos opcionales vacíos para conservar el encabezado original. La revisión muestra mes y año.',style='Muted.TLabel',wraplength=900).pack(anchor='w',pady=(10,0))
 personal_section=section('Personal y firmas')
-ttk.Label(personal_section,text='Hasta seis personas. Puedes subir una firma o dibujarla con el mouse.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
+ttk.Label(personal_section,text='Datos del personal de tu estación. Puedes guardar imágenes de sus firmas.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
 grid=ttk.Frame(personal_section);grid.pack(fill='x')
 for col,label in [(0,'N.º'),(1,'Nombre completo'),(2,'Puesto'),(3,'Firma')]:
  ttk.Label(grid,text=label,style='TableHeader.TLabel').grid(row=0,column=col,sticky='ew')
@@ -157,6 +158,7 @@ pdf=tk.BooleanVar();ttk.Checkbutton(files_section,text='Crear también PDF con W
 status=tk.StringVar(value='Las plantillas originales se conservan. Revisa los documentos generados en Word.')
 def generate():
  try:
+  require_ready()
   if not all(p.get().strip() for p in paths):raise ValueError('Selecciona ambas carpetas.')
   date=datetime.strptime(fields['Fecha (dd/mm/aaaa)'].get().strip(),'%d/%m/%Y')
   indexes=[i for i,(n,p,sig) in enumerate(people) if n.get().strip() or p.get().strip() or sig.get().strip()]
@@ -195,4 +197,8 @@ def generate():
 button=ttk.Button(files_section,text='Generar documentos',style='Primary.TButton',command=generate)
 button.pack(pady=(8,14))
 ttk.Label(files_section,textvariable=status,style='Muted.TLabel',wraplength=850).pack(anchor='w')
+active=catalog_state()
+if active['status']!='ready':
+ button.config(state='disabled',text='Llenado pendiente de adaptar')
+ status.set(active['message'])
 if __name__=='__main__':app.mainloop()
