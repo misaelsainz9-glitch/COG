@@ -57,6 +57,6 @@ button=ttk.Button(frame,text='Generar documentos',command=run);button.pack(ancho
 ttk.Label(frame,textvariable=status,wraplength=650).pack(anchor='w')
 active=catalog_state()
 if active['status']!='ready':
- button.config(state='disabled',text='Llenado pendiente de adaptar')
- status.set(active['message'])
+ button.config(state='disabled',text='Usar Iniciar.bat — modo PDF')
+ status.set('El modo Excel anterior se retiró. Abre Iniciar.bat para generar la nueva base PDF.')
 if __name__=='__main__':app.mainloop()

@@ -1,3 +1,15 @@
+# ESTADO ACTUAL: GENERACIÓN NATIVA DE POLÍTICA EN PDF
+
+El usuario confirmó que solo tiene el PDF. Se adaptó el programa para generar directamente una copia de PROCEDIMIENTO I.pdf de 14 páginas. Las siete plantillas anteriores siguen retiradas. El formulario permite cinco asistentes, encabezados, datos y firmas en listas y espacios del representante legal. No requiere Word para generar el PDF.
+
+Se verificó que las imágenes antiguas de firmas/sellos se retiran de la copia y que se conservan las páginas y los trazos vectoriales de las tablas. Se usa texto nuevo en espacios fijos y se rechaza el exceso de longitud. Los bloques genéricos de elaboración/revisión/aprobación quedan sin imágenes de firma; sus asignaciones no están implementadas. Los datos fijos del procedimiento y el historial siguen requerir revisión del usuario.
+
+La última suite ejecutó 35 pruebas aprobadas y omitió tres grupos de integración de Word retirados. Las siete pruebas del nuevo PDF comprobaron el archivo real con datos/imágenes ficticios, incluidos layout vectorial, texto, imágenes, firmas, original intacto y errores de entrada. Se corrigieron durante la implementación una región de fecha que podía tocar la etiqueta Hora y el ajuste proporcional de imágenes. Se validó la conservación geométrica y de color de las líneas, sin comparar identificadores internos de orden de dibujo que cambian al editar texto.
+
+Se comprobó la disponibilidad de PyMuPDF 1.26.6 para Windows x64/Python 3.12. La interfaz gráfica y la instalación en Windows siguen pendientes de prueba real; se inspeccionaron renderizados de portada y difusión aquí en Linux. Los informes siguientes son históricos y algunos describen fases anteriores.
+
+---
+
 # ESTADO ACTUAL: NUEVA BASE PDF
 
 El catálogo anterior fue retirado por solicitud del usuario. Ahora solo se registra POL-I, PROCEDIMIENTO I.pdf, del ZIP 1. POLITICA. El original tiene 14 páginas, no contiene campos rellenables ni archivos Word.

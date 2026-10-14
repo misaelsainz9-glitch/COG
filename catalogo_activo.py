@@ -8,5 +8,5 @@ def catalog_state():
 
 def require_ready():
     state=catalog_state()
-    if state['status']!='ready':raise ValueError(state['message'])
+    if state['status'] not in ('ready','ready_pdf'):raise ValueError(state['message'])
     return state

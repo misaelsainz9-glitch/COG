@@ -6,8 +6,8 @@ from datetime import datetime
 import threading
 import queue
 from PIL import Image as PILImage,ImageTk
-from motor import ROOT,export_pdf
-from sencillo import basic_generate
+from motor import ROOT
+from pdf_politica import generate_pdf
 from firma_canvas import signature_dialog
 from personalizacion import validated_image
 from tema import configure_theme,NAVY,BG
@@ -85,12 +85,12 @@ ttk.Button(logo_box,text='Elegir logo',command=choose_logo).pack(fill='x')
 ttk.Button(logo_box,text='Quitar logo',command=clear_logo).pack(fill='x',pady=(4,0))
 ttk.Label(station_section,text='Deja los campos opcionales vacíos para conservar el encabezado original. La revisión muestra mes y año.',style='Muted.TLabel',wraplength=900).pack(anchor='w',pady=(10,0))
 personal_section=section('Personal y firmas')
-ttk.Label(personal_section,text='Datos del personal de tu estación. Puedes guardar imágenes de sus firmas.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
+ttk.Label(personal_section,text='Hasta cinco asistentes. La persona elegida como representante legal también figura en AUTORIZO.',style='Muted.TLabel').pack(anchor='w',pady=(0,8))
 grid=ttk.Frame(personal_section);grid.pack(fill='x')
 for col,label in [(0,'N.º'),(1,'Nombre completo'),(2,'Puesto'),(3,'Firma')]:
  ttk.Label(grid,text=label,style='TableHeader.TLabel').grid(row=0,column=col,sticky='ew')
 people=[]
-for i in range(6):
+for i in range(5):
  name=tk.StringVar();role=tk.StringVar();signature=tk.StringVar();people.append((name,role,signature))
  ttk.Label(grid,text=str(i+1),width=3).grid(row=i+1,column=0,pady=8)
  ttk.Entry(grid,textvariable=name,width=25).grid(row=i+1,column=1,sticky='ew',padx=4,pady=5)
@@ -111,17 +111,17 @@ for i in range(6):
 grid.columnconfigure(1,weight=2);grid.columnconfigure(2,weight=1)
 rep=tk.StringVar(value='1');sec=tk.StringVar(value='1')
 roles=ttk.Frame(personal_section);roles.pack(fill='x',pady=(10,0))
-for label,var in [('Fila del representante',rep),('Fila del secretario',sec)]:
+for label,var in [('Fila representante legal / autoriza',rep),('Fila del secretario',sec)]:
  row=ttk.Frame(roles);row.pack(side='left',padx=(0,20))
  ttk.Label(row,text=label).pack(side='left',padx=(0,8))
- ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,7)],state='readonly',width=4).pack(side='left')
+ ttk.Combobox(row,textvariable=var,values=[str(i) for i in range(1,6)],state='readonly',width=4).pack(side='left')
 profile_row=ttk.Frame(station_section);profile_row.pack(fill='x',pady=(12,0))
 def save_station():
  path=filedialog.asksaveasfilename(title='Guardar datos de estación',defaultextension='.sasisopa',filetypes=[('Perfil SASISOPA','*.sasisopa')])
  if not path:return
  try:
   state={'version':1,'fields':{k:v.get() for k,v in fields.items() if k!=EVENT_DATE},
-         'people':[{'nombre':n.get(),'puesto':p.get(),'firma':sig.get()} for n,p,sig in people],
+         'people':[{'nombre':n.get(),'puesto':p.get(),'firma':sig.get()} for n,p,sig in people]+[{'nombre':'','puesto':'','firma':''}],
          'logo':logo.get(),'representative':int(rep.get())-1,'secretary':int(sec.get())-1}
   save_profile(path,state)
  except Exception as exc:messagebox.showerror('No se pudo guardar la estación',str(exc));return
@@ -132,6 +132,8 @@ def load_station():
  if not path:return
  try:
   state=load_profile(path,ROOT/'datos_locales'/'perfiles')
+  if any(state['people'][5].values()) or state['representative']>4 or state['secretary']>4:
+   raise ValueError('Este perfil usa una sexta persona. El nuevo PDF admite cinco; conserva el perfil y usa una captura nueva para esta base.')
   if state['logo']:show_logo(state['logo'])
   else:clear_logo()
  except Exception as exc:messagebox.showerror('No se pudo cargar la estación',str(exc));return
@@ -154,8 +156,8 @@ for label,default in [('Carpeta de plantillas',str(ROOT/'plantillas')),('Guardar
   p=filedialog.askdirectory()
   if p:v.set(p)
  ttk.Button(row,text='Elegir',command=pick).pack(side='right')
-pdf=tk.BooleanVar();ttk.Checkbutton(files_section,text='Crear también PDF con Word',variable=pdf).pack(anchor='w',pady=8)
-status=tk.StringVar(value='Las plantillas originales se conservan. Revisa los documentos generados en Word.')
+ttk.Label(files_section,text='Salida: un PDF de 14 páginas. Este modo no necesita Microsoft Word.',style='Muted.TLabel').pack(anchor='w',pady=8)
+status=tk.StringVar(value='Las plantillas originales se conservan. Revisa la copia PDF antes de utilizarla.')
 def generate():
  try:
   require_ready()
@@ -172,25 +174,22 @@ def generate():
            'signatures':any(p['firma'] for p in data)}
   if not messagebox.askokcancel('Revisar contenido fijo',
       'Se cambiarán los campos y las imágenes que capturaste.\n'
-      'Los campos sin captura, contactos, cargos SASISOPA, horarios, temas y acuerdos conservarán los datos originales.\n'
-      'Las firmas seleccionadas se insertarán solo en los espacios definidos: acuse, difusión y nota.\n'
-      'La misma lista se usará como asistentes y receptores en los siete documentos.\n\n'
+      'Los campos sin captura, horarios, temas y acuerdos conservarán los datos originales.\n'
+      'Las firmas se insertarán en las listas de asistentes y los espacios del representante legal. Las imágenes antiguas de firmas y sellos se retirarán de la copia.\n'
+      'La misma lista se usará en las tres listas de asistentes del PDF. Los bloques de elaboración, revisión y aprobación se dejan sin imágenes de firma.\n\n'
       'Continúa solo si esos datos y esas participaciones son correctos. '
       'Los textos largos pueden cambiar la paginación.'):
    return
-  want_pdf=pdf.get()
  except Exception as exc:messagebox.showerror('Revisa los campos',str(exc));return
  button.config(state='disabled');status.set('Generando…')
  def work():
   result=[]
   try:
-   result=basic_generate(*args,**options)
-   if want_pdf:export_pdf(result)
-   msg=f'Se generaron {len(result)} Word en:\n{args[1]}\n\nRevisa textos, paginación y firmas en Word.'
+   result=generate_pdf(*args,**options)
+   msg=f'Se generó el PDF de 14 páginas en:\n{args[1]}\n\nRevisa textos, campos y firmas en tu lector de PDF.'
    notifications.put(lambda:messagebox.showinfo('Listo',msg))
   except Exception as exc:
    msg=str(exc)
-   if result:msg+='\nLos Word están en '+str(args[1])+'. El PDF no terminó.'
    notifications.put(lambda m=msg:messagebox.showerror('No se completó',m))
   finally:notifications.put(lambda:(button.config(state='normal'),status.set('Listo.')))
  threading.Thread(target=work,daemon=False).start()
@@ -198,7 +197,7 @@ button=ttk.Button(files_section,text='Generar documentos',style='Primary.TButton
 button.pack(pady=(8,14))
 ttk.Label(files_section,textvariable=status,style='Muted.TLabel',wraplength=850).pack(anchor='w')
 active=catalog_state()
-if active['status']!='ready':
+if active['status'] not in ('ready','ready_pdf'):
  button.config(state='disabled',text='Llenado pendiente de adaptar')
  status.set(active['message'])
 if __name__=='__main__':app.mainloop()

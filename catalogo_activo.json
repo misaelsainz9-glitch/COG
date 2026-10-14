@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "status": "pending_mapping",
-  "message": "Nueva base: PROCEDIMIENTO I.pdf (14 páginas). El llenado de esta plantilla todavía está pendiente de adaptar. Guarda los datos de tu estación; la generación se habilitará después de configurar los campos del nuevo documento.",
+  "status": "ready_pdf",
+  "message": "Base activa: PROCEDIMIENTO I.pdf. Genera una copia PDF de 14 páginas; máximo cinco asistentes. Revisa los textos fijos y las firmas antes de usarla.",
   "templates": [
     {
       "id": "POL-I",

@@ -19,8 +19,10 @@ class NewCatalogTests(unittest.TestCase):
             self.assertEqual(len(rows),2);self.assertEqual(rows[1][0],'POL-I')
             self.assertEqual(list(w['Generar'].values)[1][-1],'No')
         finally:w.close()
-    def test_generation_reports_pending_new_mapping(self):
-        with self.assertRaisesRegex(ValueError,'pendiente de adaptar'):require_ready()
+    def test_native_pdf_mode_is_selected(self):
+        state=require_ready()
+        self.assertEqual(state['status'],'ready_pdf')
+        self.assertEqual(state['templates'][0]['format'],'pdf')
     def test_uploaded_pdf_matches_registered_source(self):
         filename=os.environ.get('SASISOPA_NEW_PDF')
         if not filename:self.skipTest('El PDF privado no se publica; indica SASISOPA_NEW_PDF para comprobarlo.')

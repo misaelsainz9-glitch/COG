@@ -1,6 +1,4 @@
-NUEVA BASE
-Copia aquí PROCEDIMIENTO I.pdf del ZIP 1. POLITICA.
-Las siete plantillas anteriores ya no forman parte del catálogo activo.
-El nuevo PDF tiene 14 páginas y no tiene campos rellenables.
-La generación está pendiente de adaptar al PDF o al Word original, si lo tienes.
-No se incluye el documento original en GitHub.
+BASE ACTIVA: PROCEDIMIENTO I.pdf
+Copia aquí el archivo PDF original del ZIP 1. POLITICA, directamente en esta carpeta.
+El programa genera una copia PDF de 14 páginas. Los siete Word anteriores no se usan.
+Los originales privados no están incluidos en GitHub.

@@ -1,17 +1,22 @@
-NUEVA BASE SASISOPA: I. POLITICA
+SASISOPA — nueva base de Política en PDF
 
-El usuario pidió retirar las siete plantillas anteriores y comenzar con el nuevo ZIP.
-El ZIP recibido contiene PROCEDIMIENTO I.pdf, de 14 páginas y sin campos rellenables.
+La base activa es PROCEDIMIENTO I.pdf, de 14 páginas, del ZIP 1. POLITICA.
+Copia ese archivo directamente en plantillas. Los siete Word anteriores se retiraron.
 
-Copia ese PDF en plantillas. No hace falta colocar los siete Word anteriores.
-El original no se incluye en GitHub.
+Ejecuta Instalar.bat nuevamente y después Iniciar.bat. No se necesita Microsoft Word
+para este modo. El programa genera una copia PDF manteniendo las 14 páginas y tablas.
 
-La aplicación conserva sus perfiles, logo y captura de firmas. La generación permanece
-DESHABILITADA hasta adaptar el llenado del nuevo documento. No está lista para generar
-este PDF todavía.
+Completa estación, razón social, dirección, fecha y hasta cinco asistentes.
+Selecciona representante legal/autoriza y secretario. Puedes cambiar logo y revisión.
+Puedes subir firmas PNG/JPG o dibujarlas con el mouse.
 
-Está pendiente confirmar si tienes la versión Word original. Si solo existe PDF,
-hay que preparar y validar el mapeo de sus campos.
+Se rellenan las tres listas y las firmas se insertan solo en sus espacios y los del
+representante legal. Las imágenes antiguas de firmas/sellos se retiran de la copia.
+Los bloques ELABORO/REVISADO/APROBADO se conservan sin imágenes de firma.
+Los horarios, acuerdos, contenidos y fechas históricas permanecen y requieren revisión.
 
-Descarga el programa, extrae todo y ejecuta Instalar.bat e Iniciar.bat para usar
-el formulario y guardar los datos de estación. Consulta README.md y REVISION.md.
+Usa Guardar estación/Cargar estación para reutilizar los datos. Los perfiles de seis
+personas no se cargan en este modo de cinco filas; conserva el perfil anterior.
+
+Revisa todo el resultado en tu lector de PDF antes de utilizarlo. La ventana Windows
+sigue pendiente de prueba real. Consulta README.md y REVISION.md.

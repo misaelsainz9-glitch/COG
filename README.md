@@ -1,30 +1,54 @@
-# SASISOPA — nueva base documental
+# SASISOPA — Política en PDF
 
-El catálogo anterior de siete plantillas Word se retiró por solicitud del usuario. La base activa ahora es **PROCEDIMIENTO I.pdf**, del ZIP **1. POLITICA**: un PDF de 14 páginas con procedimiento y formatos del apartado de política.
+Por solicitud del usuario, las siete plantillas Word anteriores se retiraron. La nueva base es **PROCEDIMIENTO I.pdf**, del ZIP **1. POLITICA**: un archivo de 14 páginas con el procedimiento y sus formatos. El programa rellena una copia de ese PDF directamente, sin convertirlo a Word.
 
-## Estado actual
-
-- Se conserva la aplicación, su diseño, los perfiles de estación, logo y firmas como imágenes.
-- El catálogo y el Excel ya contienen únicamente la nueva base `POL-I`.
-- **La generación está deshabilitada mientras se adapta el llenado del nuevo documento.** No se ha probado ni habilitado su automatización.
-- El PDF no tiene campos rellenables y no contiene archivos Word. Está pendiente confirmar si existe el Word original o si hay que preparar un flujo de llenado sobre PDF.
-- Las firmas seguirán colocándose únicamente en espacios existentes, según la preferencia confirmada del usuario.
-- Los originales y perfiles privados no se publican en GitHub.
-
-## Descargar y preparar
+## Descargar y usar
 
 1. [Descarga el ZIP del programa](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo.
-2. Copia `PROCEDIMIENTO I.pdf` desde tu ZIP en `plantillas`. Los siete Word anteriores ya no se utilizan.
-3. Conserva el Excel, el JSON y todos los archivos Python incluidos.
-4. Si tienes el Word original del nuevo documento, compártelo para configurar los campos sobre esa versión.
-5. `Instalar.bat` prepara las dependencias; `Iniciar.bat` abre la aplicación. Puedes seguir guardando/cargando estaciones. El botón de generación indica que el llenado está pendiente.
+2. Del ZIP que compartiste, entra en `1. POLITICA` y copia **PROCEDIMIENTO I.pdf** directamente dentro de `plantillas` del programa. No coloques los siete Word anteriores.
+3. Ejecuta **Instalar.bat** otra vez al actualizar: se agregó PyMuPDF. Se comprobó la disponibilidad de su dependencia para Windows x64 y Python 3.12.
+4. Ejecuta **Iniciar.bat**. Introduce número de estación con formato `E-00000`, razón social, dirección, fecha de reuniones y hasta **cinco personas** con sus puestos.
+5. Elige quién figura como **representante legal / autoriza** y quién como secretario. La primera selección actualiza también el nombre de AUTORIZO de la portada y el representante legal de la política.
+6. Opcionalmente, selecciona logo, revisión y fecha de revisión. Usa **Subir** o **Dibujar** para las firmas.
+7. Pulsa **Generar documentos**. Se guarda un único PDF de **14 páginas**, conservando la geometría de las tablas.
+8. Abre la copia en un lector de PDF y revisa los campos, las firmas, los textos fijos y los espacios antes de utilizarla.
 
-El formato de origen es importante para conservar la estructura: los encabezados, imágenes y campos del nuevo PDF deben mapearse específicamente antes de generar copias.
+Este modo no necesita Microsoft Word. Los datos se capturan en el formulario; el Excel se conserva como catálogo. El modo Excel anterior se deshabilitó para evitar generar documentos con la base retirada.
 
-## Validación
+## Campos y límites
 
-Se verificaron el archivo recibido, sus 14 páginas y la ausencia de campos rellenables. Se comprobó que el catálogo y el Excel ya no contienen las siete plantillas anteriores y que se bloquea la generación durante esta transición.
+- Estación en encabezados, códigos y texto del procedimiento/política.
+- Razón social y dirección en portada y encabezados; logo proporcional dentro de su espacio.
+- Revisión y sufijo R de códigos; mes/año del encabezado y portada cuando se indica fecha de revisión.
+- Fecha común para las reuniones y las listas; nombres y puestos en las tres listas de cinco asistentes.
+- Convocante/facilitador usan la selección de representante y Secretario usa su selección.
+- Firmas seleccionadas en las listas y en los espacios de autorización/representante legal existentes. **No se añaden bloques nuevos.** Los bloques genéricos ELABORÓ/REVISADO POR/APROBADO POR permanecen sin imágenes de firma; su asignación por roles no está implementada.
 
-Las pruebas de utilidades y perfiles siguen disponibles. Tres grupos de integración con los Word anteriores se omiten explícitamente porque esas plantillas fueron retiradas; sus resultados históricos no validan el nuevo PDF. La nueva generación, Windows, Word y la inspección visual están pendientes.
+El PDF original trae imágenes de firmas y sellos. Se retiran de las zonas de firma de la **copia generada**; el original permanece intacto. Las firmas seleccionadas son imágenes, no firmas digitales criptográficas.
 
-Consulta [REVISION.md](REVISION.md) para el historial técnico. La [imagen del diseño](docs/diseno-propuesto.png) es una ilustración de referencia, no una captura de la aplicación.
+Horarios, teléfono, temas, acuerdos, contenido del procedimiento, historial de actualización y fechas históricas de elaboración/revisión se conservan. La aplicación no verifica que los acuerdos se hayan realizado. Revisa esos datos antes de usar la copia.
+
+Los campos tienen espacios fijos: el texto se ajusta dentro de ellos y se rechaza si no cabe. Se usa una fuente estándar en los campos nuevos; no se garantiza identidad tipográfica con la fuente original. Se admite esta versión exacta del PDF; una base modificada se rechaza antes de guardar.
+
+## Estaciones guardadas
+
+**Guardar estación** y **Cargar estación** conservan datos, logo y firmas en un archivo local `.sasisopa`. La fecha de reunión y las carpetas de trabajo se mantienen aparte. Un perfil anterior con una sexta persona se rechaza de forma explícita en este modo: no se descarta esa persona ni se modifica el perfil original.
+
+Los PDF originales, resultados, logos, firmas y perfiles reales no se publican en GitHub.
+
+## Comprobaciones
+
+Se ejecutaron **35 pruebas aprobadas** con el PDF original local, incluyendo siete pruebas del nuevo llenado PDF. **Tres grupos de integración de Word se omiten explícitamente** porque sus plantillas se retiraron; sus resultados no validan este flujo.
+
+Se comprobó generación de 14 páginas, dimensiones y geometría/color de líneas de tablas, campos actualizados, imagen proporcional, firmas en sus espacios, retiro de imágenes antiguas, original intacto, exceso de asistentes, texto excesivo, PDF alterado y sobrescritura. Se inspeccionaron imágenes renderizadas de portada y difusión durante el desarrollo.
+
+**Pendiente:** instalación e interacción real con la ventana en Windows y revisión visual de todas las páginas por el usuario. Las pruebas PDF se ejecutaron aquí en Linux; no equivalen a una prueba de Windows.
+
+Para ejecutar las pruebas del nuevo PDF local:
+
+```bat
+set "SASISOPA_NEW_PDF=%CD%\plantillas\PROCEDIMIENTO I.pdf"
+.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+Consulta [REVISION.md](REVISION.md) para el historial. La [imagen del diseño](docs/diseno-propuesto.png) es una ilustración de referencia.
