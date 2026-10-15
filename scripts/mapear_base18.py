@@ -90,6 +90,7 @@ for roman,module in zip(ROMANS,META['modules']):
     if any(k in n for k in address_terms):addr.append(s['bbox'])
    if corp:
     r=union(corp);style=next((v for v in ss if list(v['bbox'])==list(corp[0])),{'font':'Arial-BoldMT','size':11.04}) if cover else {'font':'Arial-BoldMT','size':9}
+    if not cover and addr and min(v[1] for v in addr)>=r[3]:r[3]=max(r[3],min(v[1] for v in addr)-2)
     add('estacion.razon_social',r,style,size=9 if not cover else style['size'],min_size=8 if not cover else style['size'],align=2 if not cover else 1)
    if addr:
     r=union(addr)

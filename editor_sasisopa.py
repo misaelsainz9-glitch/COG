@@ -10,14 +10,16 @@ import sasisopa18 as engine
 from importar18 import import_zip
 from tema import configure_theme,NAVY
 from firma_canvas import signature_dialog
+from rutas_app import RESOURCE_ROOT,user_root
 from personalizacion import validated_image
-ROOT=Path(__file__).resolve().parent
+ROOT=user_root()
 
 
 class Editor:
  def __init__(self,app):
+  ROOT.mkdir(parents=True,exist_ok=True)
   self.app=app;app.title('SASISOPA — Datos y documentos');app.geometry('1440x920');app.minsize(1000,640);configure_theme(app)
-  self.catalog,self.maps=engine.configuration();self.inventory=json.loads((ROOT/'campos_sasisopa_18.json').read_text(encoding='utf-8'))
+  self.catalog,self.maps=engine.configuration();self.inventory=json.loads((RESOURCE_ROOT/'campos_sasisopa_18.json').read_text(encoding='utf-8'))
   self.data=engine.empty_project();self.busy=False;self.closed=False;self.timer=None;self.photo=None;self.scale=1.0;self.messages=queue.Queue();self.selected={}
   self.vars={};self.role_vars={};self.doc_vars={};self.table_vars={};self.custom_doc_fields={};self.field_keys={};self.tab_canvases={};self.drag=None;self.rect_item=None
   bar=tk.Frame(app,bg=NAVY);bar.pack(fill='x');tk.Label(bar,text='SASISOPA · Datos y documentos',font=('Segoe UI',19,'bold'),bg=NAVY,fg='white').pack(side='left',padx=18,pady=14)

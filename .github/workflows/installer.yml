@@ -1,0 +1,105 @@
+name: Build Windows installer
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths:
+      - 'packaging/**'
+      - 'rutas_app.py'
+      - 'lanzamiento.py'
+      - 'comprobacion_instalacion.py'
+      - '.github/workflows/installer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install and test source
+        shell: cmd
+        run: |
+          call Instalar.bat < nul
+          if errorlevel 1 exit /b 1
+          .venv\Scripts\python.exe scripts\verify_desktop.py
+      - name: Build self-contained executable
+        run: |
+          .venv\Scripts\python.exe -m pip install -r packaging/requirements-build.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe -m PyInstaller --noconfirm --clean packaging/SASISOPA.spec
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile Windows installer
+        run: |
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $compiler)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.0' }
+          & $compiler "/DAppVersion=$version" packaging/instalador.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test install, executable, update and uninstall
+        run: |
+          $ErrorActionPreference = 'Stop'
+          trap { $msg = $_.ToString().Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A'); Write-Output "::error::$msg"; exit 1 }
+          $installer = (Resolve-Path release/SASISOPA-Instalador-Windows.exe).Path
+          $installDir = Join-Path $env:RUNNER_TEMP 'SASISOPA instalado'
+          $dataDir = Join-Path $env:LOCALAPPDATA 'SASISOPA\Datos'
+          New-Item -ItemType Directory -Path $dataDir -Force | Out-Null
+          $sentinel = Join-Path $dataDir 'conservar-datos.txt'
+          Set-Content -Path $sentinel -Value 'DATOS DE PRUEBA NO BORRAR'
+          function Install-App {
+            $p = Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/DIR=`"$installDir`"") -PassThru -Wait
+            if ($p.ExitCode -ne 0) { throw "Installer failed: $($p.ExitCode)" }
+          }
+          function Check-App($name) {
+            $report = Join-Path $env:RUNNER_TEMP "$name.json"
+            $p = Start-Process -FilePath "$installDir\SASISOPA.exe" -ArgumentList @('--smoke-test',"`"$report`"") -PassThru
+            if (!$p.WaitForExit(120000)) { $p.Kill(); throw 'Executable test timed out' }
+            $p.Refresh()
+            if (Test-Path $report) { $detail = Get-Content $report -Raw; Write-Output $detail } else { $detail = 'No smoke report was created' }
+            if ($p.ExitCode -ne 0) { throw $detail }
+            if (!(($detail | ConvertFrom-Json).ok)) { throw 'Invalid executable report' }
+            Copy-Item $report "release/$name.json"
+          }
+          Install-App
+          Check-App 'comprobacion-instalado'
+          Install-App
+          Check-App 'comprobacion-actualizado'
+          $p = Start-Process -FilePath "$installDir\unins000.exe" -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -PassThru -Wait
+          if ($p.ExitCode -ne 0) { throw 'Uninstall failed' }
+          if (Test-Path "$installDir\SASISOPA.exe") { throw 'Executable remained after uninstall' }
+          if ((Get-Content $sentinel -Raw).Trim() -ne 'DATOS DE PRUEBA NO BORRAR') { throw 'User data changed during install/update/uninstall' }
+          @{ install=$true; update=$true; uninstall=$true; user_data_preserved=$true } | ConvertTo-Json | Set-Content release/comprobacion-instalador.json
+      - name: Record checksums
+        run: |
+          (Get-FileHash release/SASISOPA-Instalador-Windows.exe -Algorithm SHA256).Hash.ToLower() + '  SASISOPA-Instalador-Windows.exe' | Set-Content release/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SASISOPA-Windows
+          path: release/*
+          if-no-files-found: error
+          retention-days: 30
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: SASISOPA-Windows
+          path: release
+      - name: Publish tested installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" release/* --title "SASISOPA $RELEASE_TAG — Instalador Windows" --notes "Instalador autónomo para Windows 10/11 de 64 bits. No requiere Python ni Word. Importa tu SASISOPA.zip desde Documentos. Guarda los datos en la carpeta local de SASISOPA y los conserva al actualizar o desinstalar. Incluye comprobaciones del programa instalado y SHA-256. No contiene documentos, firmas ni datos personales. Versión para probar con tus documentos; conserva tus originales."

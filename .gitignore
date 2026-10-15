@@ -12,3 +12,7 @@ firmas/
 
 *.sasisopa18.json
 *.sasisopa18.json.tmp
+
+build/
+dist/
+release/
