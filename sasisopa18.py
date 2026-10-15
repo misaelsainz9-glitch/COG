@@ -73,7 +73,7 @@ def validate_project(data,catalog=None,maps=None):
   if not isinstance(b.get('key'),str) or not b['key'] or not 3<=size<=36:raise ValueError('Campo o tamaño de letra inválido.')
   minimum=b.get('min_size',size)
   if not isinstance(minimum,(int,float)) or not 3<=minimum<=size:raise ValueError('El tamaño mínimo de letra es inválido.')
-  if b.get('align',0) not in (0,1,2):raise ValueError('Alineación inválida.')
+  if b.get('align',0) not in (0,1,2,3):raise ValueError('Alineación inválida.')
   if b.get('flow') and not isinstance(b['flow'],str):raise ValueError('Grupo de campo inválido.')
   if b.get('kind','text') not in ('text','image'):raise ValueError('Tipo de campo inválido.')
   if b.get('replace_id') and not any(s['id']==b['replace_id'] for s in pages[p]['slots']):raise ValueError('La ubicación original de ese campo ya no existe.')
@@ -282,10 +282,21 @@ def _write(page,slot,value,fonts):
  lines,size,top,bottom,height=_layout(font,value,_logical_rect(slot),slot.get('size',9),slot.get('min_size',slot.get('size',9)))
  page.insert_font(fontname=alias,fontbuffer=buffer)
  y=rect.y0+(rect.height-height)/2+top*size
+ paragraph_ends=set();word_count=0
+ for paragraph in value.split('\n'):
+  word_count+=len(paragraph.split());paragraph_ends.add(word_count)
+ consumed=0
  for line in lines:
+  words=line.split();consumed+=len(words)
   width,left=_line_width(font,line,size);xscale=slot.get('x_scale',1);width*=xscale;left*=xscale;align=slot.get('align',0)
   x=rect.x0-left+(rect.width-width)*(.5 if align==1 else 1 if align==2 else 0)
-  page.insert_text((x,y),line,fontname=alias,fontsize=size,morph=(fitz.Point(x,y),fitz.Matrix(xscale,1)));y+=size*1.15
+  if align==3 and len(words)>1 and consumed not in paragraph_ends:
+   extra=max(0,rect.width-width)/(len(words)-1)
+   for index,word in enumerate(words):
+    page.insert_text((x,y),word,fontname=alias,fontsize=size,morph=(fitz.Point(x,y),fitz.Matrix(xscale,1)))
+    if index<len(words)-1:x+=font.text_length(word+' ',fontsize=size)*xscale+extra
+  else:page.insert_text((x,y),line,fontname=alias,fontsize=size,morph=(fitz.Point(x,y),fitz.Matrix(xscale,1)))
+  y+=size*1.15
  return len(lines),size
 
 

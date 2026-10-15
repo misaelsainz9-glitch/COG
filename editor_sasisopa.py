@@ -245,7 +245,7 @@ class Editor:
   x,y=self.drag;self.drag=None;u=self.canvas.canvasx(event.x);v=self.canvas.canvasy(event.y)
   try:
    key=self.field_keys[self.field_choice.get()];rect=[min(x,u)/self.scale,min(y,v)/self.scale,max(x,u)/self.scale,max(y,v)/self.scale];size=float(self.binding_size.get());kind='image' if key.endswith(('.logo','.firma')) else 'text'
-   binding={'id':'B'+uuid.uuid4().hex,'doc':self.doc_selector.get(),'page':int(self.page.get())-1,'key':key,'rect':rect,'font':'Arial-BoldMT' if key=='estacion.razon_social' else 'ArialMT','size':size,'min_size':8 if key=='estacion.direccion' and size>=8 else size,'align':2 if key in ('estacion.razon_social','estacion.direccion') else 0,'kind':kind,'clear':kind!='image' or key.endswith('.logo')}
+   binding={'id':'B'+uuid.uuid4().hex,'doc':self.doc_selector.get(),'page':int(self.page.get())-1,'key':key,'rect':rect,'font':'Arial-BoldMT' if key=='estacion.razon_social' else 'ArialMT','size':size,'min_size':8 if key=='estacion.direccion' and size>=8 else size,'align':3 if key=='estacion.direccion' else 2 if key=='estacion.razon_social' else 0,'kind':kind,'clear':kind!='image' or key.endswith('.logo')}
    replaced_custom=None
    if self.current_slot:
     old=self.current_slot

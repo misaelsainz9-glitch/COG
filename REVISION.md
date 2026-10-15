@@ -1,3 +1,11 @@
+# DIRECCIÓN DE LA ESTACIÓN JUSTIFICADA
+
+Se justifican las 526 ubicaciones predefinidas de la dirección entre ambos márgenes de su espacio, dejando la última línea de cada párrafo a la izquierda. Las ubicaciones nuevas de dirección usan la misma regla. Se conserva el tamaño y el ajuste mínimo existente; no se estira la última línea. Se actualizó la ilustración con datos ficticios.
+
+Verificación en Linux con los 18 PDF privados: 59 pruebas, 54 aprobadas y 5 grupos retirados omitidos. Incluye comprobación de los márgenes de cada línea justificada, última línea a la izquierda y los 526 destinos configurados.
+
+---
+
 # VERIFICACIÓN EN WINDOWS
 
 Se ejecutó el instalador real `Instalar.bat` en un equipo Windows de GitHub Actions con Python 3.12 y las pruebas desde su entorno virtual. Resultado: 45 pruebas ejecutadas, 34 aprobadas y 11 omitidas, sin errores. Incluye una ventana Tk real, captura del número de estación, vista previa, guardado/carga y generación de PDF individual/unido con un documento ficticio. Se comprobó contenido fijo, bordes y original intactos.

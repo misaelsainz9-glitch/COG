@@ -95,12 +95,12 @@ for roman,module in zip(ROMANS,META['modules']):
     r=union(addr)
     if not cover and corp:r[2]=min(r[2],max(v[2] for v in corp))
     style=next((v for v in ss if list(v['bbox'])==list(addr[0])),{'font':'ArialMT','size':11.04}) if cover else {'font':'ArialMT','size':9}
-    add('estacion.direccion',r,style,size=9 if not cover else style['size'],min_size=8,align=2 if not cover else 1)
+    add('estacion.direccion',r,style,size=9 if not cover else style['size'],min_size=8,align=3)
    # Body company/address, leaving the header to the blocks above.
    for rect,s in matches(page,main_company):
     if rect[1]>160 and not cover:add('estacion.razon_social',rect,s)
    for rect,s in matches(page,address):
-    if rect[1]>160 and not cover:add('rol.representante_tecnico.domicilio' if roman=='V' and pi==15 and rect[0]>page.rect.width*.47 else 'estacion.direccion',rect,s,min_size=8)
+    if rect[1]>160 and not cover:add('rol.representante_tecnico.domicilio' if roman=='V' and pi==15 and rect[0]>page.rect.width*.47 else 'estacion.direccion',rect,s,min_size=8,align=0 if roman=='V' and pi==15 and rect[0]>page.rect.width*.47 else 3)
    for s in ss:
     t=s['text'].strip();n=norm(t);x,y,x1,y1=s['bbox']
     if (not cover and y<145 or cover and 240<y<540):
@@ -234,7 +234,7 @@ for roman,module in zip(ROMANS,META['modules']):
     r=projected(area);line=r.height/3
     for j,key in enumerate(('estacion.numero','estacion.razon_social','estacion.direccion')):
      box=fitz.Rect(r.x0,r.y0+j*line,r.x1,r.y0+(j+1)*line);pt=min(8,line*.68)
-     add(key,box,size=pt,min_size=pt,align=1,clear=False)
+     add(key,box,size=pt,min_size=pt,align=3 if key=='estacion.direccion' else 1,clear=False)
     add('estacion.numero',projected(code),size=3,min_size=3,clear=False)
    aliases={}
    for slot in info['slots']:

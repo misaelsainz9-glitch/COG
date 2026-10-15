@@ -45,7 +45,7 @@ Si capturas un dato común o particular sin destino, la aplicación lo señala y
 
 ## Tipografía y contenido
 
-En los encabezados habituales se usa Arial 9 en empresa/dirección, con negrita donde corresponde. La dirección ajusta líneas y puede reducirse hasta 8 puntos; si no cabe, se rechaza. Las portadas y los nombres ya presentes conservan su estilo de referencia. Los nombres añadidos en los espacios libres de los pies usan 8 puntos. Los títulos, bordes y contenido técnico se conservan.
+En los encabezados habituales se usa Arial 9 en empresa/dirección, con negrita donde corresponde. La dirección se justifica entre ambos márgenes del bloque, con la última línea a la izquierda; ajusta líneas y puede reducirse hasta 8 puntos; si no cabe, se rechaza. Las portadas y los nombres ya presentes conservan su estilo de referencia. Los nombres añadidos en los espacios libres de los pies usan 8 puntos. Los títulos, bordes y contenido técnico se conservan.
 
 El programa intenta usar las fuentes originales embebidas y las fuentes instaladas en Windows. Si la fuente del PDF es un subconjunto sin algún carácter nuevo, utiliza una alternativa disponible y lo avisa en la vista previa y en `revision_del_lote.json`. Instalar la fuente original completa puede evitar esa sustitución. No se garantiza identidad tipográfica si falta esa fuente.
 
