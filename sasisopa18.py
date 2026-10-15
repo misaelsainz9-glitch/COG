@@ -136,6 +136,25 @@ def _source(templates,meta):
  return blob
 
 
+@lru_cache(maxsize=16)
+def _canonical_hyphen(buffer):
+ # Some Windows fonts map hyphen and soft hyphen to one glyph. MuPDF's
+ # reverse map may pick U+00AD, breaking search/copy of station identifiers.
+ # Edit only the new embedded font, leaving original PDF fonts untouched.
+ try:
+  with TTFont(io.BytesIO(buffer)) as tt:
+   changed=False
+   for table in tt['cmap'].tables:
+    if table.isUnicode() and table.cmap.get(0x2d) and table.cmap.get(0xad)==table.cmap[0x2d]:
+     del table.cmap[0xad];changed=True
+   if changed:
+    out=io.BytesIO();tt.save(out);return out.getvalue()
+ except Exception:
+  # Raw CFF buffers do not have a TrueType cmap.
+  pass
+ return buffer
+
+
 class FontBook:
  def __init__(self,doc):self.doc=doc;self.buffers={};self.cache={};self.warnings=set()
  def get(self,name,text):
@@ -159,12 +178,16 @@ class FontBook:
       if buffer:self.buffers[name].append(buffer)
   candidates+=self.buffers[name]
   for buffer in candidates:
+   if '-' in text and '\xad' not in text:buffer=_canonical_hyphen(buffer)
    font=fitz.Font(fontbuffer=buffer)
    if all(c.isspace() or font.has_glyph(ord(c)) for c in text):
     result=(font,buffer,'SF'+hashlib.sha256(buffer).hexdigest()[:10]);self.cache[key]=result;return result
   # A full installed Arial is a fallback when the PDF subset lacks a new glyph.
   fallback=win/('arialbd.ttf' if bold else 'arial.ttf')
-  if fallback.is_file():buffer=fallback.read_bytes();font=fitz.Font(fontbuffer=buffer)
+  if fallback.is_file():
+   buffer=fallback.read_bytes()
+   if '-' in text and '\xad' not in text:buffer=_canonical_hyphen(buffer)
+   font=fitz.Font(fontbuffer=buffer)
   else:
    font=fitz.Font('hebo' if bold else 'helv');buffer=font.buffer
   if not all(c.isspace() or font.has_glyph(ord(c)) for c in text):raise ValueError('La fuente disponible no contiene todos los caracteres. Instala la fuente original o utiliza caracteres compatibles.')
