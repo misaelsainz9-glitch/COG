@@ -36,10 +36,17 @@ class DesktopSmokeTests(unittest.TestCase):
                     editor = ui.Editor(window)
                     editor.templates.set(str(folder))
                     editor.vars['estacion.numero'].set('E-99999')
+                    editor.vars['documento.revision'].set('1')
+                    editor.vars['documento.fecha_revision'].set('15/10/2026')
                     window.update()
                     editor.update_preview()
                     self.assertIsNotNone(editor.photo)
                     project = editor.capture()
+                    self.assertEqual(engine.resolve(project, 'documento.revision', 'I'), '1')
+                    self.assertEqual(engine.resolve(project, 'documento.fecha_revision', 'I'), '15/10/2026')
+                    # This synthetic page has only a station slot.
+                    project['values'].pop('documento.revision')
+                    project['values'].pop('documento.fecha_revision')
                     saved = folder / 'prueba.sasisopa18.json'
                     engine.save_project(saved, project)
                     self.assertEqual(engine.load_project(saved)['values']['estacion.numero'], 'E-99999')

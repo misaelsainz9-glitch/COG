@@ -135,7 +135,7 @@ class Editor:
   self.data['values']={k:v.get().strip() for k,v in self.vars.items()}
   self.data['roles']={k:self.choice_to_id.get(v.get(),'') for k,v in self.role_vars.items() if v.get()}
   id=getattr(self,'fields_document',None)
-  if id:self.data['documents'][id]={k:v.get().strip() for k,v in self.doc_vars.items()}
+  if id:self.data['documents'][id]={k:v.get().strip() for k,v in self.doc_vars.items() if v.get().strip()}
   self.data['tables'].update({k:v.get().strip() for k,v in self.table_vars.items() if not self.data.get('table_people',{}).get(k.rsplit('.',1)[0])})
   return copy.deepcopy(self.data)
  def build_doc_fields(self):
