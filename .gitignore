@@ -9,3 +9,6 @@ plantillas/*
 datos_locales/
 firmas/
 *.sasisopa
+
+*.sasisopa18.json
+*.sasisopa18.json.tmp

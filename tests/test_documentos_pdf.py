@@ -19,6 +19,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class MultiPDFTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if catalog_state().get('engine')=='sasisopa18':raise unittest.SkipTest('La base SASISOPA1 se retiró; se prueba sasisopa18.')
         directory=os.environ.get('SASISOPA1_DIR')
         if not directory:raise unittest.SkipTest('Los PDF son privados; indica SASISOPA1_DIR.')
         cls.source=Path(directory)

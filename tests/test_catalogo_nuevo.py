@@ -7,10 +7,11 @@ from openpyxl import load_workbook
 from catalogo_activo import catalog_state,require_ready
 
 class NewCatalogTests(unittest.TestCase):
-    def test_three_new_documents_only(self):
+    def test_18_documents_only(self):
         state=catalog_state()
-        self.assertEqual([t['id'] for t in state['templates']],['POL-01','PEL-02','LEG-03'])
-        self.assertEqual([t['pages'] for t in state['templates']],[14,53,20])
+        self.assertEqual([t['id'] for t in state['templates']],['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII'])
+        self.assertEqual(sum(t['pages'] for t in state['templates']),523)
+        self.assertEqual(state['engine'],'sasisopa18')
     def test_excel_catalog_matches_active_pdfs(self):
         w=load_workbook(Path(__file__).resolve().parents[1]/'Base_SASISOPA.xlsx',read_only=True)
         try:
@@ -23,8 +24,8 @@ class NewCatalogTests(unittest.TestCase):
         self.assertEqual(state['status'],'ready_pdf')
         self.assertTrue(all(t['format']=='pdf' for t in state['templates']))
     def test_private_sources_match_catalog(self):
-        directory=os.environ.get('SASISOPA1_DIR')
-        if not directory:self.skipTest('Indica SASISOPA1_DIR para validar los PDF privados.')
+        directory=os.environ.get('SASISOPA18_BASE')
+        if not directory:self.skipTest('Indica SASISOPA18_BASE para validar los PDF privados.')
         for t in catalog_state()['templates']:
             path=Path(directory)/t['filename']
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),t['sha256'])

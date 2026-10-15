@@ -1,53 +1,72 @@
-# SASISOPA — documentos PDF
+# SASISOPA — 18 documentos y vista previa
 
-La base activa es **SASISOPA1.zip**: tres PDF originales, **87 páginas** en total. Sustituye a las bases anteriores. El programa crea copias con los campos capturados, manteniendo las páginas, orientación y trazos de las tablas.
+La aplicación de Windows trabaja con los **18 procedimientos del nuevo SASISOPA.zip: 523 páginas**. Permite capturar estación, personas y funciones; ver el PDF real; reutilizar ubicaciones de campos y generar documentos separados o un PDF unido.
 
-## Descargar y usar en Windows
+## Descargar y empezar
 
-1. [Descarga el programa](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo.
-2. Extrae tu **SASISOPA1.zip** y copia estos tres archivos directamente en la carpeta `plantillas` del programa, conservando sus nombres:
-   - `1 POLITICA.pdf` — 14 páginas.
-   - `2. ID DE PELIGROS.pdf` — 53 páginas.
-   - `3. REQUISITOS LEGALES.pdf` — 20 páginas.
-3. Con Python 3.12 o posterior instalado, ejecuta **Instalar.bat** y después **Iniciar.bat**. Este modo no necesita Microsoft Word.
-4. Captura solo los datos que quieras cambiar. **Los campos vacíos conservan el contenido original**, incluyendo fechas, puestos y revisión. El número de estación usa el formato `E-00000`.
-5. Selecciona representante legal/autoriza y secretario entre las cinco filas de personal. Puedes subir o dibujar firmas, elegir un logo y guardar/cargar un perfil de estación.
-6. Marca los documentos que quieras generar. Activa **Crear también un PDF con todos los documentos seleccionados** si quieres reunirlos en un archivo; seleccionando los tres tendrá 87 páginas.
-7. Pulsa **Generar documentos** y revisa las copias en un lector de PDF antes de utilizarlas. Cada lote se guarda en una carpeta nueva dentro de `salidas`.
+1. [Descarga el programa actualizado](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo en una carpeta de tu computadora.
+2. Con Python 3.12 o posterior instalado, ejecuta **Instalar.bat**. Vuelve a ejecutarlo si actualizas una versión anterior: ahora también se utiliza FontTools.
+3. Abre **Iniciar.bat** y entra en **Documentos → Importar SASISOPA.zip**. Selecciona el ZIP original que compartiste; también se admite la copia limpia actualizada.
+4. La aplicación prepara los 18 PDF limpios en una carpeta nueva. Conserva el ZIP y los originales; recuerda la carpeta para la próxima sesión.
+5. Captura datos, revisa la vista previa y pulsa **Generar PDF**. Cada lote se guarda en una carpeta nueva dentro de la ubicación elegida.
 
-Los originales, resultados, logos, firmas y perfiles reales no se publican en GitHub. Debes copiar tus tres PDF a `plantillas` para usar esta base. El Excel se conserva como catálogo; este modo captura los datos en el formulario y no los importa desde Excel.
+Este modo no requiere Word. Los PDF originales, resultados, firmas, logos y datos reales permanecen en tu computadora y no se publican en GitHub. La importación verifica los archivos y reproduce la limpieza validada; no procesa automáticamente versiones diferentes del SASISOPA.
 
-## Campos que cambian
+## Capturar los datos
 
-- Número de estación en encabezados, códigos y referencias de texto de los tres documentos.
-- Razón social y dirección en portadas y encabezados. La razón social también se actualiza en las referencias del cuerpo y las celdas de operador identificadas.
-- Logo proporcional dentro de sus espacios originales.
-- Número de revisión del encabezado y sufijo R de los códigos. Fecha de revisión como mes y año en portadas/encabezados.
-- Nombre de AUTORIZO en las portadas y del representante legal en la política. En Política, convocante/facilitador y secretario según las filas elegidas.
-- Fecha común para reuniones y listas de Política; nombres y puestos en sus tres listas de cinco asistentes. Las filas vacías conservan su posición y contenido.
-- Firmas cargadas o dibujadas en las listas y los espacios existentes del representante legal/autoriza. **No se crean bloques nuevos.** Los otros bloques históricos de elaboración/revisión/aprobación no reciben nuevas firmas.
+- **Estación:** número `E-00000`, razón social, dirección, localidad, estado, código postal, teléfono, correo y logo. Localidad/estado/código postal se integran en la dirección si se capturan por separado. Revisión y fecha de revisión son opcionales.
+- **Personas:** agrega las necesarias, con nombre, puesto, iniciales, empresa, contacto, domicilio para notificaciones y firma. Puedes subir PNG/JPG o dibujar la firma con el mouse.
+- **Funciones:** selecciona a la persona de cada función. Una persona puede ocupar varias funciones; los cargos se asignan por separado. Selecciona **Autoriza** para las portadas y los bloques de aprobación, aunque sea la misma persona que el representante legal. Alta dirección y representante legal no se deducen uno del otro.
+- **Documentos:** marca cuáles generar, elige si quieres también el PDF unido y captura los datos particulares del documento que estás viendo. Las fechas de revisión, reunión, designación y aceptación son independientes. Una revisión particular se aplica a su documento y a las referencias identificadas a esa versión; no cambia automáticamente la versión de otros procedimientos.
+- **Listas:** selecciona una lista detectada y asigna personas por fila. Sus datos y firmas se toman de la ficha de la persona, de modo que corregir un nombre actualiza sus filas vinculadas. También puedes dejar la selección vacía y escribir la fila manualmente.
 
-Los PDF contienen firmas y sellos anteriores. Al capturar estación, razón social o nombres se retiran esas imágenes de la copia para evitar atribuirlas a una identidad distinta. Sin esos cambios, se conservan; una firma nueva del representante reemplaza la anterior en su espacio. Los diagramas y fotos técnicas se mantienen. El logo original permanece si no seleccionas otro.
+Los campos vacíos conservan el contenido de la **base limpia**: no recuperan nombres ni firmas retirados. Se conservan puestos, fechas históricas, horarios y textos fijos salvo cuando capturas un cambio en un campo asignado. Las firmas se colocan únicamente en espacios existentes. Las tablas mantienen su capacidad: no se agregan filas ni bloques de firma.
 
-Horarios, teléfonos, acuerdos, fechas históricas, historial de cambios, matrices de riesgo, requisitos y demás contenido técnico se conservan. Los nombres del equipo técnico del análisis de riesgo mantienen su contenido original; todavía no tienen una asignación por roles en el formulario. Esta versión no recalcula matrices ni determina obligaciones legales. Revisa el contenido fijo para tu estación.
+## Qué se coloca automáticamente
 
-Los espacios tienen tamaño fijo. El texto nuevo se ajusta dentro de ellos y se rechaza si no cabe; se utiliza una fuente estándar y no se garantiza identidad tipográfica. Se aceptan exclusivamente los tres originales de esta versión del ZIP, comprobados por su huella SHA-256. La preparación de todos los documentos termina antes de guardar el lote; un error no deja documentos incompletos.
+Los mapas incluyen el número de estación en encabezados, portadas, cuerpo, códigos e índices; razón social y dirección en sus bloques; logo; revisión y fecha de revisión; nombres previamente identificados por su función, incluido el organigrama y el equipo HAZOP; iniciales de ese equipo; contacto/domicilio del representante técnico; fechas de sus cartas y las listas de personas detectadas. También se prepararon los datos de los encabezados incrustados en imágenes de tres cronogramas.
 
-## Perfiles
+Los nombres del equipo HAZOP se asignan a representante legal, representante técnico, encargado, jefe de operaciones, secretario técnico HAZOP y líder HAZOP. Sus empresas son datos propios; las cuatro funciones de la estación pueden usar la razón social como valor común si no indicas otra. Las empresas externas del ejemplo permanecen si no capturas un cambio.
 
-**Guardar estación/Cargar estación** conservan datos, logo y firmas en un archivo local `.sasisopa`. La fecha de reunión y las carpetas se mantienen aparte. Un perfil anterior con una sexta persona se rechaza explícitamente: no se descarta esa persona ni se modifica el perfil original.
+El domicilio y contacto del representante técnico no se copian automáticamente del domicilio y contacto de la estación. Las iniciales se capturan o confirman en la ficha: no se heredan del ejemplo.
 
-## Verificación
+## Campos particulares: ubicar una vez y reutilizar
 
-La suite completa aprobó 40 pruebas y omitió cuatro grupos de integración de bases retiradas. Las pruebas del motor PDF se ejecutan aquí en Linux con los tres originales privados. Comprueban copias exactas con todos los campos vacíos, cambios de identidad, conservación de campos selectivos, 87 páginas y sus tablas, orden del PDF unido, selección de documentos, imágenes, firmas, originales intactos y errores sin resultados parciales. Los grupos de integración de las bases retiradas se omiten explícitamente.
+No todos los formatos tienen las mismas casillas. Los campos sin ubicación predefinida —por ejemplo CURP/RFC/NSS, otros folios o datos de un evento— se configuran desde la vista previa:
 
-**Pendiente:** instalación e interacción real con la ventana en Windows y revisión final del contenido por el usuario. Las pruebas del motor no equivalen a abrir la aplicación en Windows.
+1. Elige el documento y su página. En **Documentos**, captura el dato o pulsa **Agregar otro dato al documento**.
+2. Elige ese dato en **Campo**, activa **Ubicar campo** y arrastra sobre su espacio existente en la página.
+3. Comprueba la vista previa. Puedes ajustar el tamaño de letra con el control disponible.
+4. Pulsa **Guardar datos** para conservar valores, funciones y ubicaciones. Al generar otra vez se colocarán automáticamente en esas ubicaciones.
 
-Para ejecutar las pruebas con tus PDF locales:
+Para mover una ubicación existente, haz clic sobre ella en la página, activa **Ubicar campo** y marca su nueva zona. El espacio anterior se limpia cuando se coloca el nuevo valor. **Quitar ubicación marcada** retira una ubicación personalizada y restaura la original, si la había.
+
+Si capturas un dato común o particular sin destino, la aplicación lo señala y detiene la generación: no lo ignora silenciosamente. Usa **Mostrar espacios editables** y el zoom para revisar. Cuando un texto no cabe, se muestra la base para que puedas corregirlo o ajustar el espacio.
+
+## Tipografía y contenido
+
+En los encabezados habituales se usa Arial 9 en empresa/dirección, con negrita donde corresponde. La dirección ajusta líneas y puede reducirse hasta 8 puntos; si no cabe, se rechaza. Las portadas y los nombres ya presentes conservan su estilo de referencia. Los nombres añadidos en los espacios libres de los pies usan 8 puntos. Los títulos, bordes y contenido técnico se conservan.
+
+El programa intenta usar las fuentes originales embebidas y las fuentes instaladas en Windows. Si la fuente del PDF es un subconjunto sin algún carácter nuevo, utiliza una alternativa disponible y lo avisa en la vista previa y en `revision_del_lote.json`. Instalar la fuente original completa puede evitar esa sustitución. No se garantiza identidad tipográfica si falta esa fuente.
+
+Las matrices de riesgo, indicadores, resultados, hallazgos, calendarios, obligaciones legales y contactos públicos de emergencia no se recalculan por cambiar la estación. Sus datos particulares requieren captura/revisión expresa. Tampoco se presupone que una reunión, auditoría o firma haya ocurrido.
+
+## Guardar y cargar
+
+**Guardar datos/Cargar datos** utiliza un archivo `.sasisopa18.json`. Conserva valores, personas, asignaciones, filas vinculadas y ubicaciones. Las imágenes se referencian por su ruta: conserva esos archivos o vuelve a seleccionarlos si los mueves. Guarda una copia por estación si quieres reutilizar su diseño y sus datos.
+
+Los perfiles `.sasisopa` de las versiones antiguas tienen otro formato y no se importan en este editor; se conservan intactos. El Excel se actualizó como catálogo de los 18 PDF, pero este modo no importa sus hojas de datos ni genera lotes desde Excel.
+
+## Verificación y límites
+
+Las pruebas usan los 18 PDF privados localmente. Cubren importación del ZIP original a las huellas exactas de la base limpia, copia idéntica con campos vacíos, unión de 523 páginas, geometría y trazos de tablas, funciones independientes, organigrama, iniciales, fechas, listas vinculadas, imágenes, campos personalizados y errores sin lotes parciales ni sobrescritura. También se ejercitaron la ventana Tk real y acciones de captura/guardado/generación en una pantalla virtual de Linux.
+
+**Pendiente:** instalar y usar la aplicación directamente en Windows. La comprobación gráfica en Linux y la disponibilidad de dependencias para Windows x64/Python 3.12 no sustituyen esa prueba.
 
 ```bat
-set "SASISOPA1_DIR=%CD%\plantillas"
+set "SASISOPA18_BASE=C:\ruta\a\los\18\pdf\limpios"
+set "SASISOPA18_ZIP=C:\ruta\SASISOPA.zip"
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Los siguientes ZIP se incorporarán como nuevos lotes calibrados al mismo catálogo. Copiar PDF adicionales a la carpeta no los adapta automáticamente. Las [imágenes del diseño](docs/diseno-propuesto.png) son ilustraciones de referencia y pueden mostrar una versión anterior.
+Los grupos de integración de las bases retiradas se omiten explícitamente. Las pruebas gráficas requieren una pantalla; se omiten si no existe `DISPLAY`. Consulta [el inventario por documento](docs/campos-sasisopa-18.md) y [REVISION.md](REVISION.md). Las imágenes antiguas de propuesta son ilustraciones, no capturas de la versión final.

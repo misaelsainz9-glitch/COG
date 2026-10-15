@@ -1,6 +1,6 @@
 # Campos identificados en los 18 procedimientos SASISOPA
 
-Revisión de los 18 PDF recibidos: 523 páginas. Este inventario define la captura; todavía no es un mapa de coordenadas ni activa el llenado de los nuevos PDF. El programa publicado mantiene su catálogo anterior de tres documentos.
+Revisión de los 18 PDF recibidos: 523 páginas. El editor ya utiliza esta base completa y sus mapas de campos. Los datos identificados tienen ubicaciones predefinidas; los demás se capturan y se ubican una vez desde la vista previa del PDF real. Consulta [las instrucciones de uso](../README.md).
 
 ## Datos comunes
 
@@ -62,4 +62,4 @@ Conservar las fuentes Aptos/Calibri correspondientes al original. Estación/empr
 
 ## Estado de implementación
 
-Terminado: inventario de campos y funciones, con revisión de los 18 archivos. Pendiente: calibrar los espacios de los PDF nuevos, añadir la captura por roles y registros, implementar la vista previa y verificar el llenado sobre las 523 páginas. Este informe no afirma que esas funciones ya estén implementadas.
+Implementado: importación local del ZIP original o limpio, editor por estación/personas/funciones, ubicaciones predefinidas, listas vinculadas, campos particulares con ubicación visual, guardado/carga, vista previa del PDF real y generación de los 18 archivos o un PDF unido. No todos los campos tienen ubicación automática: el editor señala los que necesitan configurarse. Las matrices y resultados técnicos no se deducen automáticamente. La instalación y el uso directo en Windows siguen pendientes de prueba.

@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "status": "inventario_revisado_no_es_catalogo_de_generacion",
+  "version": 2,
+  "status": "editor_18_activo_con_campos_predefinidos_y_ubicaciones_personalizables",
   "documents": 18,
   "pages": 523,
   "fields": [
@@ -10,7 +10,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 1510
     },
     {
       "id": "estacion.razon_social",
@@ -18,7 +19,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 525
     },
     {
       "id": "estacion.direccion",
@@ -26,7 +28,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 526
     },
     {
       "id": "estacion.localidad",
@@ -34,7 +37,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "se integra en la dirección; también admite ubicación propia",
+      "automatic_slots": 0
     },
     {
       "id": "estacion.estado",
@@ -42,7 +46,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "se integra en la dirección; también admite ubicación propia",
+      "automatic_slots": 0
     },
     {
       "id": "estacion.codigo_postal",
@@ -50,7 +55,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "se integra en la dirección; también admite ubicación propia",
+      "automatic_slots": 0
     },
     {
       "id": "estacion.telefono",
@@ -58,7 +64,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "estacion.correo",
@@ -66,7 +73,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "estacion.logo",
@@ -74,7 +82,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 523
     },
     {
       "id": "estacion.curr",
@@ -82,7 +91,8 @@
       "scope": "estacion",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "persona.nombre",
@@ -90,7 +100,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.puesto",
@@ -98,7 +109,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.iniciales",
@@ -106,7 +118,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.empresa",
@@ -114,7 +127,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.telefono",
@@ -122,7 +136,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.correo",
@@ -130,7 +145,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.domicilio",
@@ -138,7 +154,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "persona.firma",
@@ -146,7 +163,8 @@
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 0
     },
     {
       "id": "documento.revision",
@@ -154,7 +172,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 1163
     },
     {
       "id": "documento.fecha_revision",
@@ -162,7 +181,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 983
     },
     {
       "id": "documento.fecha_reunion",
@@ -170,7 +190,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 24
     },
     {
       "id": "documento.hora",
@@ -178,7 +199,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "documento.lugar",
@@ -186,7 +208,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "documento.folio",
@@ -194,7 +217,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     },
     {
       "id": "documento.fecha_designacion",
@@ -202,7 +226,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 1
     },
     {
       "id": "documento.fecha_aceptacion",
@@ -210,7 +235,8 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "ubicaciones predefinidas y personalizables",
+      "automatic_slots": 1
     },
     {
       "id": "documento.periodo",
@@ -218,99 +244,164 @@
       "scope": "documento_o_evento",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "identificado_pendiente_de_mapeo_y_prueba"
+      "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
+      "automatic_slots": 0
     }
   ],
   "roles": [
     {
       "id": "alta_direccion",
       "label": "Alta dirección",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 1
+      }
     },
     {
       "id": "representante_legal",
       "label": "Representante legal",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 8,
+        "firma": 2,
+        "empresa": 1,
+        "iniciales": 35
+      }
     },
     {
       "id": "representante_tecnico",
       "label": "Representante técnico",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 7,
+        "empresa": 1,
+        "iniciales": 35,
+        "domicilio": 3,
+        "puesto": 1,
+        "correo": 1,
+        "telefono": 1
+      }
     },
     {
       "id": "encargado_estacion",
       "label": "Encargado de estación",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 2,
+        "empresa": 1,
+        "iniciales": 35
+      }
     },
     {
       "id": "jefe_operaciones",
       "label": "Jefe de operaciones",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 2,
+        "empresa": 1,
+        "iniciales": 35
+      }
     },
     {
       "id": "secretario_reunion",
       "label": "Secretario de reunión",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 5
+      }
     },
     {
       "id": "convocante",
       "label": "Convocante",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 5
+      }
     },
     {
       "id": "facilitador",
       "label": "Facilitador",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 5
+      }
     },
     {
       "id": "secretario_hazop",
       "label": "Secretario técnico HAZOP",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 1,
+        "empresa": 1,
+        "iniciales": 35
+      }
     },
     {
       "id": "lider_hazop",
       "label": "Líder HAZOP",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 1,
+        "empresa": 1,
+        "iniciales": 35
+      }
     },
     {
       "id": "auditor_lider",
       "label": "Auditor líder",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {}
     },
     {
       "id": "auditor",
       "label": "Auditor",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {}
     },
     {
       "id": "responsable_area",
       "label": "Responsable del área",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {}
     },
     {
       "id": "elabora",
       "label": "Elabora",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 421,
+        "firma": 343
+      }
     },
     {
       "id": "revisa",
       "label": "Revisa",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 394,
+        "firma": 315
+      }
     },
     {
       "id": "autoriza",
       "label": "Autoriza",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {
+        "nombre": 418,
+        "firma": 119
+      }
     },
     {
       "id": "recibe",
       "label": "Recibe",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {}
     },
     {
       "id": "investigador",
       "label": "Integrante de investigación",
-      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente"
+      "person_assignment": "independiente; una persona puede cubrir varios roles si se selecciona expresamente",
+      "automatic_fields": {}
     }
   ],
   "modules": [
@@ -344,7 +435,7 @@
         14
       ],
       "specific_fields": "Reuniones, convocante/facilitador, secretario y asistentes; nombre y firma del representante.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "II",
@@ -414,7 +505,7 @@
         33
       ],
       "specific_fields": "Equipo HAZOP por seis funciones distintas, compañía e iniciales en las matrices. Fechas de estudio independientes.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "III",
@@ -451,7 +542,7 @@
       ],
       "reference_pages": [],
       "specific_fields": "Registros de requisitos y su evaluación: responsables/fechas se capturan por registro; resultados y obligaciones se revisan aparte.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "IV",
@@ -478,7 +569,7 @@
         13
       ],
       "specific_fields": "Registro de objetivos/metas/indicadores y programa anual: datos de estación y responsables; metas, resultados y calendario son propios del registro.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "V",
@@ -516,7 +607,7 @@
         19
       ],
       "specific_fields": "Organigrama por cinco funciones, designación/aceptación del representante técnico y sus datos de contacto/notificaciones.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "VI",
@@ -574,7 +665,7 @@
         28
       ],
       "specific_fields": "Ficha de personal: nombres y apellidos, contacto, fecha/lugar de nacimiento, sexo, edad, estado civil, nacionalidad, CURP, RFC, NSS, estudios, experiencia y puesto; opcional y por empleado.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "VII",
@@ -604,7 +695,7 @@
         15
       ],
       "specific_fields": "Bitácora y distribución de comunicaciones; remitente/destinatario y responsables por registro. La encuesta de la página 14 está en imagen.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "VIII",
@@ -642,7 +733,7 @@
         18
       ],
       "specific_fields": "Acuse: folio, fecha, entrega/recepción y documentos. Catálogos e índices: actualizar estación dentro de códigos sin cambiar identificadores de formatos.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "IX",
@@ -672,7 +763,7 @@
         11
       ],
       "specific_fields": "Reunión y asistencia: fecha/hora/lugar, responsables y participantes; acuerdos capturados por evento.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "X",
@@ -710,7 +801,7 @@
         24
       ],
       "specific_fields": "Permisos/AST: lugar, horarios, responsables del área, ejecución y autorización; cada firma se asigna al bloque que la pide.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XI",
@@ -756,7 +847,7 @@
         17
       ],
       "specific_fields": "Orden de trabajo: fecha, inicio, equipo y responsables propios de la orden. Los datos técnicos y resultados de mantenimiento no se deducen de nombres.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XII",
@@ -814,7 +905,7 @@
         43
       ],
       "specific_fields": "Proveedor/contratista, personal participante, evaluador y responsables de acuerdos; empresa externa distinta de razón social de la estación.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XIII",
@@ -897,7 +988,7 @@
         16
       ],
       "specific_fields": "Responsables/brigadas y programa de simulacros; contactos públicos, escenarios y calendario requieren revisión propia. Encabezado del cronograma incrustado en imagen.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XIV",
@@ -950,7 +1041,7 @@
         31
       ],
       "specific_fields": "Responsables por registro de monitoreo/evaluación. Matriz legal y hallazgos requieren captura específica; no llenar instrucciones como si fueran celdas.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XV",
@@ -1000,7 +1091,7 @@
         31
       ],
       "specific_fields": "Equipo auditor, auditor líder, contactos, fechas/folios, responsables de atender hallazgos, elaborar/autorizar/recibir y seguimiento.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XVI",
@@ -1053,7 +1144,7 @@
         14
       ],
       "specific_fields": "Quien reporta: nombre, cargo, teléfono y correo; CURR, folio, ID y fecha/hora del evento. Páginas 15–17 explican el llenado y se conservan.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XVII",
@@ -1078,7 +1169,7 @@
         10
       ],
       "specific_fields": "Informe de reunión: número de informe, tipo/fecha/lugar y responsables; conclusiones, resultados y acuerdos se capturan expresamente.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     },
     {
       "id": "XVIII",
@@ -1100,7 +1191,7 @@
         8
       ],
       "specific_fields": "Indicadores y avance de desempeño: valores y periodo del informe requieren datos reales; no se infieren por cambiar la estación.",
-      "implementation": "inventario_revisado_sin_mapa_de_llenado"
+      "implementation": "habilitado en editor; datos particulares configurables por página"
     }
   ],
   "rules": {

@@ -1,25 +1,26 @@
-SASISOPA — base SASISOPA1: tres PDF, 87 páginas.
+SASISOPA — 18 procedimientos, 523 páginas
 
-Copia los originales de SASISOPA1.zip directamente dentro de plantillas:
-1 POLITICA.pdf (14 páginas)
-2. ID DE PELIGROS.pdf (53 páginas)
-3. REQUISITOS LEGALES.pdf (20 páginas)
+1. Extrae todo el programa.
+2. Instala Python 3.12 o posterior y ejecuta Instalar.bat.
+3. Abre Iniciar.bat.
+4. En Documentos pulsa Importar SASISOPA.zip y selecciona tu ZIP original.
+   Se crea la base limpia sin modificar los originales.
+5. Captura Estación, agrega Personas y asigna sus Funciones por separado.
+   Una persona puede ocupar varias funciones; selecciona también Autoriza.
+6. En Listas puedes elegir a las personas por fila. Los nombres y firmas se
+   toman de sus fichas. Cada lista conserva su número de filas.
+7. Los datos particulares sin ubicación se colocan con Ubicar campo:
+   selecciona dato y página, activa esa opción y arrastra sobre su espacio.
+8. Revisa el PDF real y genera los documentos seleccionados, con PDF unido opcional.
 
-Ejecuta Instalar.bat y después Iniciar.bat en Windows con Python 3.12 o posterior.
-No se necesita Word. El Excel sirve como catálogo; los datos se capturan en pantalla.
+Los campos vacíos conservan la base limpia. Fechas y puestos son opcionales.
+Los títulos y las tablas se mantienen. Si un texto no cabe, el programa avisa.
+Las firmas nuevas se insertan en espacios existentes; las anteriores se retiraron.
+Las matrices y resultados técnicos requieren su propia captura y revisión.
 
-Los campos vacíos conservan el original. Captura solo lo que quieras cambiar:
-estación, razón social, dirección, fechas, revisión, nombres y puestos.
-Puedes subir logo, subir o dibujar firmas y guardar/cargar datos de estación.
-Hasta cinco asistentes. Selecciona representante legal/autoriza y secretario.
-
-Marca uno o varios documentos. Puedes crear también un PDF unido con todos los
-seleccionados; los tres suman 87 páginas. Se guardan copias en una carpeta nueva.
-
-Las firmas se colocan solo en espacios existentes de listas y del representante.
-Al capturar una identidad nueva se retiran las firmas/sellos anteriores de la copia.
-Los campos históricos y el contenido técnico permanecen y requieren revisión.
-Los textos que no caben se rechazan. Los originales permanecen intactos.
-
-La instalación y ventana en Windows siguen pendientes de prueba real.
-Consulta README.md para los campos, límites y comprobaciones.
+Guardar datos conserva valores y ubicaciones en .sasisopa18.json.
+Mantén las imágenes en sus rutas; no se incluyen dentro de ese archivo.
+El Excel es catálogo: este modo captura datos desde la ventana.
+No necesita Microsoft Word. Vuelve a ejecutar Instalar.bat al actualizar.
+La instalación y uso real en Windows siguen pendientes de prueba del usuario.
+Más detalles en README.md.

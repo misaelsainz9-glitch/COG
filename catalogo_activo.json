@@ -1,31 +1,152 @@
 {
-  "version": 2,
+  "version": 3,
   "status": "ready_pdf",
-  "message": "Base SASISOPA1: tres PDF, 87 páginas. Los campos vacíos conservan el original.",
+  "engine": "sasisopa18",
   "templates": [
     {
-      "id": "POL-01",
-      "filename": "1 POLITICA.pdf",
+      "id": "I",
       "title": "Política",
-      "format": "pdf",
+      "filename": "PROCEDIMIENTO I.pdf",
       "pages": 14,
-      "sha256": "5cac7882ec24a071b6bffebbbe82e10dcbe596e6e19dfe30c94b1b9d7d692ad0"
+      "sha256": "01c40cb26ce083540bf42e3d85da096f6a03e287cf22b722b5b415f5d3be25f1",
+      "format": "pdf"
     },
     {
-      "id": "PEL-02",
-      "filename": "2. ID DE PELIGROS.pdf",
-      "title": "Identificación de peligros",
-      "format": "pdf",
-      "pages": 53,
-      "sha256": "c643da1fece606396fc35c65a2368a5597d86d38d1691ad6d13fca0fdaef95a6"
+      "id": "II",
+      "title": "Peligros y riesgos",
+      "filename": "PROCEDIMIENTO II.pdf",
+      "pages": 57,
+      "sha256": "d919c6f2ecd8f4753cddea92e74e4960d3c799c9d1853a665628b7bf5cd402d6",
+      "format": "pdf"
     },
     {
-      "id": "LEG-03",
-      "filename": "3. REQUISITOS LEGALES.pdf",
+      "id": "III",
       "title": "Requisitos legales",
-      "format": "pdf",
-      "pages": 20,
-      "sha256": "ce19fa58e9ce5113719a36cfedfc4040f30a8662007e0990561eacf4f468a3f8"
+      "filename": "PROCEDIMIENTO III.pdf",
+      "pages": 26,
+      "sha256": "0a5e3aedcaed8a17b694cc029d55e85c11e43b0cb1b51255df1cf236c87a85ee",
+      "format": "pdf"
+    },
+    {
+      "id": "IV",
+      "title": "Objetivos, metas e indicadores",
+      "filename": "PROCEDIMIENTO IV.pdf",
+      "pages": 13,
+      "sha256": "972dc911923a591965707e8611d11e6f00614e79c9aebaf504009fa6a1a0728c",
+      "format": "pdf"
+    },
+    {
+      "id": "V",
+      "title": "Funciones y autoridad",
+      "filename": "PROCEDIMIENTO V.pdf",
+      "pages": 21,
+      "sha256": "9558b2b9fbd70610d67f0bdc4a114744e9028d7a6226cb760294764207a70a01",
+      "format": "pdf"
+    },
+    {
+      "id": "VI",
+      "title": "Competencia y capacitación",
+      "filename": "PROCEDIMIENTO VI.pdf",
+      "pages": 45,
+      "sha256": "3da776ab68c78807983e549978aab50e7530d6eb37e2f6903b48cca430cc16b6",
+      "format": "pdf"
+    },
+    {
+      "id": "VII",
+      "title": "Comunicación",
+      "filename": "PROCEDIMIENTO VII.pdf",
+      "pages": 15,
+      "sha256": "5c195764360f7e6fca6aff6985f9e3253ce5fa4c71ca6b403eeb43385bd1bc43",
+      "format": "pdf"
+    },
+    {
+      "id": "VIII",
+      "title": "Control documental",
+      "filename": "PROCEDIMIENTO VIII.pdf",
+      "pages": 18,
+      "sha256": "1c2626ca11791aeb76955b34125c0eca6bf70a1ad2dcf73c7600a42a2198d3a0",
+      "format": "pdf"
+    },
+    {
+      "id": "IX",
+      "title": "Mejores prácticas",
+      "filename": "PROCEDIMIENTO IX.pdf",
+      "pages": 16,
+      "sha256": "234788492b12c776dfd9f60c6ac3aa13587112448bc5b8f24586586b8105b6b1",
+      "format": "pdf"
+    },
+    {
+      "id": "X",
+      "title": "Control de actividades y procesos",
+      "filename": "PROCEDIMIENTO X.pdf",
+      "pages": 24,
+      "sha256": "4688912a6d7b6b4c519c70fce93caab977fbf30a5ff07cea9d59a1145fbac630",
+      "format": "pdf"
+    },
+    {
+      "id": "XI",
+      "title": "Integridad mecánica",
+      "filename": "PROCEDIMIENTO XI.pdf",
+      "pages": 33,
+      "sha256": "7b0c9665c77141a9132855e97351f0c46039a67b8bb6a245b4325341eb427b8b",
+      "format": "pdf"
+    },
+    {
+      "id": "XII",
+      "title": "Contratistas",
+      "filename": "PROCEDIMIENTO XII.pdf",
+      "pages": 44,
+      "sha256": "ba363cd57aec44e99139d2b0c8dbc15603af487fc642242f2a48015fd3355480",
+      "format": "pdf"
+    },
+    {
+      "id": "XIII",
+      "title": "Emergencias",
+      "filename": "PROCEDIMIENTO XIII.pdf",
+      "pages": 70,
+      "sha256": "deda7733d1f4f4aad464708f0018f96c36699be54b189a05a993a2ad6af77f9c",
+      "format": "pdf"
+    },
+    {
+      "id": "XIV",
+      "title": "Monitoreo y evaluación",
+      "filename": "PROCEDIMIENTO XIV.pdf",
+      "pages": 39,
+      "sha256": "b6b1613e9e89f93e201c55f6b57e6108dc3e5bd854ecd72a89e6c86c5a606b0f",
+      "format": "pdf"
+    },
+    {
+      "id": "XV",
+      "title": "Auditorías",
+      "filename": "PROCEDIMIENTO XV.pdf",
+      "pages": 31,
+      "sha256": "eb85a24abe9ca3198a8d956384810b1d971aa8265c09e27a31a25def5df4d7a3",
+      "format": "pdf"
+    },
+    {
+      "id": "XVI",
+      "title": "Incidentes y accidentes",
+      "filename": "PROCEDIMIENTO XVI.pdf",
+      "pages": 39,
+      "sha256": "cd4fc50f8a05c6a00e1e2da94bfbb62742b4f126b2d6d42196bc3d2c4a5a9895",
+      "format": "pdf"
+    },
+    {
+      "id": "XVII",
+      "title": "Revisión de resultados",
+      "filename": "PROCEDIMIENTO XVII.pdf",
+      "pages": 10,
+      "sha256": "504730e829a62b00a98c19d0c7b0ec2d828358e0cb2d71860c1d01cb35b26672",
+      "format": "pdf"
+    },
+    {
+      "id": "XVIII",
+      "title": "Informe de desempeño",
+      "filename": "PROCEDIMIENTO XVIII.pdf",
+      "pages": 8,
+      "sha256": "7aa2d5985fa13f6a215a4fa27868796267829c83ca77b9e0c4a5045e5fe2d3b6",
+      "format": "pdf"
     }
-  ]
+  ],
+  "message": "Base limpia SASISOPA: 18 PDF, 523 páginas."
 }

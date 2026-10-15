@@ -1,8 +1,6 @@
-BASE ACTIVA: SASISOPA1.zip, tres PDF originales.
-Copia directamente aquí, conservando exactamente estos nombres:
-1 POLITICA.pdf
-2. ID DE PELIGROS.pdf
-3. REQUISITOS LEGALES.pdf
-
-Son 14, 53 y 20 páginas: 87 en total. Puedes generar uno, varios o un PDF unido.
-Las bases anteriores ya no se usan. Los originales privados no están en GitHub.
+BASE ACTIVA: los 18 PDF limpios del nuevo SASISOPA.zip (523 páginas).
+La forma recomendada de prepararlos es Documentos > Importar SASISOPA.zip.
+Se admite el ZIP original registrado o el ZIP limpio actualizado.
+El programa crea una carpeta nueva y recuerda su ubicación.
+Los originales privados no se incluyen en GitHub.
+Las bases anteriores ya no se usan.

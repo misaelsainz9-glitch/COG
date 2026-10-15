@@ -1,4 +1,8 @@
 from catalogo_activo import catalog_state,require_ready
+if __name__=='__main__' and catalog_state().get('engine')=='sasisopa18':
+ from editor_sasisopa import main
+ main()
+ raise SystemExit
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog,messagebox,ttk

@@ -1,3 +1,15 @@
+# BASE ACTIVA: 18 PROCEDIMIENTOS SASISOPA — 523 PÁGINAS
+
+Se integró el editor con vista previa del PDF, captura de estación y personas, asignación por función, listas vinculadas y ubicaciones personalizables. Permite importar el SASISOPA.zip original y reproducir las 18 copias limpias verificadas por SHA-256. Los documentos privados y las imágenes de identidad no se distribuyen en el repositorio.
+
+Las ubicaciones predefinidas abarcan estación, empresa, dirección, logos, revisión, nombres por función, iniciales HAZOP y espacios identificados de firmas y listas. Los campos particulares sin destino requieren «Ubicar campo» una vez; se guardan junto con los datos. No se agregan filas ni bloques de firma. Los campos vacíos conservan la base limpia. El contacto y domicilio del representante son independientes de los de la estación.
+
+La suite ejecutó 56 pruebas: 51 aprobadas y 5 grupos de versiones retiradas omitidos. Incluye importación exacta del ZIP, unión de 523 páginas, preservación de originales, geometría, texto sin cambios, funciones y fechas independientes, errores de ajuste, guardado y tres pruebas de interacción real con Tk en una pantalla virtual Linux. La instalación e interacción directamente en Windows siguen pendientes. Si faltan caracteres en las fuentes disponibles, la aplicación informa la sustitución tipográfica.
+
+Los apartados siguientes son históricos y no describen el catálogo ni el comportamiento actuales.
+
+---
+
 # BASE ACTIVA: SASISOPA1 — TRES PDF, 87 PÁGINAS
 
 Se reemplazó el catálogo anterior por Política (14 páginas), Identificación de peligros (53) y Requisitos legales (20). La interfaz selecciona uno o varios documentos y permite crear también un PDF unificado en orden del catálogo. El Excel se actualizó como catálogo; la captura activa se hace en el formulario.

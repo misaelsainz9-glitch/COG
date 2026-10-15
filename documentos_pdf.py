@@ -92,6 +92,7 @@ def _render(source,metadata,layout,day,station,company,people,representative,sec
 
 
 def generate_documents(templates,out,day,station,company,people,representative,secretary,*,address='',logo='',revision='',revision_date=None,signatures=False,selected=None,merge=False):
+    if require_ready().get('engine')=='sasisopa18':raise ValueError('Usa el editor de 18 documentos desde Iniciar.bat.')
     catalog=require_ready()['templates'];ids=[t['id'] for t in catalog]
     selected=ids if selected is None else list(selected)
     if not selected or len(set(selected))!=len(selected) or any(id not in ids for id in selected):raise ValueError('Selecciona uno o más documentos válidos, sin duplicados.')
