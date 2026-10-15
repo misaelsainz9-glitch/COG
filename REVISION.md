@@ -1,10 +1,22 @@
+# VERIFICACIÓN EN WINDOWS
+
+Se ejecutó el instalador real `Instalar.bat` en un equipo Windows de GitHub Actions con Python 3.12 y las pruebas desde su entorno virtual. Resultado: 45 pruebas ejecutadas, 34 aprobadas y 11 omitidas, sin errores. Incluye una ventana Tk real, captura del número de estación, vista previa, guardado/carga y generación de PDF individual/unido con un documento ficticio. Se comprobó contenido fijo, bordes y original intactos.
+
+La primera ejecución detectó que Arial de Windows producía un guion blando al extraer el número de estación del PDF. Se corrigió la fuente nueva embebida para mantener el guion normal al copiar o buscar, sin modificar las fuentes del documento original. La prueba de Windows pasó después de la corrección.
+
+Evidencia: https://github.com/misaelsainz9-glitch/COG/actions/runs/38791522490 (código 639055c). Después de la corrección también se repitió la suite completa en Linux con los 18 PDF privados: 57 pruebas, 52 aprobadas y 5 grupos retirados omitidos, sin fallos.
+
+Los documentos, firmas y datos privados no se enviaron al equipo de GitHub. Las pruebas de integración de los 18 documentos reales se ejecutan por separado en Linux. La verificación en un equipo Windows alojado no equivale a probar la computadora particular del usuario. Los apartados antiguos que indican Windows pendiente quedan sustituidos por esta actualización.
+
+---
+
 # BASE ACTIVA: 18 PROCEDIMIENTOS SASISOPA — 523 PÁGINAS
 
 Se integró el editor con vista previa del PDF, captura de estación y personas, asignación por función, listas vinculadas y ubicaciones personalizables. Permite importar el SASISOPA.zip original y reproducir las 18 copias limpias verificadas por SHA-256. Los documentos privados y las imágenes de identidad no se distribuyen en el repositorio.
 
 Las ubicaciones predefinidas abarcan estación, empresa, dirección, logos, revisión, nombres por función, iniciales HAZOP y espacios identificados de firmas y listas. Los campos particulares sin destino requieren «Ubicar campo» una vez; se guardan junto con los datos. No se agregan filas ni bloques de firma. Los campos vacíos conservan la base limpia. El contacto y domicilio del representante son independientes de los de la estación.
 
-La suite ejecutó 56 pruebas: 51 aprobadas y 5 grupos de versiones retiradas omitidos. Incluye importación exacta del ZIP, unión de 523 páginas, preservación de originales, geometría, texto sin cambios, funciones y fechas independientes, errores de ajuste, guardado y tres pruebas de interacción real con Tk en una pantalla virtual Linux. La instalación e interacción directamente en Windows siguen pendientes. Si faltan caracteres en las fuentes disponibles, la aplicación informa la sustitución tipográfica.
+La suite ejecutó 56 pruebas: 51 aprobadas y 5 grupos de versiones retiradas omitidos. Incluye importación exacta del ZIP, unión de 523 páginas, preservación de originales, geometría, texto sin cambios, funciones y fechas independientes, errores de ajuste, guardado y tres pruebas de interacción real con Tk en una pantalla virtual Linux. La verificación posterior en Windows se describe arriba. Si faltan caracteres en las fuentes disponibles, la aplicación informa la sustitución tipográfica.
 
 Los apartados siguientes son históricos y no describen el catálogo ni el comportamiento actuales.
 

@@ -61,7 +61,7 @@ Los perfiles `.sasisopa` de las versiones antiguas tienen otro formato y no se i
 
 Las pruebas usan los 18 PDF privados localmente. Cubren importación del ZIP original a las huellas exactas de la base limpia, copia idéntica con campos vacíos, unión de 523 páginas, geometría y trazos de tablas, funciones independientes, organigrama, iniciales, fechas, listas vinculadas, imágenes, campos personalizados y errores sin lotes parciales ni sobrescritura. También se ejercitaron la ventana Tk real y acciones de captura/guardado/generación en una pantalla virtual de Linux.
 
-**Pendiente:** instalar y usar la aplicación directamente en Windows. La comprobación gráfica en Linux y la disponibilidad de dependencias para Windows x64/Python 3.12 no sustituyen esa prueba.
+**Windows verificado:** [ejecución de GitHub Actions](https://github.com/misaelsainz9-glitch/COG/actions/runs/38791522490) en `windows-latest` con Python 3.12: 45 pruebas, 34 aprobadas y 11 omitidas, sin fallos. Se ejecutó `Instalar.bat` y se comprobó una ventana Tk real, captura, vista previa, guardado y generación con un PDF ficticio. Se corrigió la extracción del guion en números de estación con Arial de Windows. Los 18 PDF privados no se suben a ese equipo; su integración completa se verifica localmente en Linux. Esto no equivale a una prueba en la computadora particular del usuario.
 
 ```bat
 set "SASISOPA18_BASE=C:\ruta\a\los\18\pdf\limpios"
