@@ -17,7 +17,5 @@ jobs:
       - name: Run Windows installer
         shell: cmd
         run: Instalar.bat < nul
-      - name: Model and catalogue tests
-        run: .venv\Scripts\python.exe -m unittest discover -s tests -v
-      - name: Real Tk window and synthetic PDF on Windows
-        run: .venv\Scripts\python.exe -m unittest discover -s tests -p test_desktop_smoke.py -v
+      - name: Model, catalogue and real desktop tests
+        run: .venv\Scripts\python.exe scripts/verify_desktop.py
