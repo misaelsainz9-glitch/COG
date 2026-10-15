@@ -1,3 +1,9 @@
+# DIRECCIÓN DE LA ESTACIÓN ALINEADA A LA DERECHA
+
+Por indicación del usuario, se sustituyó la justificación por alineación a la derecha en las 526 ubicaciones predefinidas de la dirección de la estación y en las nuevas ubicaciones de este campo. Las demás alineaciones se conservan. Se verificaron los márgenes derechos de todas las líneas con una prueba de renderizado y la configuración de los 526 destinos. Esta indicación sustituye la de justificación del apartado siguiente.
+
+---
+
 # DIRECCIÓN DE LA ESTACIÓN JUSTIFICADA
 
 Se justifican las 526 ubicaciones predefinidas de la dirección entre ambos márgenes de su espacio, dejando la última línea de cada párrafo a la izquierda. Las ubicaciones nuevas de dirección usan la misma regla. Se conserva el tamaño y el ajuste mínimo existente; no se estira la última línea. Se actualizó la ilustración con datos ficticios.

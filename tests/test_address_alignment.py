@@ -1,4 +1,4 @@
-"""Verify the station address fills both margins without stretching its last line."""
+"""Verify right-aligned station addresses and the optional justification renderer."""
 import unittest
 from types import SimpleNamespace
 import fitz
@@ -27,9 +27,25 @@ class AddressAlignmentTests(unittest.TestCase):
                 self.assertAlmostEqual(words[-1][2], rect.x1, delta=1)
             self.assertLess(ordered[-1][-1][2], rect.x1 - 10)
 
-    def test_all_predefined_station_addresses_are_justified(self):
+    def test_all_predefined_station_addresses_are_right_aligned(self):
         _, maps = engine.configuration()
         addresses = [s for d in maps.values() for p in d['pages'] for s in p['slots']
                      if s['key'] == 'estacion.direccion']
         self.assertTrue(addresses)
-        self.assertTrue(all(s['align'] == 3 for s in addresses))
+        self.assertTrue(all(s['align'] == 2 for s in addresses))
+
+    def test_station_address_lines_are_right_aligned(self):
+        font = fitz.Font('helv')
+        fonts = SimpleNamespace(get=lambda name, text: (font, font.buffer, 'testfont'))
+        with fitz.open() as doc:
+            page = doc.new_page()
+            rect = fitz.Rect(40, 40, 200, 110)
+            count, _ = engine._write(page, {'rect': list(rect), 'align': 2, 'size': 9},
+                                     'AVENIDA PRINCIPAL NUMERO 123 COLONIA CENTRO PUEBLA', fonts)
+            self.assertGreater(count, 1)
+            lines = {}
+            for word in page.get_text('words'):
+                lines.setdefault(round(word[1], 2), []).append(word)
+            self.assertEqual(len(lines), count)
+            for words in lines.values():
+                self.assertAlmostEqual(words[-1][2], rect.x1, delta=1)
