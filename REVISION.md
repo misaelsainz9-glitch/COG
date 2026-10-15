@@ -1,3 +1,15 @@
+# REVISIÓN COMPLETA Y PREPARACIÓN DEL INSTALADOR AUTÓNOMO
+
+Se generaron los 18 procedimientos y un PDF unido de 523 páginas con estación, empresa, dirección a la derecha, logo sintético, tres personas ficticias asignadas por función, firmas sintéticas y filas vinculadas. El perfil de demostración pasó guardado/carga. Se verificaron dimensiones y trazos de tablas página por página y las huellas de todos los originales. El informe sin documentos privados está en `docs/revision-lote-demo.json`.
+
+La revisión detectó seis bloques de razón social que desperdiciaban espacio libre y una dirección de cronograma que necesitaba dos líneas. Se ampliaron sus regiones únicamente dentro del espacio disponible de sus celdas. Se mantiene el tamaño mínimo y se rechaza el texto que aun así no cabe.
+
+La suite completa en Linux ejecutó 62 pruebas: 57 aprobadas y 5 grupos retirados omitidos. La revisión visual con los datos y firmas definitivos y el uso en la computadora del usuario siguen pendientes. Las sustituciones de fuentes disponibles continúan informándose.
+
+El instalador se construye sin PDF privados, perfiles, logos ni firmas de usuarios. La comprobación del ejecutable instalado incluye ventana, vista previa, guardado/carga y generación con un PDF sintético. Los datos se almacenan fuera de la carpeta del programa para conservarlos al actualizar o desinstalar.
+
+---
+
 # DIRECCIÓN DE LA ESTACIÓN ALINEADA A LA DERECHA
 
 Por indicación del usuario, se sustituyó la justificación por alineación a la derecha en las 526 ubicaciones predefinidas de la dirección de la estación y en las nuevas ubicaciones de este campo. Las demás alineaciones se conservan. Se verificaron los márgenes derechos de todas las líneas con una prueba de renderizado y la configuración de los 526 destinos. Esta indicación sustituye la de justificación del apartado siguiente.

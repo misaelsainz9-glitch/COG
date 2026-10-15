@@ -60,7 +60,13 @@ jobs:
           function Check-App($name) {
             $report = Join-Path $env:RUNNER_TEMP "$name.json"
             $p = Start-Process -FilePath "$installDir\SASISOPA.exe" -ArgumentList @('--smoke-test',"`"$report`"") -PassThru
-            if (!$p.WaitForExit(120000)) { $p.Kill(); throw 'Executable test timed out' }
+            if (!$p.WaitForExit(120000)) {
+              $p.Kill()
+              $detail = if (Test-Path $report) { Get-Content $report -Raw } else { 'No report' }
+              $startupLog = Join-Path $dataDir 'error_inicio.txt'
+              if (Test-Path $startupLog) { $detail += Get-Content $startupLog -Raw }
+              throw "Executable test timed out: $detail"
+            }
             $p.Refresh()
             if (Test-Path $report) { $detail = Get-Content $report -Raw; Write-Output $detail } else { $detail = 'No smoke report was created' }
             if ($p.ExitCode -ne 0) { throw $detail }

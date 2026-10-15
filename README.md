@@ -4,11 +4,16 @@ La aplicación de Windows trabaja con los **18 procedimientos del nuevo SASISOPA
 
 ## Descargar y empezar
 
-1. [Descarga el programa actualizado](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip) y extrae todo en una carpeta de tu computadora.
-2. Con Python 3.12 o posterior instalado, ejecuta **Instalar.bat**. Vuelve a ejecutarlo si actualizas una versión anterior: ahora también se utiliza FontTools.
-3. Abre **Iniciar.bat** y entra en **Documentos → Importar SASISOPA.zip**. Selecciona el ZIP original que compartiste; también se admite la copia limpia actualizada.
-4. La aplicación prepara los 18 PDF limpios en una carpeta nueva. Conserva el ZIP y los originales; recuerda la carpeta para la próxima sesión.
-5. Captura datos, revisa la vista previa y pulsa **Generar PDF**. Cada lote se guarda en una carpeta nueva dentro de la ubicación elegida.
+**[Descargar instalador para Windows](https://github.com/misaelsainz9-glitch/COG/releases/latest/download/SASISOPA-Instalador-Windows.exe)** — Windows 10/11 de 64 bits. Incluye Python y los componentes necesarios.
+
+1. Ejecuta **SASISOPA-Instalador-Windows.exe** y abre **SASISOPA** desde el menú Inicio.
+2. En **Documentos → Importar SASISOPA.zip**, selecciona el ZIP original que compartiste; también se admite la copia limpia actualizada.
+3. Captura tus datos, revisa la vista previa y pulsa **Guardar datos** para conservar tu perfil.
+4. Genera los PDF seleccionados y, si lo deseas, el PDF unido de 523 páginas.
+
+El instalador no incluye tus PDF. Los datos se guardan por defecto en `%LOCALAPPDATA%\SASISOPA\Datos`, separados del programa para conservarlos al actualizar o desinstalar. Consulta [las instrucciones de instalación](docs/instalacion-windows.md).
+
+Para trabajar desde el código fuente: [descarga el repositorio](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip), extrae todo, instala Python 3.12 o posterior, ejecuta **Instalar.bat** y abre **Iniciar.bat**. Esta alternativa conserva sus carpetas locales y no requiere el instalador.
 
 Este modo no requiere Word. Los PDF originales, resultados, firmas, logos y datos reales permanecen en tu computadora y no se publican en GitHub. La importación verifica los archivos y reproduce la limpieza validada; no procesa automáticamente versiones diferentes del SASISOPA.
 

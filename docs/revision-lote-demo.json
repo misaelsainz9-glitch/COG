@@ -1,0 +1,129 @@
+{
+  "fictional_data": true,
+  "documents": 18,
+  "pages": 523,
+  "merged_pdf": true,
+  "profile_roundtrip": true,
+  "station_address_alignment": "right",
+  "logo_and_signatures": "synthetic",
+  "warnings": [
+    "Algunos textos nuevos usaron Helvetica porque la fuente original no incluye esos caracteres.",
+    "Algunos textos nuevos usaron Helvetica-Bold porque la fuente original no incluye esos caracteres."
+  ],
+  "checks": [
+    {
+      "document": "I",
+      "pages": 14,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "II",
+      "pages": 57,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "III",
+      "pages": 26,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "IV",
+      "pages": 13,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "V",
+      "pages": 21,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "VI",
+      "pages": 45,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "VII",
+      "pages": 15,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "VIII",
+      "pages": 18,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "IX",
+      "pages": 16,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "X",
+      "pages": 24,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XI",
+      "pages": 33,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XII",
+      "pages": 44,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XIII",
+      "pages": 70,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XIV",
+      "pages": 39,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XV",
+      "pages": 31,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XVI",
+      "pages": 39,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XVII",
+      "pages": 10,
+      "geometry_and_borders": true,
+      "original_intact": true
+    },
+    {
+      "document": "XVIII",
+      "pages": 8,
+      "geometry_and_borders": true,
+      "original_intact": true
+    }
+  ],
+  "requires_user_review": [
+    "Datos definitivos",
+    "Firmas definitivas",
+    "Campos particulares sin ubicación",
+    "Uso en la computadora del usuario"
+  ]
+}

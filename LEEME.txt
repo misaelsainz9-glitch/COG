@@ -1,8 +1,10 @@
 SASISOPA — 18 procedimientos, 523 páginas
 
-1. Extrae todo el programa.
-2. Instala Python 3.12 o posterior y ejecuta Instalar.bat.
-3. Abre Iniciar.bat.
+1. Ejecuta SASISOPA-Instalador-Windows.exe (Windows 10/11 de 64 bits).
+2. Sigue sus pasos: incluye Python y las dependencias.
+3. Abre SASISOPA desde el menú Inicio.
+   Alternativa con código fuente: instala Python 3.12 o posterior,
+   ejecuta Instalar.bat y después Iniciar.bat.
 4. En Documentos pulsa Importar SASISOPA.zip y selecciona tu ZIP original.
    Se crea la base limpia sin modificar los originales.
 5. Captura Estación, agrega Personas y asigna sus Funciones por separado.
@@ -21,6 +23,7 @@ Las matrices y resultados técnicos requieren su propia captura y revisión.
 Guardar datos conserva valores y ubicaciones en .sasisopa18.json.
 Mantén las imágenes en sus rutas; no se incluyen dentro de ese archivo.
 El Excel es catálogo: este modo captura datos desde la ventana.
-No necesita Microsoft Word. Vuelve a ejecutar Instalar.bat al actualizar.
-La instalación y uso real en Windows siguen pendientes de prueba del usuario.
+No necesita Microsoft Word. Para actualizar, ejecuta el instalador nuevo.
+Los datos del programa instalado están en %LOCALAPPDATA%\SASISOPA\Datos,
+separados del programa. Verifica el uso con tus datos en tu computadora.
 Más detalles en README.md.

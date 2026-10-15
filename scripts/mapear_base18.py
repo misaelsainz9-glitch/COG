@@ -235,6 +235,7 @@ for roman,module in zip(ROMANS,META['modules']):
     r=projected(area);line=r.height/3
     for j,key in enumerate(('estacion.numero','estacion.razon_social','estacion.direccion')):
      box=fitz.Rect(r.x0,r.y0+j*line,r.x1,r.y0+(j+1)*line);pt=min(8,line*.68)
+     if roman=='XIII' and key=='estacion.direccion':box.y1=projected((195,18,549,76)).y1
      add(key,box,size=pt,min_size=pt,align=2 if key=='estacion.direccion' else 1,clear=False)
     add('estacion.numero',projected(code),size=3,min_size=3,clear=False)
    aliases={}

@@ -72,7 +72,7 @@ class Integration18Tests(unittest.TestCase):
   for meta,path in zip(self.catalog['templates'],paths):self.assertEqual(path.read_bytes(),(self.base/meta['filename']).read_bytes())
   with fitz.open(paths[-1]) as doc:self.assertEqual(len(doc),523);self.assertEqual(len(doc.get_toc()),18)
  def test_all_18_common_data_and_structure_preserved(self):
-  self.p['values']={'estacion.numero':'E-99999','estacion.razon_social':'EMPRESA TEST SA','estacion.direccion':'AVENIDA EJEMPLO 100','documento.revision':'2','documento.fecha_revision':'15/10/2026'}
+  self.p['values']={'estacion.numero':'E-99999','estacion.razon_social':'ESTACION EJEMPLO SA','estacion.direccion':'AV. PRINCIPAL 123, COL. CENTRO, PUEBLA, C.P. 72000','documento.revision':'2','documento.fecha_revision':'15/10/2026'}
   paths,warnings=e.generate(self.base,self.out,self.p,merge=True);self.assertEqual(len(paths),19)
   with fitz.open(paths[-1]) as merged:
    offset=0
