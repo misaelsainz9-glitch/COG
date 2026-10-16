@@ -10,4 +10,6 @@ a = Analysis([str(repo / 'lanzamiento.py')], pathex=[str(repo)],
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='SASISOPA',
           debug=False, bootloader_ignore_signals=False, strip=False, upx=False, console=False)
-coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='SASISOPA')
+diagnostic = EXE(pyz, a.scripts, [], exclude_binaries=True, name='SASISOPA-Verificar',
+                 debug=True, bootloader_ignore_signals=False, strip=False, upx=False, console=True)
+coll = COLLECT(exe, diagnostic, a.binaries, a.datas, strip=False, upx=False, name='SASISOPA')

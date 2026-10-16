@@ -25,7 +25,7 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 [Tasks]
 Name: "desktopicon"; Description: "Crear un acceso directo en el escritorio"; Flags: unchecked
 [Files]
-Source: "..\dist\SASISOPA\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\SASISOPA\*"; DestDir: "{app}"; Excludes: "SASISOPA-Verificar.exe"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
 Name: "{group}\SASISOPA"; Filename: "{app}\SASISOPA.exe"
 Name: "{autodesktop}\SASISOPA"; Filename: "{app}\SASISOPA.exe"; Tasks: desktopicon

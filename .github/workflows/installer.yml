@@ -12,6 +12,8 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+env:
+  PY_PYTHON3: '3.12'
 jobs:
   build:
     runs-on: windows-latest
@@ -33,6 +35,30 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           .venv\Scripts\python.exe -m PyInstaller --noconfirm --clean packaging/SASISOPA.spec
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Diagnose packaged runtime before installation
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $report = Join-Path $env:RUNNER_TEMP 'portable-check.json'
+          $stdout = Join-Path $env:RUNNER_TEMP 'portable-out.txt'
+          $stderr = Join-Path $env:RUNNER_TEMP 'portable-err.txt'
+          try {
+            $exe = (Resolve-Path dist/SASISOPA/SASISOPA-Verificar.exe).Path
+            $p = Start-Process -FilePath $exe -ArgumentList @('--smoke-test',"`"$report`"") -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+            $null = $p.Handle
+            if (!$p.WaitForExit(60000)) { $p.Kill(); throw 'Portable runtime timed out' }
+            if ($p.ExitCode -ne 0) { throw "Portable runtime exited $($p.ExitCode)" }
+            $data = Get-Content $report -Raw
+            if (!(($data | ConvertFrom-Json).ok)) { throw $data }
+            Write-Output "::notice::$data"
+          } catch {
+            $detail = $_.ToString()
+            foreach ($path in @($report,$stdout,$stderr)) {
+              if (Test-Path $path) { $detail += "`n" + (Get-Content $path -Raw) }
+            }
+            if ($detail.Length -gt 12000) { $detail = $detail.Substring($detail.Length-12000) }
+            Write-Output ('::error::' + $detail.Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A'))
+            exit 1
+          }
       - name: Compile Windows installer
         run: |
           $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
@@ -60,7 +86,8 @@ jobs:
           function Check-App($name) {
             $report = Join-Path $env:RUNNER_TEMP "$name.json"
             $p = Start-Process -FilePath "$installDir\SASISOPA.exe" -ArgumentList @('--smoke-test',"`"$report`"") -PassThru
-            if (!$p.WaitForExit(120000)) {
+            $null = $p.Handle
+            if (!$p.WaitForExit(60000)) {
               $p.Kill()
               $detail = if (Test-Path $report) { Get-Content $report -Raw } else { 'No report' }
               $startupLog = Join-Path $dataDir 'error_inicio.txt'
