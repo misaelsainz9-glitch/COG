@@ -1,0 +1,37 @@
+name: Publish complete Windows package
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/empaquetar_entrega.py'
+      - '.github/workflows/complete-package.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Download already tested 0.2.2 installer and verification reports
+        run: |
+          mkdir -p /tmp/sasisopa-release /tmp/sasisopa-package
+          base=https://github.com/${{ github.repository }}/releases/download/v0.2.2
+          for file in SASISOPA-Instalador-Windows.exe SHA256SUMS.txt comprobacion-instalado.json comprobacion-actualizado.json comprobacion-instalador.json; do
+            curl --fail --location --retry 3 "$base/$file" --output "/tmp/sasisopa-release/$file"
+          done
+          git archive --format=zip v0.2.2 --output=/tmp/sasisopa-source.zip
+      - name: Bundle matching source and verified installer
+        run: |
+          python scripts/empaquetar_entrega.py --source-zip /tmp/sasisopa-source.zip --release-dir /tmp/sasisopa-release --output /tmp/sasisopa-package/SASISOPA-COMPLETO-Windows.zip
+      - name: Add complete package to existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release upload v0.2.2 /tmp/sasisopa-package/SASISOPA-COMPLETO-Windows.zip /tmp/sasisopa-package/SHA256SUMS-COMPLETO.txt --clobber

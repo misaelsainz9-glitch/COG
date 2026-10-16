@@ -6,6 +6,8 @@ La aplicación de Windows trabaja con los **18 procedimientos del nuevo SASISOPA
 
 ## Descargar y empezar
 
+**[Descargar paquete completo ZIP](https://github.com/misaelsainz9-glitch/COG/releases/download/v0.2.2/SASISOPA-COMPLETO-Windows.zip)**: incluye el instalador autónomo, el código fuente, los archivos `.bat`, instrucciones e informes de comprobación. Extrae el ZIP y ejecuta `SASISOPA-Instalador-Windows.exe`. Tus documentos originales se importan desde el programa.
+
 **[Descargar instalador para Windows](https://github.com/misaelsainz9-glitch/COG/releases/latest/download/SASISOPA-Instalador-Windows.exe)** — Windows 10/11 de 64 bits. Incluye Python y los componentes necesarios.
 
 1. Ejecuta **SASISOPA-Instalador-Windows.exe** y abre **SASISOPA** desde el menú Inicio.

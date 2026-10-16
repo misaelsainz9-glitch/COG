@@ -1,5 +1,7 @@
 # SASISOPA 0.2.2 para Windows
 
+**[Descargar todo junto en ZIP](https://github.com/misaelsainz9-glitch/COG/releases/download/v0.2.2/SASISOPA-COMPLETO-Windows.zip)**. Incluye el instalador, el proyecto, los `.bat`, instrucciones e informes. Extrae todo y ejecuta el instalador que viene dentro.
+
 [Descargar instalador](https://github.com/misaelsainz9-glitch/COG/releases/download/v0.2.2/SASISOPA-Instalador-Windows.exe) · [Descargar código fuente](https://github.com/misaelsainz9-glitch/COG/archive/refs/tags/v0.2.2.zip)
 
 Windows 10/11 de 64 bits. El instalador incluye Python y las dependencias; no necesita Word.
