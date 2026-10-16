@@ -1,5 +1,6 @@
 param([Parameter(Mandatory=$true)][string]$Package)
 $ErrorActionPreference = 'Stop'
+trap { $msg = $_.ToString().Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A'); Write-Output "::error::$msg"; exit 1 }
 $testData = Join-Path $env:RUNNER_TEMP 'datos aislados de prueba'
 $prepare = Join-Path $Package 'Preparar-SASISOPA.ps1'
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $prepare -SinAbrir -Datos $testData
@@ -37,3 +38,7 @@ if ($p.ExitCode -ne 0 -or !(Test-Path $report)) { throw 'Installed app smoke tes
 $result = Get-Content $report -Raw -Encoding UTF8 | ConvertFrom-Json
 if (!$result.ok -or !$result.large_blue_signatures -or !$result.manual_attendance) { throw 'Installed app report failed' }
 Write-Output '::notice::Automatic install, 18 synthetic PDFs, repeat setup, existing settings, modified base preservation, damaged package rejection and installed app checks passed.'
+
+# The intentional damaged-package rejection above leaves LASTEXITCODE at 1.
+# All assertions passed; report the result of the full test, not that expected error.
+exit 0
