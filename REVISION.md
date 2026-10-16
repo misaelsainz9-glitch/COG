@@ -1,3 +1,11 @@
+# VERIFICACIÓN DE LOS AJUSTES VISUALES — 0.2.1
+
+La suite con los 18 PDF privados completó 65 pruebas correctas; cinco grupos de versiones retiradas quedaron omitidos. Pasaron las comprobaciones de posición vertical y separación, conservación de bordes, original intacto y generación de 523 páginas.
+
+La [ejecución Windows 38942777123](https://github.com/misaelsainz9-glitch/COG/actions/runs/38942777123) pasó la compilación y la comprobación del ejecutable instalado, actualización y desinstalación. El logo PEMEX está incluido en los recursos y en la prueba de vista previa/generación del programa empaquetado. La publicación 0.2.1 repite el proceso antes de habilitar la descarga.
+
+---
+
 # AJUSTE VISUAL DEL ENCABEZADO Y LOGO PEMEX
 
 Se incorpora como logo inicial la imagen PEMEX aportada, preparada en PNG transparente. Las regiones del logo aprovechan el espacio libre disponible sin deformarlo. En encabezados regulares se mantiene la dirección a la derecha y se fija al inicio de su bloque. Se reserva una separación de 3 puntos entre el número, la empresa y la dirección cuando el espacio de la celda lo permite, respetando el tamaño mínimo de letra.
