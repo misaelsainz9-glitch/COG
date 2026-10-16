@@ -1,3 +1,13 @@
+# INSTALADOR WINDOWS VERIFICADO — 0.2.0
+
+La [ejecución 38927825128](https://github.com/misaelsainz9-glitch/COG/actions/runs/38927825128) terminó correctamente: diagnóstico del ejecutable empaquetado, compilación de Inno Setup, instalación en una ruta con espacios, apertura real de Tk, vista previa, guardado/carga, PDF individual/unido sintético, actualización, desinstalación y conservación de datos externos. La suite pública de Windows ejecutó 51 pruebas: 40 aprobadas y 11 omitidas por falta de bases privadas o por corresponder a versiones retiradas.
+
+Se estandarizó la compilación con Python 3.12 y se añadió un ejecutable de diagnóstico que no se distribuye en el instalador. La versión instalada no necesita Python ni Word. Los documentos, firmas y perfiles privados no se empaquetan. Se publican el instalador, SHA-256 y los informes de comprobación con datos ficticios.
+
+La revisión completa de los 18 documentos reales continúa ejecutándose localmente en Linux. No se han confirmado los datos ni las firmas definitivas del usuario, ni se ha probado su computadora particular.
+
+---
+
 # REVISIÓN COMPLETA Y PREPARACIÓN DEL INSTALADOR AUTÓNOMO
 
 Se generaron los 18 procedimientos y un PDF unido de 523 páginas con estación, empresa, dirección a la derecha, logo sintético, tres personas ficticias asignadas por función, firmas sintéticas y filas vinculadas. El perfil de demostración pasó guardado/carga. Se verificaron dimensiones y trazos de tablas página por página y las huellas de todos los originales. El informe sin documentos privados está en `docs/revision-lote-demo.json`.
