@@ -19,6 +19,8 @@ Este modo no requiere Word. Los PDF originales, resultados, firmas y datos reale
 
 Puedes [ver cuatro ejemplos visuales de llenado](docs/pruebas-visuales.md): dirección corta, dirección larga, empresa larga y firmas simuladas.
 
+También puedes [ver ocho pruebas con direcciones detalladas y logos FULLOK, MonGas, Chavana y ARCO](docs/ubicaciones-detalladas.md), más una dirección rechazada por exceso de longitud.
+
 ## Capturar los datos
 
 Los proyectos nuevos incluyen el logo PEMEX preparado a partir de la imagen aportada. Puedes sustituirlo desde **Estación → Logo → Subir**. Se coloca sin deformarlo.

@@ -1,0 +1,1 @@
+Imágenes de prueba preparadas a partir de los cuatro logos aportados por el usuario. Se usan únicamente para las demostraciones de direcciones y proporciones. Las empresas, números y ubicaciones de esas demostraciones son ficticios y no identifican sucursales de estas marcas. No se incluyen como logos predeterminados del instalador.

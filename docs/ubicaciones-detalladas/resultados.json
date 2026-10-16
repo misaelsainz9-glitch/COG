@@ -1,0 +1,105 @@
+[
+  {
+    "example": "01-fullok-avenida",
+    "brand": "fullok",
+    "fictional_address": "AV. REFORMA 125, LOCAL 2, COL. CENTRO, PUEBLA, PUEBLA, C.P. 72000",
+    "characters": 65,
+    "lines": 3,
+    "font_size": 9.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "02-fullok-alcaldia",
+    "brand": "fullok",
+    "fictional_address": "CALZ. IGNACIO ZARAGOZA 1845, COL. AGRÍCOLA ORIENTAL, ALC. IZTACALCO, CIUDAD DE MÉXICO, C.P. 08500",
+    "characters": 97,
+    "lines": 3,
+    "font_size": 8.5,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "03-mongas-kilometro",
+    "brand": "mongas",
+    "fictional_address": "CARRETERA FEDERAL 129, KM 108+500, COL. CENTRO, ZACAPOAXTLA, PUEBLA, C.P. 73680",
+    "characters": 79,
+    "lines": 3,
+    "font_size": 9.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "04-mongas-localidad",
+    "brand": "mongas",
+    "fictional_address": "CARRETERA AMOZOC-TEZIUTLÁN, KM 108+500, TENEXTATILOYAN, ZAUTLA, PUEBLA, C.P. 73750",
+    "characters": 82,
+    "lines": 3,
+    "font_size": 9.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "05-chavana-esquina",
+    "brand": "chavana",
+    "fictional_address": "AV. UNIVERSIDAD 350, ESQ. MORELOS, COL. CENTRO, SAN NICOLÁS DE LOS GARZA, NUEVO LEÓN, C.P. 66400",
+    "characters": 96,
+    "lines": 3,
+    "font_size": 8.75,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "06-chavana-industrial",
+    "brand": "chavana",
+    "fictional_address": "BLVD. MIGUEL ALEMÁN 1200, LOTE 8, PARQUE INDUSTRIAL, APODACA, NUEVO LEÓN, C.P. 66600",
+    "characters": 84,
+    "lines": 3,
+    "font_size": 9.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "07-arco-local",
+    "brand": "arco",
+    "fictional_address": "BLVD. AGUA CALIENTE 1050, LOCAL A, COL. AVIACIÓN, TIJUANA, BAJA CALIFORNIA, C.P. 22014",
+    "characters": 86,
+    "lines": 3,
+    "font_size": 9.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "08-arco-carretera",
+    "brand": "arco",
+    "fictional_address": "CARRETERA TRANSPENINSULAR, KM 28+700, LOTE 12, COL. LOS PINOS, ENSENADA, BAJA CALIFORNIA, C.P. 22785",
+    "characters": 100,
+    "lines": 3,
+    "font_size": 8.0,
+    "right_aligned": true,
+    "all_address_text_present": true,
+    "logo_proportions_preserved": true,
+    "borders_preserved": true
+  },
+  {
+    "example": "09-direccion-rechazada",
+    "fictional_address": "CARRETERA FEDERAL AMOZOC-TEZIUTLÁN, KILÓMETRO 108+500, MARGEN DERECHO, PREDIO LAS FLORES, LOTE 12, MANZANA 8, JUNTA AUXILIAR DE TENEXTATILOYAN, REFERENCIA FRENTE AL ENTRONQUE PRINCIPAL, MUNICIPIO DE ZAUTLA, ESTADO DE PUEBLA, C.P. 73750",
+    "characters": 235,
+    "rejected_as_expected": true,
+    "page_unchanged_before_displaying_error": true
+  }
+]
