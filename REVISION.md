@@ -1,3 +1,13 @@
+# REPETICIÓN DE PRUEBAS — INSTALADOR PUBLICADO v0.2.0
+
+Se repitió la suite completa en Linux con los 18 PDF privados y el ZIP original: 63 resultados individuales correctos en 84,142 segundos, sin errores ni fallos. Se omitieron cinco grupos de integración de versiones retiradas. Las omisiones de `setUpClass` corresponden a grupos y no deben restarse del contador de pruebas individuales ejecutadas.
+
+En [la ejecución 38940454436](https://github.com/misaelsainz9-glitch/COG/actions/runs/38940454436) se descargó el instalador v0.2.0 publicado y se verificó su SHA-256, en lugar de sustituirlo por una compilación nueva. Pasaron instalación, ventana real Tk, vista previa, guardado/carga, generación de PDF sintético, actualización y desinstalación conservando datos. Huella verificada: `a91a34ecccadb249f4d0f4d2fd6001de368e5d69a3cf72339db373248ffe052f`.
+
+Los documentos privados continúan verificándose en Linux; no se subieron a GitHub. La validación con los datos y firmas definitivos y la computadora del usuario permanece pendiente.
+
+---
+
 # INSTALADOR WINDOWS VERIFICADO — 0.2.0
 
 La [ejecución 38927825128](https://github.com/misaelsainz9-glitch/COG/actions/runs/38927825128) terminó correctamente: diagnóstico del ejecutable empaquetado, compilación de Inno Setup, instalación en una ruta con espacios, apertura real de Tk, vista previa, guardado/carga, PDF individual/unido sintético, actualización, desinstalación y conservación de datos externos. La suite pública de Windows ejecutó 51 pruebas: 40 aprobadas y 11 omitidas por falta de bases privadas o por corresponder a versiones retiradas.
