@@ -2,6 +2,8 @@
 
 La aplicación de Windows trabaja con los **18 procedimientos del nuevo SASISOPA.zip: 523 páginas**. Permite capturar estación, personas y funciones; ver el PDF real; reutilizar ubicaciones de campos y generar documentos separados o un PDF unido.
 
+[Entrega 0.2.2: instalación, cambios y comprobaciones](docs/entrega-v0.2.2.md).
+
 ## Descargar y empezar
 
 **[Descargar instalador para Windows](https://github.com/misaelsainz9-glitch/COG/releases/latest/download/SASISOPA-Instalador-Windows.exe)** — Windows 10/11 de 64 bits. Incluye Python y los componentes necesarios.
