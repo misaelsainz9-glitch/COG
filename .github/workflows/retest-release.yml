@@ -1,0 +1,58 @@
+name: Recheck published Windows installer
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/retest-release.yml'
+      - 'packaging/probar-instalador.ps1'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PY_PYTHON3: '3.12'
+jobs:
+  recheck:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Repeat public source tests
+        shell: cmd
+        run: |
+          call Instalar.bat < nul
+          if errorlevel 1 exit /b 1
+          .venv\Scripts\python.exe scripts\verify_desktop.py
+      - name: Download published v0.2.0 and verify SHA-256
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path release -Force | Out-Null
+          $base = 'https://github.com/misaelsainz9-glitch/COG/releases/download/v0.2.0'
+          Invoke-WebRequest "$base/SASISOPA-Instalador-Windows.exe" -OutFile release/SASISOPA-Instalador-Windows.exe
+          Invoke-WebRequest "$base/SHA256SUMS.txt" -OutFile release/SHA256SUMS.txt
+          $expected = ((Get-Content release/SHA256SUMS.txt -Raw).Trim() -split '\s+')[0]
+          $actual = (Get-FileHash release/SASISOPA-Instalador-Windows.exe -Algorithm SHA256).Hash.ToLower()
+          if ($actual -ne $expected) { throw 'Published installer SHA-256 does not match' }
+          Write-Output "::notice::Published installer SHA-256 verified: $actual"
+      - name: Recheck installation, window, preview, PDF, update and uninstall
+        run: |
+          & packaging/probar-instalador.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Confirm installed executable reports
+        run: |
+          foreach ($name in @('comprobacion-instalado','comprobacion-actualizado')) {
+            $report = Get-Content "release/$name.json" -Raw | ConvertFrom-Json
+            if (!$report.ok -or !$report.window -or !$report.preview -or !$report.save_load -or !$report.synthetic_pdf) { throw "Failed $name" }
+          }
+          $report = Get-Content release/comprobacion-instalador.json -Raw | ConvertFrom-Json
+          if (!$report.install -or !$report.update -or !$report.uninstall -or !$report.user_data_preserved) { throw 'Installer lifecycle failed' }
+          Write-Output '::notice::Published v0.2.0 passed install, real Tk window, preview, save/load, PDF, update, uninstall and user data preservation.'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Comprobaciones-v0.2.0
+          path: |
+            release/comprobacion-*.json
+            release/SHA256SUMS.txt
+          if-no-files-found: error
