@@ -1,0 +1,40 @@
+{
+  "fictional_data": true,
+  "public_previews": "synthetic_template_real_engine",
+  "logo": "MonGas (aportado por el usuario)",
+  "station": {
+    "estacion.numero": "E-48216",
+    "estacion.razon_social": "SERVICIOS DEMO SA",
+    "estacion.direccion": "AV. REFORMA 125, ZAUTLA, PUEBLA, C.P. 73750",
+    "documento.revision": "2",
+    "documento.fecha_revision": "16/10/2026"
+  },
+  "people": [
+    {
+      "nombre": "CARLOS MEDINA",
+      "puesto": "OPERADOR"
+    },
+    {
+      "nombre": "ELENA TORRES",
+      "puesto": "SUPERVISOR"
+    },
+    {
+      "nombre": "JAVIER RUIZ",
+      "puesto": "RESPONSABLE"
+    }
+  ],
+  "signatures": "Trazos simulados para demostración; no pertenecen a personas reales.",
+  "actual_batch": {
+    "procedures": 18,
+    "pages": 523,
+    "merged_bookmarks": 18,
+    "blank_attendance_rows": 33,
+    "footer_signatures_inside_cells": 1197,
+    "warnings": [
+      "Algunos textos nuevos usaron Helvetica porque la fuente original no incluye esos caracteres.",
+      "Algunos textos nuevos usaron Helvetica-Bold porque la fuente original no incluye esos caracteres."
+    ],
+    "passed": true,
+    "page_dimensions_and_table_lines": "preserved"
+  }
+}

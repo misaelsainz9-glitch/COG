@@ -32,9 +32,9 @@ def text(page, rect, value, size=9, bold=False, align=0):
                                'font': 'Arial-BoldMT' if bold else 'ArialMT', 'align': align}, value, fonts)
 
 
-def template(title, signatures=False):
+def template(title, signatures=False, height=385):
     doc = fitz.open()
-    page = doc.new_page(width=612, height=385)
+    page = doc.new_page(width=612, height=height)
     text(page, [52, 5, 560, 25], title, 14, True)
     page.draw_rect(fitz.Rect(52.5, 33.8, 559.6, 151.9), color=(.1, .1, .1), width=.6)
     def line(x0, y0, x1, y1):
