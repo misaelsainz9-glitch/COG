@@ -1,0 +1,42 @@
+[
+  {
+    "example": "01-portada",
+    "status": "existing",
+    "synthetic_names_and_signatures": true,
+    "signature_count": 2,
+    "signature_bounds_verified": true,
+    "production_maps_changed": false
+  },
+  {
+    "example": "02-pie-tres-firmas",
+    "status": "proposed_uniform_size",
+    "synthetic_names_and_signatures": true,
+    "signature_count": 3,
+    "signature_bounds_verified": true,
+    "production_maps_changed": false
+  },
+  {
+    "example": "03-representante-legal",
+    "status": "proposed_label_gap",
+    "synthetic_names_and_signatures": true,
+    "signature_count": 1,
+    "signature_bounds_verified": true,
+    "production_maps_changed": false
+  },
+  {
+    "example": "04-aceptacion-tecnico",
+    "status": "proposed_unmapped_signature",
+    "synthetic_names_and_signatures": true,
+    "signature_count": 1,
+    "signature_bounds_verified": true,
+    "production_maps_changed": false
+  },
+  {
+    "example": "05-lista-asistencia",
+    "status": "existing",
+    "synthetic_names_and_signatures": true,
+    "signature_count": 3,
+    "signature_bounds_verified": true,
+    "production_maps_changed": false
+  }
+]

@@ -17,4 +17,4 @@ build/
 dist/
 release/
 
-docs/pruebas-visuales/recursos-demo/
+docs/**/recursos-demo/

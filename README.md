@@ -21,6 +21,8 @@ Puedes [ver cuatro ejemplos visuales de llenado](docs/pruebas-visuales.md): dire
 
 También puedes [ver ocho pruebas con direcciones detalladas y logos FULLOK, MonGas, Chavana y ARCO](docs/ubicaciones-detalladas.md), más una dirección rechazada por exceso de longitud.
 
+Puedes revisar la [propuesta de ubicación de firmas](docs/ubicacion-firmas.md): portadas, pies, cartas y listas, con espacios marcados y firmas simuladas.
+
 ## Capturar los datos
 
 Los proyectos nuevos incluyen el logo PEMEX preparado a partir de la imagen aportada. Puedes sustituirlo desde **Estación → Logo → Subir**. Se coloca sin deformarlo.
