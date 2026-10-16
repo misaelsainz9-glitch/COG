@@ -14,7 +14,7 @@ Dos espacios existentes, uno para quien elabora y otro para quien autoriza. La f
 
 ## 2. Pie de página: elaboración, revisión y aprobación
 
-Las firmas quedan dentro de cada cuadro, sin nombres de personas. Se conservan los rótulos, puestos y fechas originales. La firma se ajusta proporcionalmente al espacio disponible.
+Las firmas quedan dentro de cada cuadro, sin nombres de personas. Se conservan los rótulos, puestos y fechas originales. La firma ocupa el interior del cuadro, en tinta azul y sin deformarse. Puede superponerse con las letras; el fondo transparente conserva los textos y las líneas.
 
 ![Pie con tres firmas](firmas-propuesta/02-pie-tres-firmas.png)
 

@@ -71,7 +71,7 @@ def generate(folder):
     keys={f'rol.{role}.{field}' for role in ('elabora','revisa','autoriza') for field in ('nombre','firma')}
     slots=[s for s in engine.slots_for(maps['II'],data,'II',19) if s['key'] in keys]
     cases.append(('02-pie-tres-firmas','2. Pie: firmas dentro de los cuadros, sin nombres',doc,slots,copy.deepcopy(data),
-                  fitz.Rect(45,680,567,752),'Firmas dentro de cada cuadro. Se conservan puestos, rótulos y fechas; no se insertan nombres.','inside_cells_no_names'))
+                  fitz.Rect(45,680,567,752),'Firmas grandes en azul dentro del cuadro. Pueden tocar letras; no borran los textos ni se insertan nombres.','inside_cells_no_names'))
 
     # Legal representative: leave a gap below Atentamente and above the line.
     doc=base_doc();page=doc[0]

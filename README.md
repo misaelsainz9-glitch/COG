@@ -32,7 +32,7 @@ Los proyectos nuevos incluyen el logo PEMEX preparado a partir de la imagen apor
 - **Funciones:** selecciona a la persona de cada función. Una persona puede ocupar varias funciones; los cargos se asignan por separado. Selecciona **Autoriza** para las portadas y los bloques de aprobación, aunque sea la misma persona que el representante legal. Alta dirección y representante legal no se deducen uno del otro.
 - **Documentos:** marca cuáles generar, elige si quieres también el PDF unido y captura los datos particulares del documento que estás viendo. Las fechas de revisión, reunión, designación y aceptación son independientes. Una revisión particular se aplica a su documento y a las referencias identificadas a esa versión; no cambia automáticamente la versión de otros procedimientos.
 - **Listas:** se entregan vacías para llenado manual, sin nombres, puestos, teléfonos ni firmas. Se conservan las filas, columnas y numeración originales.
-- **Firmas del pie:** van dentro de los cuadros de elaboración, revisión y aprobación, sin nombres de personas y conservando los textos fijos y fechas.
+- **Firmas del pie:** van dentro de los cuadros de elaboración, revisión y aprobación, sin nombres de personas y conservando los textos fijos y fechas. Se amplían al interior del cuadro, con tinta azul y fondo transparente; pueden superponerse con las letras. Puedes dibujar tu firma o subirla en PNG/JPG.
 
 Los campos vacíos conservan el contenido de la **base limpia**: no recuperan nombres ni firmas retirados. Se conservan puestos, fechas históricas, horarios y textos fijos salvo cuando capturas un cambio en un campo asignado. Las firmas se colocan únicamente en espacios existentes. Las tablas mantienen su capacidad: no se agregan filas ni bloques de firma.
 

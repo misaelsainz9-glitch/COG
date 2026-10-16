@@ -112,7 +112,7 @@ def slot_value(data,slot,doc_id):
 def slots_for(layout,data,doc_id,page):
  spec=layout['pages'][page]
  base=spec['slots']
- # The blank name gaps in the existing footer cells are the signature spaces.
+ # Signatures use the measured cell interior and may overlap printed labels.
  footer={s['key'].split('.')[1]:s for s in base
          if page>0 and s['key'] in ('rol.elabora.nombre','rol.revisa.nombre','rol.autoriza.nombre')
          and s['rect'][1]>spec['size'][3]*.65}
@@ -127,7 +127,7 @@ def slots_for(layout,data,doc_id,page):
  replaced={b.get('replace_id') for b in customs}
  result=[s for s in base if s['id'] not in replaced and s['id'] not in protected]
  for role,name in footer.items():
-  result.append({**name,'id':name['id']+'.firma','key':f'rol.{role}.firma','kind':'image','clear':True,'locked':True})
+  result.append({**name,'id':name['id']+'.firma','key':f'rol.{role}.firma','rect':name.get('signature_rect',name['rect']),'kind':'image','clear':False,'locked':True})
  return result+customs
 
 
@@ -319,9 +319,17 @@ def _write(page,slot,value,fonts):
 
 
 def _image(page,slot,path):
- path,image=validated_image(path,'la imagen');r=fitz.Rect(slot['rect']);ratio=image.px_width/image.px_height
+ path,image=validated_image(path,'la imagen');r=fitz.Rect(slot['rect'])
+ stream=None
+ if slot['key'].endswith('.firma'):
+  from firma_canvas import blue_signature
+  signature=blue_signature(path);image_width,image_height=signature.size
+  buffer=io.BytesIO();signature.save(buffer,format='PNG');stream=buffer.getvalue()
+ else:image_width,image_height=image.px_width,image.px_height
+ ratio=image_width/image_height
  width=min(r.width,r.height*ratio);height=width/ratio;x=r.x0+(r.width-width)/2;y=r.y0+(r.height-height)/2
- page.insert_image((x,y,x+width,y+height),filename=str(path),keep_proportion=True)
+ kwargs={'stream':stream} if stream is not None else {'filename':str(path)}
+ page.insert_image((x,y,x+width,y+height),keep_proportion=True,overlay=True,**kwargs)
 
 
 def render_page(doc,index,layout,data,id,fonts):

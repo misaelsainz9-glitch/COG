@@ -11,7 +11,9 @@ SASISOPA — 18 procedimientos, 523 páginas
    Una persona puede ocupar varias funciones; selecciona también Autoriza.
 6. Las listas de asistencia se entregan vacías para llenado manual,
    sin nombres, puestos, teléfonos ni firmas; conservan sus filas.
-   En los pies las firmas van dentro de los cuadros, sin nombres de personas.
+   En los pies las firmas van grandes dentro de los cuadros, sin nombres.
+   Se muestran en azul con fondo transparente y pueden tocar las letras.
+   Puedes dibujar tu firma con el mouse o subirla como imagen PNG/JPG.
 7. Los datos particulares sin ubicación se colocan con Ubicar campo:
    selecciona dato y página, activa esa opción y arrastra sobre su espacio.
 8. Revisa el PDF real y genera los documentos seleccionados, con PDF unido opcional.
