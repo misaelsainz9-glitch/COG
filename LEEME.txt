@@ -9,8 +9,9 @@ SASISOPA — 18 procedimientos, 523 páginas
    Se crea la base limpia sin modificar los originales.
 5. Captura Estación, agrega Personas y asigna sus Funciones por separado.
    Una persona puede ocupar varias funciones; selecciona también Autoriza.
-6. En Listas puedes elegir a las personas por fila. Los nombres y firmas se
-   toman de sus fichas. Cada lista conserva su número de filas.
+6. Las listas de asistencia se entregan vacías para llenado manual,
+   sin nombres, puestos, teléfonos ni firmas; conservan sus filas.
+   En los pies las firmas van dentro de los cuadros, sin nombres de personas.
 7. Los datos particulares sin ubicación se colocan con Ubicar campo:
    selecciona dato y página, activa esa opción y arrastra sobre su espacio.
 8. Revisa el PDF real y genera los documentos seleccionados, con PDF unido opcional.

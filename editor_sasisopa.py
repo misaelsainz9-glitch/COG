@@ -168,24 +168,7 @@ class Editor:
   for w in self.table_box.winfo_children():w.destroy()
   table=getattr(self,'table_labels',{}).get(self.table_selector.get())
   if not table:return
-  choices=['']+list(self.choice_to_id)
-  for i in range(table['rows']):
-   prefix=f"tabla.{table['id']}.{i}";row=ttk.Frame(self.table_box);row.pack(fill='x',pady=(8,2));ttk.Label(row,text='Fila '+str(i+1)).pack(side='left')
-   choice=tk.StringVar(value=self.id_to_choice.get(self.data.get('table_people',{}).get(prefix,''),''))
-   combo=ttk.Combobox(row,textvariable=choice,values=choices,state='readonly');combo.pack(side='left',fill='x',expand=True,padx=5)
-   for key in table['columns']:
-    full=prefix+'.'+key;value=engine.resolve(self.data,full,self.doc_selector.get());v=self.entry(self.table_box,key.capitalize(),self.table_vars,full,value)
-    if choice.get():
-     v.entry.configure(state='readonly')
-     if v.upload:v.upload.configure(state='disabled')
-   def assign(event=None,prefix=prefix,choice=choice):
-    person=self.choice_to_id.get(choice.get(),'')
-    self.data.setdefault('table_people',{})[prefix]=person
-    for key in table['columns']:
-     full=prefix+'.'+key;self.data['tables'][full]=''
-     if full in self.table_vars:self.table_vars[full].set('')
-    self.change_table();self.schedule()
-   combo.bind('<<ComboboxSelected>>',assign)
+  ttk.Label(self.table_box,text='Esta lista se entrega vacía para llenarla manualmente.\nNo se insertan nombres, puestos, teléfonos ni firmas.\nSe conservan los encabezados y las filas originales.',wraplength=340).pack(anchor='w',padx=8,pady=12)
  def refresh_field_choices(self):
   fields={s['label']:s['id'] for s in self.inventory['fields'] if s['scope']!='persona'}
   for role in self.inventory['roles']:
@@ -238,6 +221,8 @@ class Editor:
   data=self.capture();index=int(self.page.get())-1;point=fitz.Point(x/self.scale,y/self.scale);slots=engine.slots_for(self.maps[self.doc_selector.get()],data,self.doc_selector.get(),index)
   found=next((s for s in reversed(slots) if fitz.Rect(s['rect']).contains(point)),None)
   self.current_slot=found
+  if found and found.get('locked'):
+   self.status.set('Esta firma se ajusta al espacio interior del cuadro; su posición se conserva.');return
   if found:
    label=next((label for label,key in self.field_keys.items() if key==found['key']),None)
    if label:self.field_choice.set(label)
@@ -248,6 +233,7 @@ class Editor:
   if not self.drag:return
   x,y=self.drag;self.drag=None;u=self.canvas.canvasx(event.x);v=self.canvas.canvasy(event.y)
   try:
+   if self.current_slot and self.current_slot.get('locked'):raise ValueError('La firma debe permanecer dentro del cuadro original.')
    key=self.field_keys[self.field_choice.get()];rect=[min(x,u)/self.scale,min(y,v)/self.scale,max(x,u)/self.scale,max(y,v)/self.scale];size=float(self.binding_size.get());kind='image' if key.endswith(('.logo','.firma')) else 'text'
    binding={'id':'B'+uuid.uuid4().hex,'doc':self.doc_selector.get(),'page':int(self.page.get())-1,'key':key,'rect':rect,'font':'Arial-BoldMT' if key=='estacion.razon_social' else 'ArialMT','size':size,'min_size':8 if key=='estacion.direccion' and size>=8 else size,'align':2 if key in ('estacion.direccion','estacion.razon_social') else 0,'valign':'top' if key in ('estacion.direccion','estacion.razon_social') else 'middle','kind':kind,'clear':kind!='image' or key.endswith('.logo')}
    replaced_custom=None

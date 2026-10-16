@@ -33,10 +33,9 @@ class Editor18Tests(unittest.TestCase):
   self.assertEqual(len(ed.data['people']),1);person=ed.data['people'][0];label=ed.id_to_choice[person['id']]
   ed.role_vars['representante_legal'].set(label);ed.role_vars['representante_tecnico'].set(label);ed.capture()
   self.assertEqual(ed.data['roles']['representante_legal'],ed.data['roles']['representante_tecnico'])
-  first_combo=next(w for w in descendants(ed.table_box) if isinstance(w,ttk.Combobox));first_combo.set(label);first_combo.event_generate('<<ComboboxSelected>>');self.window.update()
-  prefix=next(iter(ed.data['table_people']));self.assertEqual(engine.resolve(ed.capture(),prefix+'.nombre','I'),'PERSONA UNO')
-  person['nombre']='PERSONA DOS';ed.refresh_people();ed.change_table();self.assertEqual(ed.table_vars[prefix+'.nombre'].get(),'PERSONA DOS')
-  ed.people_list.selection_set(person['id']);ed.delete_person();self.assertFalse(ed.data['people']);self.assertEqual(ed.table_vars[prefix+'.nombre'].get(),'')
+  ed.change_table();self.assertEqual(ed.table_vars,{})
+  self.assertFalse(any(isinstance(w,ttk.Combobox) for w in descendants(ed.table_box)))
+  ed.people_list.selection_set(person['id']);ed.delete_person();self.assertFalse(ed.data['people'])
   ed.doc_selector.set('VI');ed.page.set(28);ed.data['documents'].setdefault('VI',{})['dato.CURP']='PRUEBA123';ed.build_doc_fields();ed.refresh_field_choices();ed.update_preview();self.window.update()
   ed.field_choice.set('dato.CURP');ed.place_mode.set(True);ed.canvas.xview_moveto(0);ed.canvas.yview_moveto(0)
   ed.pointer_down(SimpleNamespace(x=50,y=440));ed.pointer_move(SimpleNamespace(x=210,y=465));ed.pointer_up(SimpleNamespace(x=210,y=465));self.assertEqual(len(ed.data['bindings']),1);self.assertIsNotNone(ed.photo)

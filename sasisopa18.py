@@ -110,9 +110,25 @@ def slot_value(data,slot,doc_id):
 
 
 def slots_for(layout,data,doc_id,page):
- customs=[b for b in data['bindings'] if b['doc']==doc_id and b['page']==page]
+ spec=layout['pages'][page]
+ base=spec['slots']
+ # The blank name gaps in the existing footer cells are the signature spaces.
+ footer={s['key'].split('.')[1]:s for s in base
+         if page>0 and s['key'] in ('rol.elabora.nombre','rol.revisa.nombre','rol.autoriza.nombre')
+         and s['rect'][1]>spec['size'][3]*.65}
+ protected={s['id'] for s in base if s['key'].startswith('tabla.') or
+            (s['key'].startswith('rol.') and s['key'].split('.')[1] in footer
+             and s['key'].endswith(('.nombre','.firma')))}
+ customs=[b for b in data['bindings'] if b['doc']==doc_id and b['page']==page
+          and b.get('replace_id') not in protected and not b['key'].startswith('tabla.')]
+ attendance=[fitz.Rect(s['rect']) for s in base if s['key'].startswith('tabla.')]
+ if any(any(fitz.Rect(b['rect']).intersects(r) for r in attendance) for b in customs):
+  raise ValueError('Las listas de asistencia deben permanecer vacías. Quita las ubicaciones personalizadas sobre sus filas.')
  replaced={b.get('replace_id') for b in customs}
- return [s for s in layout['pages'][page]['slots'] if s['id'] not in replaced]+customs
+ result=[s for s in base if s['id'] not in replaced and s['id'] not in protected]
+ for role,name in footer.items():
+  result.append({**name,'id':name['id']+'.firma','key':f'rol.{role}.firma','kind':'image','clear':True,'locked':True})
+ return result+customs
 
 
 def destination_keys(maps,data,selected):
@@ -310,6 +326,8 @@ def _image(page,slot,path):
 
 def render_page(doc,index,layout,data,id,fonts):
  page=doc[index];slots=slots_for(layout,data,id,index);ops=[];notes=[];extra_erases=[]
+ # Attendance is manual, including when an older profile still contains row data.
+ attendance=[s for s in layout['pages'][index]['slots'] if s['key'].startswith('tabla.')]
  if list(page.rect)!=layout['pages'][index]['size']:raise ValueError('Las dimensiones del PDF no coinciden con la base.')
  for s in slots:
   value=slot_value(data,s,id)
@@ -347,11 +365,13 @@ def render_page(doc,index,layout,data,id,fonts):
   else:
    font,_,_=fonts.get(s.get('font','ArialMT'),value)
    _layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
+ for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
   if old.get('kind')=='image':page.add_redact_annot(old['rect'],fill=None,cross_out=False)
  for s,value in ops:
   if s.get('kind')=='image' and s.get('clear',True):page.add_redact_annot(s['rect'],fill=None,cross_out=False)
  if page.first_annot:page.apply_redactions(images=2,graphics=0,text=1)
+ for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
   if old.get('kind','text')=='text':
    r=fitz.Rect(old.get('erase_rect',old['rect']));r+=(.02,r.height*.15,-.02,-r.height*.15);page.add_redact_annot(r,fill=None,cross_out=False)
@@ -392,7 +412,7 @@ def generate(templates,out,data,selected=None,merge=False):
   id=meta['id']
   if id not in selected:continue
   blob=_source(templates,meta);layout=maps[id]
-  active=any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
+  active=any(s['key'].startswith('tabla.') for p in layout['pages'] for s in p['slots']) or any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
   if active:
    with fitz.open(stream=blob,filetype='pdf') as doc:
     fonts=FontBook(doc)

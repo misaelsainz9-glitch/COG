@@ -69,13 +69,9 @@ def generate(folder):
         text(page,[x+4,710,x+503/3-4,722],job,7.5,align=1)
         text(page,[x+4,729,x+503/3-4,741],'Fecha: 01-10-2024',7.5,align=1)
     keys={f'rol.{role}.{field}' for role in ('elabora','revisa','autoriza') for field in ('nombre','firma')}
-    slots=choose(maps,'II',20,keys)
-    for slot in slots:
-        if slot['key'].endswith('.firma'):
-            center=(slot['rect'][0]+slot['rect'][2])/2
-            slot['rect']=[center-48.12,656.04,center+48.12,685.9]
-    cases.append(('02-pie-tres-firmas','2. Pie: elaboración, revisión y aprobación',doc,slots,copy.deepcopy(data),
-                  fitz.Rect(45,645,567,752),'Propuesta: firmas de tamaño uniforme en el espacio libre sobre el pie.','proposed_uniform_size'))
+    slots=[s for s in engine.slots_for(maps['II'],data,'II',19) if s['key'] in keys]
+    cases.append(('02-pie-tres-firmas','2. Pie: firmas dentro de los cuadros, sin nombres',doc,slots,copy.deepcopy(data),
+                  fitz.Rect(45,680,567,752),'Firmas dentro de cada cuadro. Se conservan puestos, rótulos y fechas; no se insertan nombres.','inside_cells_no_names'))
 
     # Legal representative: leave a gap below Atentamente and above the line.
     doc=base_doc();page=doc[0]
@@ -119,8 +115,8 @@ def generate(folder):
     for i in range(5):
         text(page,[67,rows[i][0]+3,94,rows[i][1]-3],str(i+1),9,align=1)
         if i<3:linked['table_people'][f'tabla.I.10.2.{i}']=str(i)
-    cases.append(('05-lista-asistencia','5. Asistencia: una firma por persona',doc,slots,linked,
-                  fitz.Rect(55,top-8,576,bottom+9),'Tres filas llenas y dos vacías; se conservan las cinco filas originales.','existing'))
+    cases.append(('05-lista-asistencia','5. Asistencia: todas las filas vacías',doc,slots,linked,
+                  fitz.Rect(55,top-8,576,bottom+9),'Sin nombres, puestos, teléfonos ni firmas. Se conservan las cinco filas para llenado manual.','existing'))
 
     overview=fitz.open();board=overview.new_page(width=1224,height=1200)
     reports=[]
@@ -128,10 +124,10 @@ def generate(folder):
         pair=fitz.open();sheet=pair.new_page(width=1224,height=240)
         text(sheet,[18,5,1205,28],title,14,True)
         text(sheet,[18,30,602,44],'ESPACIOS MARCADOS (guías azules)',9,True)
-        text(sheet,[630,30,1206,44],'RESULTADO CON NOMBRES Y FIRMAS SIMULADAS',9,True)
+        text(sheet,[630,30,1206,44],'RESULTADO SEGÚN LAS REGLAS ACTUALES',9,True)
         base_bytes=doc.tobytes()
         for slot in slots:
-            if slot['key'].endswith('.firma'):
+            if slot['key'].endswith('.firma') and not slot['key'].startswith('tabla.'):
                 doc[0].draw_rect(fitz.Rect(slot['rect']),color=(0,.45,.8),width=.6,dashes='[3 2]')
         sheet.show_pdf_page(fitz.Rect(18,48,600,194),doc,0,clip=clip)
         clean=fitz.open(stream=base_bytes,filetype='pdf')
@@ -140,7 +136,7 @@ def generate(folder):
         layout={'pages':[{'size':[0.,0.,612.,792.],'slots':slots,'tables':[]}]}
         engine.render_page(clean,0,layout,project,'DEMO',engine.FontBook(clean))
         assert drawings(clean[0])==before
-        image_slots=[s for s in slots if s['key'].endswith('.firma') and engine.resolve(project,s['key'],'DEMO')]
+        image_slots=[s for s in slots if s['key'].endswith('.firma') and not s['key'].startswith('tabla.') and engine.resolve(project,s['key'],'DEMO')]
         for slot in image_slots:
             assert any(fitz.Rect(slot['rect']).contains(fitz.Rect(im['bbox'])+(.001,.001,-.001,-.001)) for im in clean[0].get_image_info())
         sheet.show_pdf_page(fitz.Rect(630,48,1212,194),clean,0,clip=clip)

@@ -9,7 +9,7 @@
   },
   {
     "example": "02-pie-tres-firmas",
-    "status": "proposed_uniform_size",
+    "status": "inside_cells_no_names",
     "synthetic_names_and_signatures": true,
     "signature_count": 3,
     "signature_bounds_verified": true,
@@ -35,7 +35,7 @@
     "example": "05-lista-asistencia",
     "status": "existing",
     "synthetic_names_and_signatures": true,
-    "signature_count": 3,
+    "signature_count": 0,
     "signature_bounds_verified": true,
     "production_maps_changed": false
   }

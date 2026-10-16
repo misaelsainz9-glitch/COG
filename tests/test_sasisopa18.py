@@ -69,7 +69,13 @@ class Integration18Tests(unittest.TestCase):
   self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name);self.out=self.root/'lote';self.p=e.empty_project()
  def test_empty_all_18_identical_and_merged_523(self):
   paths,warnings=e.generate(self.base,self.out,self.p,merge=True);self.assertEqual(len(paths),19);self.assertEqual(warnings,[])
-  for meta,path in zip(self.catalog['templates'],paths):self.assertEqual(path.read_bytes(),(self.base/meta['filename']).read_bytes())
+  for meta,path in zip(self.catalog['templates'],paths):
+   if not any(p['tables'] for p in self.maps[meta['id']]['pages']):self.assertEqual(path.read_bytes(),(self.base/meta['filename']).read_bytes())
+   else:
+    with fitz.open(path) as doc:
+     for pi,page in enumerate(self.maps[meta['id']]['pages']):
+      for slot in page['slots']:
+       if slot['key'].startswith('tabla.'):self.assertFalse(doc[pi].get_textbox(fitz.Rect(slot['rect'])).strip(),slot['key'])
   with fitz.open(paths[-1]) as doc:self.assertEqual(len(doc),523);self.assertEqual(len(doc.get_toc()),18)
  def test_all_18_common_data_and_structure_preserved(self):
   self.p['values']={'estacion.numero':'E-99999','estacion.razon_social':'ESTACION EJEMPLO SA','estacion.direccion':'AV. PRINCIPAL 123, COL. CENTRO, PUEBLA, C.P. 72000','documento.revision':'2','documento.fecha_revision':'15/10/2026'}
@@ -118,10 +124,21 @@ class Integration18Tests(unittest.TestCase):
   with fitz.open(paths[0]) as doc:
    for pi,info in enumerate(self.maps['I']['pages']):
     images=doc[pi].get_image_info()
-    for slot in info['slots']:
-     if slot['key']=='estacion.logo' or slot['key']=='rol.autoriza.firma' or slot['key']==prefix+'.firma':
+    for slot in e.slots_for(self.maps['I'],self.p,'I',pi):
+     if slot['key']=='estacion.logo' or slot['key']=='rol.autoriza.firma':
       matches=[im for im in images if im['width']>1 and (fitz.Rect(slot['rect'])+(-.002,-.002,.002,.002)).contains(fitz.Rect(im['bbox']))]
       self.assertTrue(matches,(pi+1,slot['key']))
+ def test_footer_has_only_signatures_inside_cells(self):
+  sig=self.root/'footer.png';signature_png([[(10,40),(110,80),(290,40)]]).save(sig)
+  self.p['people']=[{'id':'A','nombre':'NOMBRE NO VISIBLE','firma':str(sig)}]
+  self.p['roles']={role:'A' for role in ('elabora','revisa','autoriza')}
+  paths,_=e.generate(self.base,self.out,self.p,selected=['II'])
+  with fitz.open(paths[0]) as doc,fitz.open(self.base/'PROCEDIMIENTO II.pdf') as original:
+   page=doc[19];self.assertNotIn('NOMBRE NO VISIBLE',page.get_text())
+   self.assertEqual(page.get_text(),original[19].get_text())
+   cells=[s for s in e.slots_for(self.maps['II'],self.p,'II',19) if s['key'].endswith('.firma')]
+   self.assertEqual(len(cells),3)
+   for slot in cells:self.assertTrue(any((fitz.Rect(slot['rect'])+(-.002,-.002,.002,.002)).contains(fitz.Rect(im['bbox'])) for im in page.get_image_info()))
  def test_moving_revision_clears_original_value(self):
   old=next(slot for slot in self.maps['I']['pages'][1]['slots'] if slot['key']=='documento.revision' and slot['rect'][1]<90)
   self.p['values']={'documento.revision':'2'};self.p['bindings']=[{'id':'B1','doc':'I','page':1,'key':'documento.revision','replace_id':old['id'],'rect':[50,450,100,470],'size':9,'min_size':9}]

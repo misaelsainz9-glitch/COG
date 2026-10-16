@@ -2,7 +2,7 @@
 
 [Ver las cinco vistas juntas](firmas-propuesta/00-todas-las-firmas.png)
 
-Cada imagen muestra **el espacio marcado a la izquierda** y **el resultado con nombres y firmas simuladas a la derecha**. Las guías azules sirven para explicar la posición y no forman parte del documento final.
+Cada imagen muestra **el espacio marcado a la izquierda** y **el resultado a la derecha**. Las guías azules sirven para explicar la posición y no forman parte del documento final.
 
 Son vistas de demostración basadas en la geometría de los espacios existentes. No se muestran documentos privados ni firmas reales. Las posiciones señaladas como propuestas todavía no se han aplicado a las reglas del programa.
 
@@ -14,7 +14,7 @@ Dos espacios existentes, uno para quien elabora y otro para quien autoriza. La f
 
 ## 2. Pie de página: elaboración, revisión y aprobación
 
-Se propone aprovechar el espacio libre sobre cada columna para que las tres firmas tengan un tamaño uniforme. Los nombres permanecen en sus campos y las fechas existentes se conservan.
+Las firmas quedan dentro de cada cuadro, sin nombres de personas. Se conservan los rótulos, puestos y fechas originales. La firma se ajusta proporcionalmente al espacio disponible.
 
 ![Pie con tres firmas](firmas-propuesta/02-pie-tres-firmas.png)
 
@@ -32,7 +32,7 @@ La carta ya tiene una línea para firmar. Se muestra una propuesta en ese espaci
 
 ## 5. Lista de asistencia
 
-Cada persona firma en su propia casilla de la columna FIRMA. Se llenan tres filas y se dejan dos vacías para comprobar que no se recorren personas ni se agregan filas.
+Todas las filas se entregan vacías: sin nombres, puestos, teléfonos ni firmas. Se conservan las columnas, la numeración y las filas originales para llenarlas manualmente. Los datos de perfiles anteriores tampoco se insertan.
 
 ![Lista de asistencia](firmas-propuesta/05-lista-asistencia.png)
 
