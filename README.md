@@ -17,6 +17,8 @@ Para trabajar desde el código fuente: [descarga el repositorio](https://github.
 
 Este modo no requiere Word. Los PDF originales, resultados, firmas, logos y datos reales permanecen en tu computadora y no se publican en GitHub. La importación verifica los archivos y reproduce la limpieza validada; no procesa automáticamente versiones diferentes del SASISOPA.
 
+Puedes [ver cuatro ejemplos visuales de llenado](docs/pruebas-visuales.md): dirección corta, dirección larga, empresa larga y firmas simuladas.
+
 ## Capturar los datos
 
 - **Estación:** número `E-00000`, razón social, dirección, localidad, estado, código postal, teléfono, correo y logo. Localidad/estado/código postal se integran en la dirección si se capturan por separado. Revisión y fecha de revisión son opcionales.
