@@ -31,6 +31,8 @@ class Editor:
   for spec in self.inventory['fields']:
    if spec['scope']=='estacion' or spec['id'] in ('documento.revision','documento.fecha_revision'):
     self.entry(station,spec['label'],self.vars,spec['id'])
+  default_logo=RESOURCE_ROOT/'assets'/'logo-pemex.png'
+  if default_logo.is_file():self.vars['estacion.logo'].set(str(default_logo))
   ttk.Label(station,text='Deja los datos vacíos para conservar la base limpia. Fechas: dd/mm/aaaa.\nLa fecha de revisión es distinta de las fechas de reuniones y eventos.',wraplength=430).pack(anchor='w',pady=10)
   self.people_list=ttk.Treeview(persons,columns=('name','role'),show='headings',height=7);self.people_list.heading('name',text='Nombre');self.people_list.heading('role',text='Puesto');self.people_list.column('name',width=225);self.people_list.column('role',width=140);self.people_list.pack(fill='x')
   row=ttk.Frame(persons);row.pack(fill='x',pady=7)
@@ -247,11 +249,11 @@ class Editor:
   x,y=self.drag;self.drag=None;u=self.canvas.canvasx(event.x);v=self.canvas.canvasy(event.y)
   try:
    key=self.field_keys[self.field_choice.get()];rect=[min(x,u)/self.scale,min(y,v)/self.scale,max(x,u)/self.scale,max(y,v)/self.scale];size=float(self.binding_size.get());kind='image' if key.endswith(('.logo','.firma')) else 'text'
-   binding={'id':'B'+uuid.uuid4().hex,'doc':self.doc_selector.get(),'page':int(self.page.get())-1,'key':key,'rect':rect,'font':'Arial-BoldMT' if key=='estacion.razon_social' else 'ArialMT','size':size,'min_size':8 if key=='estacion.direccion' and size>=8 else size,'align':2 if key in ('estacion.direccion','estacion.razon_social') else 0,'kind':kind,'clear':kind!='image' or key.endswith('.logo')}
+   binding={'id':'B'+uuid.uuid4().hex,'doc':self.doc_selector.get(),'page':int(self.page.get())-1,'key':key,'rect':rect,'font':'Arial-BoldMT' if key=='estacion.razon_social' else 'ArialMT','size':size,'min_size':8 if key=='estacion.direccion' and size>=8 else size,'align':2 if key in ('estacion.direccion','estacion.razon_social') else 0,'valign':'top' if key in ('estacion.direccion','estacion.razon_social') else 'middle','kind':kind,'clear':kind!='image' or key.endswith('.logo')}
    replaced_custom=None
    if self.current_slot:
     old=self.current_slot
-    for inherited in ('font','align'):
+    for inherited in ('font','align','valign'):
      if inherited in old:binding[inherited]=old[inherited]
     if old['key']==key:
      for inherited in ('transform','flow','flow_order'):

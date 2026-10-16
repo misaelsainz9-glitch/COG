@@ -15,13 +15,15 @@ El instalador no incluye tus PDF. Los datos se guardan por defecto en `%LOCALAPP
 
 Para trabajar desde el código fuente: [descarga el repositorio](https://github.com/misaelsainz9-glitch/COG/archive/refs/heads/main.zip), extrae todo, instala Python 3.12 o posterior, ejecuta **Instalar.bat** y abre **Iniciar.bat**. Esta alternativa conserva sus carpetas locales y no requiere el instalador.
 
-Este modo no requiere Word. Los PDF originales, resultados, firmas, logos y datos reales permanecen en tu computadora y no se publican en GitHub. La importación verifica los archivos y reproduce la limpieza validada; no procesa automáticamente versiones diferentes del SASISOPA.
+Este modo no requiere Word. Los PDF originales, resultados, firmas y datos reales permanecen en tu computadora y no se publican en GitHub. La importación verifica los archivos y reproduce la limpieza validada; no procesa automáticamente versiones diferentes del SASISOPA.
 
 Puedes [ver cuatro ejemplos visuales de llenado](docs/pruebas-visuales.md): dirección corta, dirección larga, empresa larga y firmas simuladas.
 
 ## Capturar los datos
 
 - **Estación:** número `E-00000`, razón social, dirección, localidad, estado, código postal, teléfono, correo y logo. Localidad/estado/código postal se integran en la dirección si se capturan por separado. Revisión y fecha de revisión son opcionales.
+Los proyectos nuevos incluyen el logo PEMEX preparado a partir de la imagen aportada. Puedes sustituirlo desde **Estación → Logo → Subir**. Se coloca sin deformarlo.
+
 - **Personas:** agrega las necesarias, con nombre, puesto, iniciales, empresa, contacto, domicilio para notificaciones y firma. Puedes subir PNG/JPG o dibujar la firma con el mouse.
 - **Funciones:** selecciona a la persona de cada función. Una persona puede ocupar varias funciones; los cargos se asignan por separado. Selecciona **Autoriza** para las portadas y los bloques de aprobación, aunque sea la misma persona que el representante legal. Alta dirección y representante legal no se deducen uno del otro.
 - **Documentos:** marca cuáles generar, elige si quieres también el PDF unido y captura los datos particulares del documento que estás viendo. Las fechas de revisión, reunión, designación y aceptación son independientes. Una revisión particular se aplica a su documento y a las referencias identificadas a esa versión; no cambia automáticamente la versión de otros procedimientos.

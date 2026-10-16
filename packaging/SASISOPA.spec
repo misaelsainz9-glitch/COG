@@ -4,7 +4,7 @@ repo = Path(SPECPATH).parent
 resources = ['catalogo18.json', 'catalogo_activo.json', 'campos_sasisopa_18.json',
              'mapas_sasisopa18.json', 'limpieza18.json', 'LEEME.txt']
 a = Analysis([str(repo / 'lanzamiento.py')], pathex=[str(repo)],
-             binaries=[], datas=[(str(repo / name), '.') for name in resources],
+             binaries=[], datas=[(str(repo / name), '.') for name in resources]+[(str(repo/'assets'/'logo-pemex.png'),'assets')],
              hiddenimports=[], hookspath=[], hooksconfig={}, runtime_hooks=[],
              excludes=['pytest', 'IPython', 'matplotlib', 'numpy', 'pandas'], noarchive=False)
 pyz = PYZ(a.pure)

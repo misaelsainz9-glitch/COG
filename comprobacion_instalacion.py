@@ -21,6 +21,7 @@ from rutas_app import RESOURCE_ROOT, user_root
 def check_installation(progress=lambda stage: None):
     progress('resources')
     catalog, maps = engine.configuration()
+    assert (RESOURCE_ROOT/'assets'/'logo-pemex.png').is_file()
     assert len(catalog['templates']) == 18
     assert sum(t['pages'] for t in catalog['templates']) == 523
     assert len(json.loads((importar18.ROOT / 'limpieza18.json').read_text(encoding='utf-8'))) == 18
@@ -43,7 +44,8 @@ def check_installation(progress=lambda stage: None):
                                         'pages': 1, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest()}]}
         custom_maps = {'I': {'pages': [{'size': [0., 0., 612., 792.], 'tables': [], 'slots': [
             {'id': 'I.1.0', 'key': 'estacion.numero', 'rect': [50, 50, 180, 80], 'size': 9,
-             'min_size': 9, 'font': 'Arial', 'kind': 'text', 'clear': True, 'align': 0}]}]}}
+             'min_size': 9, 'font': 'Arial', 'kind': 'text', 'clear': True, 'align': 0},
+            {'id':'I.1.1','key':'estacion.logo','rect':[190,50,260,80],'kind':'image','clear':False}]}]}}
         with patch.object(engine, 'configuration', return_value=(custom_catalog, custom_maps)), patch.object(ui, 'ROOT', folder):
             progress('create_window')
             window = tk.Tk()

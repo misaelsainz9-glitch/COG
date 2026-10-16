@@ -49,3 +49,24 @@ class AddressAlignmentTests(unittest.TestCase):
             self.assertEqual(len(lines), count)
             for words in lines.values():
                 self.assertAlmostEqual(words[-1][2], rect.x1, delta=1)
+
+    def test_top_aligned_address_starts_at_same_height(self):
+        font = fitz.Font('helv')
+        fonts = SimpleNamespace(get=lambda name, value: (font, font.buffer, 'testfont'))
+        tops = []
+        for value in ('AV. CENTRAL 120', 'AV. CENTRAL 120 COLONIA CENTRO MUNICIPIO DE PUEBLA'):
+            with fitz.open() as doc:
+                page = doc.new_page()
+                engine._write(page, {'rect':[40,40,180,85], 'size':9, 'align':2, 'valign':'top'}, value, fonts)
+                tops.append(min(w[1] for w in page.get_text('words')))
+        self.assertAlmostEqual(tops[0], tops[1], delta=.01)
+
+    def test_station_company_and_address_have_header_gaps(self):
+        _, maps = engine.configuration()
+        slots = maps['I']['pages'][1]['slots']
+        number = next(s for s in slots if s['key']=='estacion.numero' and s['rect'][1]<50)
+        company = next(s for s in slots if s['key']=='estacion.razon_social')
+        address = next(s for s in slots if s['key']=='estacion.direccion')
+        self.assertGreaterEqual(company['rect'][1]-number['rect'][3], 3-.001)
+        self.assertGreaterEqual(address['rect'][1]-company['rect'][3], 3-.001)
+        self.assertEqual(address['valign'], 'top')

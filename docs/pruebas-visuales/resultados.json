@@ -7,7 +7,8 @@
     "company_lines": 1,
     "company_size": 9.0,
     "borders_preserved": true,
-    "synthetic_template": true
+    "synthetic_template": true,
+    "continuous_code": "E-12345.01.PO.01.R1"
   },
   {
     "example": "02-direccion-larga",
@@ -17,7 +18,8 @@
     "company_lines": 1,
     "company_size": 9.0,
     "borders_preserved": true,
-    "synthetic_template": true
+    "synthetic_template": true,
+    "continuous_code": "E-67890.01.PO.01.R2"
   },
   {
     "example": "03-razon-social-larga",
@@ -25,9 +27,10 @@
     "address_lines": 2,
     "address_size": 9.0,
     "company_lines": 3,
-    "company_size": 9.0,
+    "company_size": 8.25,
     "borders_preserved": true,
-    "synthetic_template": true
+    "synthetic_template": true,
+    "continuous_code": "E-00007.01.PO.01.R3"
   },
   {
     "example": "04-logo-nombres-firmas",
@@ -37,6 +40,7 @@
     "company_lines": 1,
     "company_size": 9.0,
     "borders_preserved": true,
-    "synthetic_template": true
+    "synthetic_template": true,
+    "continuous_code": "E-54321.01.PO.01.R4"
   }
 ]

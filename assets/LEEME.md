@@ -1,0 +1,1 @@
+El logo PEMEX se preparó como PNG transparente a partir de la imagen proporcionada por el usuario. Se utiliza como valor inicial en proyectos nuevos y puede sustituirse desde Estación → Logo → Subir. La colocación mantiene su proporción. No corresponde a una firma ni a un dato personal.

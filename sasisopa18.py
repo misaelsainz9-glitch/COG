@@ -74,6 +74,7 @@ def validate_project(data,catalog=None,maps=None):
   minimum=b.get('min_size',size)
   if not isinstance(minimum,(int,float)) or not 3<=minimum<=size:raise ValueError('El tamaño mínimo de letra es inválido.')
   if b.get('align',0) not in (0,1,2,3):raise ValueError('Alineación inválida.')
+  if b.get('valign','middle') not in ('top','middle','bottom'):raise ValueError('Alineación vertical inválida.')
   if b.get('flow') and not isinstance(b['flow'],str):raise ValueError('Grupo de campo inválido.')
   if b.get('kind','text') not in ('text','image'):raise ValueError('Tipo de campo inválido.')
   if b.get('replace_id') and not any(s['id']==b['replace_id'] for s in pages[p]['slots']):raise ValueError('La ubicación original de ese campo ya no existe.')
@@ -281,7 +282,8 @@ def _write(page,slot,value,fonts):
  rect=fitz.Rect(slot['rect']);font,buffer,alias=fonts.get(slot.get('font','ArialMT'),value)
  lines,size,top,bottom,height=_layout(font,value,_logical_rect(slot),slot.get('size',9),slot.get('min_size',slot.get('size',9)))
  page.insert_font(fontname=alias,fontbuffer=buffer)
- y=rect.y0+(rect.height-height)/2+top*size
+ vertical=slot.get('valign','middle')
+ y=rect.y0+(rect.height-height)*(0 if vertical=='top' else 1 if vertical=='bottom' else .5)+top*size
  paragraph_ends=set();word_count=0
  for paragraph in value.split('\n'):
   word_count+=len(paragraph.split());paragraph_ends.add(word_count)

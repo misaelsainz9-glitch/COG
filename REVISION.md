@@ -1,3 +1,13 @@
+# AJUSTE VISUAL DEL ENCABEZADO Y LOGO PEMEX
+
+Se incorpora como logo inicial la imagen PEMEX aportada, preparada en PNG transparente. Las regiones del logo aprovechan el espacio libre disponible sin deformarlo. En encabezados regulares se mantiene la dirección a la derecha y se fija al inicio de su bloque. Se reserva una separación de 3 puntos entre el número, la empresa y la dirección cuando el espacio de la celda lo permite, respetando el tamaño mínimo de letra.
+
+Las demostraciones corrigen el código fragmentado, los acentos y los márgenes del título inferior. Ese código separado provenía de la plantilla sintética; los códigos estructurales originales del PDF se conservan. Los textos estáticos del procedimiento real no se reescriben con los textos de la demostración.
+
+Se verifican con pruebas la posición vertical estable de direcciones cortas/largas y los márgenes entre campos. Los perfiles anteriores continúan admitiéndose; las ubicaciones personalizadas mantienen su configuración guardada.
+
+---
+
 # REPETICIÓN DE PRUEBAS — INSTALADOR PUBLICADO v0.2.0
 
 Se repitió la suite completa en Linux con los 18 PDF privados y el ZIP original: 63 resultados individuales correctos en 84,142 segundos, sin errores ni fallos. Se omitieron cinco grupos de integración de versiones retiradas. Las omisiones de `setUpClass` corresponden a grupos y no deben restarse del contador de pruebas individuales ejecutadas.

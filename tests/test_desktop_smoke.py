@@ -28,7 +28,8 @@ class DesktopSmokeTests(unittest.TestCase):
                                      'pages': 1, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest()}]}
             maps = {'I': {'pages': [{'size': [0.0, 0.0, 612.0, 792.0], 'tables': [], 'slots': [
                 {'id': 'I.1.0', 'key': 'estacion.numero', 'rect': [50, 50, 180, 80],
-                 'size': 9, 'min_size': 9, 'font': 'Arial', 'kind': 'text', 'clear': True}]}]}}
+                 'size': 9, 'min_size': 9, 'font': 'Arial', 'kind': 'text', 'clear': True},
+                {'id':'I.1.1','key':'estacion.logo','rect':[190,50,260,80],'kind':'image','clear':False}]}]}}
             with patch.object(engine, 'configuration', return_value=(catalog, maps)), patch.object(ui, 'ROOT', folder):
                 window = tk.Tk()
                 editor = None
