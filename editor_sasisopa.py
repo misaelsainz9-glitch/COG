@@ -7,6 +7,7 @@ import io,json,uuid,threading,queue,copy
 from PIL import Image,ImageTk
 import fitz
 import sasisopa18 as engine
+import instalaciones
 from importar18 import import_zip
 from tema import configure_theme,NAVY
 from firma_canvas import signature_dialog
@@ -27,13 +28,14 @@ class Editor:
   self.panes=ttk.Panedwindow(app,orient='horizontal');self.panes.pack(fill='both',expand=True,padx=12,pady=10)
   left=ttk.Frame(self.panes,width=510);right=ttk.Frame(self.panes);self.panes.add(left,weight=2);self.panes.add(right,weight=3)
   self.tabs=ttk.Notebook(left);self.tabs.pack(fill='both',expand=True)
-  station=self.tab('Estación');persons=self.tab('Personas');roles=self.tab('Funciones');docs=self.tab('Documentos');tables=self.tab('Listas')
+  station=self.tab('Estación');installation=self.tab('Instalaciones');persons=self.tab('Personas');roles=self.tab('Funciones');docs=self.tab('Documentos');tables=self.tab('Listas')
   for spec in self.inventory['fields']:
    if spec['scope']=='estacion' or spec['id'] in ('documento.revision','documento.fecha_revision'):
     self.entry(station,spec['label'],self.vars,spec['id'])
   default_logo=RESOURCE_ROOT/'assets'/'logo-pemex.png'
   if default_logo.is_file():self.vars['estacion.logo'].set(str(default_logo))
   ttk.Label(station,text='Deja los datos vacíos para conservar la base limpia. Fechas: dd/mm/aaaa.\nLa fecha de revisión es distinta de las fechas de reuniones y eventos.',wraplength=430).pack(anchor='w',pady=10)
+  self.build_installation_tab(installation)
   self.people_list=ttk.Treeview(persons,columns=('name','role'),show='headings',height=7);self.people_list.heading('name',text='Nombre');self.people_list.heading('role',text='Puesto');self.people_list.column('name',width=225);self.people_list.column('role',width=140);self.people_list.pack(fill='x')
   row=ttk.Frame(persons);row.pack(fill='x',pady=7)
   ttk.Button(row,text='Agregar persona',command=self.add_person).pack(side='left');ttk.Button(row,text='Editar',command=self.edit_person).pack(side='left',padx=5);ttk.Button(row,text='Eliminar',command=self.delete_person).pack(side='left')
@@ -88,6 +90,57 @@ class Editor:
   if key.endswith(('.logo','.firma')):
    v.upload=ttk.Button(row,text='Subir',width=6,command=lambda:self.choose_image(v));v.upload.pack(side='left')
   return v
+ def build_installation_tab(self,parent):
+  self.installation_enabled=tk.BooleanVar(value=False);self.installation_tanks=[];self.equipment_vars={}
+  ttk.Checkbutton(parent,text='Aplicar datos de instalaciones a los documentos',variable=self.installation_enabled,command=self.schedule).pack(anchor='w',pady=5)
+  ttk.Label(parent,text='Captura cada tanque o compartimento con su producto real. Los productos sin tanque se marcan como No aplica. Los datos no capturados se indican como Pendiente.',wraplength=430).pack(anchor='w',pady=5)
+  self.tank_list=ttk.Treeview(parent,columns=('number','product','capacity'),show='headings',height=5)
+  for key,label,width in [('number','TQ',55),('product','Producto',110),('capacity','Litros',100)]:self.tank_list.heading(key,text=label);self.tank_list.column(key,width=width)
+  self.tank_list.pack(fill='x');buttons=ttk.Frame(parent);buttons.pack(fill='x',pady=6)
+  ttk.Button(buttons,text='Agregar tanque',command=self.add_tank).pack(side='left')
+  ttk.Button(buttons,text='Editar',command=self.edit_tank).pack(side='left',padx=4)
+  ttk.Button(buttons,text='Quitar',command=self.remove_tank).pack(side='left')
+  ttk.Button(parent,text='Cargar ejemplo ficticio',command=self.example_installation).pack(anchor='w',pady=5)
+  ttk.Label(parent,text='Equipos por producto. Un dispensario multiproducto puede contarse en más de un producto; no se suman como equipos únicos.',wraplength=430).pack(anchor='w',pady=5)
+  for product in instalaciones.PRODUCTS:
+   for field,label in [('dispensarios','Dispensarios'),('mangueras','Mangueras')]:self.entry(parent,product+' — '+label,self.equipment_vars,product+'.'+field)
+  ttk.Label(parent,text='Se actualizan las tablas, almacenamiento, despacho y nodos de II y XIII. Se agrega una ficha con todos los tanques; las hojas originales mantienen sus tres filas. La valoración de riesgos HAZOP requiere revisión técnica.',wraplength=430).pack(anchor='w',pady=8)
+ def refresh_tanks(self):
+  self.tank_list.delete(*self.tank_list.get_children())
+  for i,t in enumerate(self.installation_tanks):self.tank_list.insert('','end',iid=str(i),values=(t.get('numero',''),t.get('producto',''),t.get('litros','')))
+ def add_tank(self):self.tank_dialog()
+ def edit_tank(self):
+  selected=self.tank_list.selection()
+  if selected:self.tank_dialog(int(selected[0]))
+ def tank_dialog(self,index=None):
+  window=tk.Toplevel(self.app);window.title('Tanque / compartimento');window.transient(self.app);window.geometry('620x650')
+  body=ttk.Frame(window,padding=10);body.pack(fill='both',expand=True);values={};tank=self.installation_tanks[index] if index is not None else {}
+  for key,label in instalaciones.TANK_FIELDS:
+   if key=='producto':
+    row=ttk.Frame(body);row.pack(fill='x',pady=4);ttk.Label(row,text=label,width=24).pack(side='left');v=tk.StringVar(value=tank.get(key,''));values[key]=v;ttk.Combobox(row,textvariable=v,values=instalaciones.PRODUCTS,state='readonly').pack(side='left',fill='x',expand=True)
+   else:self.entry(body,label,values,key,tank.get(key,''))
+  def save():
+   record={k:v.get().strip() for k,v in values.items()};rows=copy.deepcopy(self.installation_tanks)
+   if index is None:rows.append(record)
+   else:rows[index]=record
+   try:instalaciones.validate({'installation':{'enabled':True,'tanks':rows,'equipment':{}}})
+   except ValueError as exc:messagebox.showerror('Revisa el tanque',str(exc),parent=window);return
+   self.installation_tanks=rows;self.installation_enabled.set(True);self.refresh_tanks();window.destroy();self.schedule()
+  ttk.Button(body,text='Guardar tanque',command=save).pack(anchor='e',pady=10)
+ def remove_tank(self):
+  selected=self.tank_list.selection()
+  if selected:self.installation_tanks.pop(int(selected[0]));self.refresh_tanks();self.schedule()
+ def example_installation(self):
+  self.installation_tanks=[{'numero':str(i),'producto':p,'litros':c,'marca':'MARCA EJEMPLO','confinamiento':'Subterráneo','pared':'Doble pared','cupula':'No tiene','presion_vapor':'1 atm','temperatura_almacen':'Ambiente','presion_operacion':'2.45 kg/cm2','temperatura_operacion':'30 °C','flujo':'30 L/min','plano':'PLANO DEMO'} for i,p,c in [(1,'Magna','60000'),(2,'Diésel','40000'),(3,'Premium','40000')]]
+  for key,var in self.equipment_vars.items():var.set('2' if key.endswith('dispensarios') else '4')
+  self.installation_enabled.set(True);self.refresh_tanks();self.schedule()
+ def installation_capture(self):
+  return {'enabled':self.installation_enabled.get(),'tanks':copy.deepcopy(self.installation_tanks),'equipment':{p:{k:self.equipment_vars[p+'.'+k].get().strip() for k in ('dispensarios','mangueras')} for p in instalaciones.PRODUCTS}}
+ def installation_load(self,data):
+  inv=data.get('installation') or {};self.installation_tanks=copy.deepcopy(inv.get('tanks',[]));self.installation_enabled.set(inv.get('enabled',False))
+  for key,var in self.equipment_vars.items():
+   product,field=key.split('.');var.set(inv.get('equipment',{}).get(product,{}).get(field,''))
+  self.refresh_tanks()
  def change_zoom(self,event=None):
   self.scale=int(self.zoom.get().split()[0])/100;self.schedule()
  def pick_folder(self,var):
@@ -136,6 +189,7 @@ class Editor:
    if key.rsplit('.',1)[0] in deleted_rows:var.set('')
   self.data['table_people']={row:id for row,id in self.data.get('table_people',{}).items() if id not in ids};self.data['people']=[p for p in self.data['people'] if p['id'] not in ids];self.data['roles']={r:id for r,id in self.data['roles'].items() if id not in ids};self.refresh_people();self.change_table();self.schedule()
  def capture(self):
+  self.data['installation']=self.installation_capture()
   self.data['values']={k:v.get().strip() for k,v in self.vars.items()}
   self.data['roles']={k:self.choice_to_id.get(v.get(),'') for k,v in self.role_vars.items() if v.get()}
   id=getattr(self,'fields_document',None)
@@ -157,7 +211,7 @@ class Editor:
   self.data['documents'].setdefault(id,{})[key]='';self.build_doc_fields();self.refresh_field_choices();self.status.set('Selecciona el nuevo dato en Campo y marca su espacio con Ubicar campo.')
  def change_document(self,*args):
   if not hasattr(self,'page'):return
-  self.capture();id=self.doc_selector.get();count=next(m['pages'] for m in self.catalog['templates'] if m['id']==id);self.page_spin.configure(to=count);self.page.set(1);self.page_count.configure(text='/ '+str(count));self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.current_slot=None;self.schedule()
+  self.capture();id=self.doc_selector.get();count=next(m['pages'] for m in self.catalog['templates'] if m['id']==id)+instalaciones.extra_pages(self.data,id);self.page_spin.configure(to=count);self.page.set(1);self.page_count.configure(text='/ '+str(count));self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.current_slot=None;self.schedule()
  def refresh_tables(self):
   self.table_labels={}
   for i,p in enumerate(self.maps[self.doc_selector.get()]['pages']):
@@ -190,9 +244,11 @@ class Editor:
   self.timer=None
   if self.busy:return
   try:
-   id=self.doc_selector.get();index=int(self.page.get())-1;data=self.capture();blob,notes,warnings=engine.preview(self.templates.get(),data,id,index,self.scale)
+   id=self.doc_selector.get();data=self.capture();count=next(m['pages'] for m in self.catalog['templates'] if m['id']==id)+instalaciones.extra_pages(data,id);self.page_spin.configure(to=count);self.page_count.configure(text='/ '+str(count));index=min(int(self.page.get())-1,count-1)
+   if index!=int(self.page.get())-1:self.page.set(index+1)
+   blob,notes,warnings=engine.preview(self.templates.get(),data,id,index,self.scale)
    im=Image.open(io.BytesIO(blob));self.photo=ImageTk.PhotoImage(im);self.canvas.delete('all');self.canvas.create_image(0,0,image=self.photo,anchor='nw');self.canvas.configure(scrollregion=(0,0,im.width,im.height));self.current_slot=None
-   if self.show_regions.get():
+   if self.show_regions.get() and index<len(self.maps[id]['pages']):
     for slot in engine.slots_for(self.maps[id],data,id,index):self.canvas.create_rectangle(*[x*self.scale for x in slot['rect']],outline='#008c86',dash=(3,2))
    detail=next((n for n in notes if n['field']=='estacion.direccion'),None)
    destination_note=''
@@ -213,6 +269,8 @@ class Editor:
 
  def pointer_down(self,event):
   if self.busy or self.photo is None:return
+  if getattr(self,'preview_page',('',-1))[1]>=len(self.maps[self.doc_selector.get()]['pages']):
+   self.status.set('Edita los datos de esta ficha en la pestaña Instalaciones.');return
   try:
    if self.preview_page!=(self.doc_selector.get(),int(self.page.get())-1):return
   except (ValueError,tk.TclError,AttributeError):return
@@ -266,7 +324,7 @@ class Editor:
   if not path:return
   try:data=engine.load_project(path)
   except Exception as exc:messagebox.showerror('No se cargó',str(exc));return
-  self.data=data
+  self.data=data;self.installation_load(data)
   for key,v in self.vars.items():v.set(data['values'].get(key,''))
   self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.schedule()
  def import_templates(self):

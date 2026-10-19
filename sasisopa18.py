@@ -7,6 +7,7 @@ from fontTools.ttLib import TTFont
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.cffLib import CFFFontSet
 import fitz
+import instalaciones
 from personalizacion import validated_image
 from motor import MESES
 ROOT=Path(__file__).resolve().parent
@@ -17,7 +18,7 @@ def configuration():
 
 
 def empty_project():
- return {'version':1,'values':{},'people':[],'roles':{},'documents':{},'tables':{},'table_people':{},'bindings':[]}
+ return {'version':1,'installation':None,'values':{},'people':[],'roles':{},'documents':{},'tables':{},'table_people':{},'bindings':[]}
 
 
 def validate_project(data,catalog=None,maps=None):
@@ -27,6 +28,7 @@ def validate_project(data,catalog=None,maps=None):
   if not isinstance(data.get(k),kind):raise ValueError('Datos de proyecto inválidos: '+k)
  data.setdefault('table_people',{})
  if not isinstance(data['table_people'],dict):raise ValueError('Asignaciones de listas inválidas.')
+ instalaciones.validate(data)
  ids=[]
  for person in data['people']:
   if not isinstance(person,dict) or not isinstance(person.get('id'),str) or not person['id']:raise ValueError('Cada persona necesita un identificador.')
@@ -101,6 +103,9 @@ def resolve(data,key,doc_id):
 
 def slot_value(data,slot,doc_id):
  key=slot['key']
+ if key.startswith('instalacion.'):
+  value=instalaciones.value(data,key)
+  return slot.get('installation_prefix','')+value if value else ''
  if slot.get('code_suffix'):
   station=resolve(data,'estacion.numero',doc_id)
   ref=re.match(r'\.(\d+)',slot['code_suffix'])
@@ -377,10 +382,12 @@ def _image(page,slot,path):
 
 def render_page(doc,index,layout,data,id,fonts):
  page=doc[index];slots=slots_for(layout,data,id,index);ops=[];notes=[];extra_erases=[]
+ inactive=instalaciones.inactive_regions(data,id,index)
  # Attendance is manual, including when an older profile still contains row data.
  attendance=[s for s in layout['pages'][index]['slots'] if s['key'].startswith('tabla.')]
  if list(page.rect)!=layout['pages'][index]['size']:raise ValueError('Las dimensiones del PDF no coinciden con la base.')
  for s in slots:
+  if any(fitz.Rect(region).intersects(fitz.Rect(s['rect'])) for region,product in inactive):continue
   if s.get('code_owner') and any(a['id']==s['code_owner'] for a in slots):continue
   value=slot_value(data,s,id)
   if value:
@@ -428,6 +435,7 @@ def render_page(doc,index,layout,data,id,fonts):
   if s.get('raster_clear'):page.add_redact_annot(s.get('erase_rect',s['rect']),fill=None,cross_out=False)
   elif s.get('kind')=='image' and s.get('clear',True):page.add_redact_annot(s['rect'],fill=None,cross_out=False)
  if page.first_annot:page.apply_redactions(images=2,graphics=0,text=1)
+ for region,product in inactive:page.add_redact_annot(region,fill=None,cross_out=False)
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
   if old.get('kind','text')=='text':
@@ -436,13 +444,18 @@ def render_page(doc,index,layout,data,id,fonts):
   if s.get('kind','text')=='text' and s.get('clear',True):
    # Keep adjacent text: original digit slots use full glyph boxes, but redaction
    # only needs their interior. This protects code prefixes and neighbouring labels.
-   r=fitz.Rect(s.get('erase_rect',s['rect']));r+=(.02,r.height*.15,-.02,-r.height*.15)
+   r=fitz.Rect(s.get('erase_rect',s['rect']))
+   r+=(.02,.02,-.02,-.02) if s.get('erase_full') else (.02,r.height*.15,-.02,-r.height*.15)
    page.add_redact_annot(r,fill=None,cross_out=False)
  if page.first_annot:page.apply_redactions(images=0,graphics=0)
  for s,value in ops:
   if s.get('kind')=='image':_image(page,s,value)
   else:
    lines,size=_write(page,s,value,fonts);notes.append({'field':s['key'],'lines':lines,'size':size})
+ for region,product in inactive:
+  r=fitz.Rect(region);r.y1=r.y0+28
+  _write(page,{'rect':list(r),'size':10,'min_size':10},'No aplica: '+product+' no se almacena en esta estación.',fonts)
+  notes.append({'field':'instalacion.no_aplica','product':product,'lines':1,'size':10})
  return notes
 
 
@@ -450,9 +463,13 @@ def preview(templates,data,id,page_index,scale=1.0):
  catalog,maps=configuration();validate_project(data,catalog,maps)
  meta=next((m for m in catalog['templates'] if m['id']==id),None)
  if meta is None:raise ValueError('Selecciona un documento válido.')
- if not isinstance(page_index,int) or not 0<=page_index<meta['pages']:raise ValueError('La página no existe.')
+ total=meta['pages']+instalaciones.extra_pages(data,id)
+ if not isinstance(page_index,int) or not 0<=page_index<total:raise ValueError('La página no existe.')
  with fitz.open(stream=_source(templates,meta),filetype='pdf') as doc:
-  fonts=FontBook(doc);notes=render_page(doc,page_index,maps[id],data,id,fonts)
+  fonts=FontBook(doc)
+  if page_index>=meta['pages']:
+   instalaciones.append_inventory(doc,data,resolve(data,'estacion.numero',id),_write,fonts);notes=[]
+  else:notes=render_page(doc,page_index,maps[id],data,id,fonts)
   pix=doc[page_index].get_pixmap(matrix=fitz.Matrix(scale,scale),alpha=False)
   return pix.tobytes('png'),notes,sorted(fonts.warnings)
 
@@ -469,7 +486,7 @@ def generate(templates,out,data,selected=None,merge=False):
   id=meta['id']
   if id not in selected:continue
   blob=_source(templates,meta);layout=maps[id]
-  active=any(s['key'].startswith('tabla.') for p in layout['pages'] for s in p['slots']) or any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
+  active=(instalaciones.enabled(data) and id in ('II','III','XIII')) or any(s['key'].startswith('tabla.') for p in layout['pages'] for s in p['slots']) or any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
   if active:
    with fitz.open(stream=blob,filetype='pdf') as doc:
     fonts=FontBook(doc)
@@ -477,6 +494,9 @@ def generate(templates,out,data,selected=None,merge=False):
      try:notes=render_page(doc,pi,layout,data,id,fonts)
      except ValueError as exc:raise ValueError(f'{id}, página {pi+1}: {exc}') from None
      report.extend({'document':id,'page':pi+1,**n} for n in notes)
+    if instalaciones.enabled(data) and id in ('II','XIII'):
+     instalaciones.append_inventory(doc,data,resolve(data,'estacion.numero',id),_write,fonts)
+     warnings.add('Instalaciones actualizadas: revisar técnicamente HAZOP y escenarios de riesgo con los datos de esta estación; el sistema no recalcula su valoración.')
     warnings.update(fonts.warnings);doc.set_metadata({});blob=doc.tobytes(garbage=4,deflate=True)
   prepared.append((f'PROCEDIMIENTO {id}.pdf',blob))
  if merge:
