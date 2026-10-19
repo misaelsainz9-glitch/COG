@@ -9,6 +9,7 @@ from fontTools.cffLib import CFFFontSet
 import fitz
 import instalaciones
 import equipo_hazop
+from limpieza_transparencias import normalizar_marcadores_vacios
 from personalizacion import validated_image
 from motor import MESES
 ROOT=Path(__file__).resolve().parent
@@ -450,6 +451,7 @@ def render_page(doc,index,layout,data,id,fonts):
   else:
    font,_,_=fonts.get(s.get('font','ArialMT'),value)
    _layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
+ normalizar_marcadores_vacios(doc,page)
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
   if old.get('kind')=='image' or old.get('raster_clear'):page.add_redact_annot(old.get('erase_rect',old['rect']),fill=None,cross_out=False)
