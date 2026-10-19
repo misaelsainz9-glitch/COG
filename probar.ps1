@@ -44,3 +44,6 @@ $before = (Get-FileHash (Join-Path $docs '01_PDF\SASISOPA_UNIDO.pdf') -Algorithm
 Check-Opener $correct 'PRUEBA-PUBLICA-SIN-DATOS-REALES' $false
 if ((Get-FileHash (Join-Path $docs '01_PDF\SASISOPA_UNIDO.pdf') -Algorithm SHA256).Hash -ne $before) { throw 'Existing documents were modified' }
 @{ passed=$true; native_windows_powershell_5=$true; synthetic_documents=$true; no_private_key_or_private_documents=$true; ordinary_windows_zip_extraction=$true; correct_key=$true; wrong_key_rejected=$true; corrupt_payload_rejected=$true; missing_component_rejected=$true; existing_output_preserved=$true; no_plaintext_residue_on_failure=$true; wrapper_sha256=(Get-FileHash 'Abrir-procedimientos.ps1' -Algorithm SHA256).Hash.ToLower() } | ConvertTo-Json | Set-Content 'resultado-windows.json' -Encoding UTF8
+
+Write-Output '::notice::Todas las comprobaciones nativas del abridor pasaron con datos sinteticos.'
+$global:LASTEXITCODE = 0

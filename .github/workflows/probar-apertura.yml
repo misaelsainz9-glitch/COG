@@ -17,7 +17,14 @@ jobs:
       - run: python -m pip install PyMuPDF==1.26.6 pyzipper==0.3.6
       - name: Test Windows extraction and native PowerShell 5 opener
         shell: pwsh
-        run: ./probar.ps1
+        run: |
+          try {
+            & ./probar.ps1
+          } catch {
+            $detail = (($_ | Out-String) + $_.ScriptStackTrace).Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
+            Write-Output "::error::$detail"
+            exit 1
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: resultado-apertura-windows
