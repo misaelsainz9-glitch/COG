@@ -110,6 +110,8 @@ def resolve(data,key,doc_id):
 
 def slot_value(data,slot,doc_id):
  key=slot['key']
+ if doc_id=='II' and key.startswith('rol.') and key.endswith('.iniciales') and key.split('.')[1] in equipo_hazop.ROLES:
+  return equipo_hazop.group_initials(data,key.split('.')[1])
  if slot.get('team_member'):
   value=resolve(data,key,doc_id)
   if not value and slot.get('fallback_key'):value=resolve(data,slot['fallback_key'],doc_id)

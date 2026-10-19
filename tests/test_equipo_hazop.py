@@ -6,6 +6,20 @@ import equipo_hazop as h
 from test_instalaciones import fixture
 
 class TeamModelTests(unittest.TestCase):
+ def test_multidisciplinary_group_counts_people_not_roles(self):
+  data=e.empty_project()
+  data['people']=[{'id':'A','nombre':'Ana Karen Guzmán Torres'}, {'id':'B','nombre':'Alma Karina García Trejo'}]
+  data['roles']={'representante_tecnico':'A','encargado_estacion':'A','jefe_operaciones':'A','lider_hazop':'B'}
+  slot=lambda role:{'key':f'rol.{role}.iniciales','hazop_product':'Magna'}
+  self.assertEqual(e.slot_value(data,slot('representante_tecnico'),'II'),'AKGT')
+  self.assertEqual(e.slot_value(data,slot('encargado_estacion'),'II'),'')
+  self.assertEqual(e.slot_value(data,slot('jefe_operaciones'),'II'),'')
+  self.assertEqual(e.slot_value(data,{'key':'rol.jefe_operaciones.iniciales'},'II'),'')
+  self.assertEqual(e.slot_value(data,slot('lider_hazop'),'II'),'AKGT')
+  self.assertEqual(e.resolve(data,'rol.encargado_estacion.nombre','II'),'Ana Karen Guzmán Torres')
+  data['roles'].pop('representante_tecnico')
+  self.assertEqual(e.slot_value(data,slot('encargado_estacion'),'II'),'AKGT')
+  self.assertEqual(e.slot_value(data,slot('jefe_operaciones'),'II'),'')
  def test_initials_follow_current_name_even_with_old_manual_value(self):
   data=e.empty_project();data['people']=[{'id':'A','nombre':'Ulises Hernández Cruz','iniciales':'VIEJAS'}];data['roles']={'lider_hazop':'A'}
   self.assertEqual(e.resolve(data,'rol.lider_hazop.iniciales','II'),'UHC')
@@ -38,6 +52,19 @@ def team_data(products=('Magna','Diésel','Premium')):
 
 @unittest.skipUnless(os.environ.get('SASISOPA18_BASE'),'Requires local private PDFs')
 class TeamPDFTests(unittest.TestCase):
+ def test_shared_person_appears_once_in_group_but_keeps_all_team_roles(self):
+  _,maps=e.configuration();data=team_data()
+  for role in ('encargado_estacion','jefe_operaciones'):data['roles'][role]=data['roles']['representante_tecnico']
+  with fitz.open(Path(os.environ['SASISOPA18_BASE'])/'PROCEDIMIENTO II.pdf') as doc:
+   fonts=e.FontBook(doc)
+   for pi in (32,34):e.render_page(doc,pi,maps['II'],data,'II',fonts)
+   with fitz.open(stream=doc.tobytes(),filetype='pdf') as saved:
+    for pi in (32,34):
+     for slot in maps['II']['pages'][pi]['slots']:
+      if slot['key'] in ('rol.encargado_estacion.iniciales','rol.jefe_operaciones.iniciales'):
+       self.assertEqual(saved[pi].get_textbox(slot['rect']).strip(),'')
+      elif slot['key'] in ('rol.encargado_estacion.nombre','rol.jefe_operaciones.nombre'):
+       self.assertEqual(saved[pi].get_textbox(slot['rect']).strip(),'Ana María López')
  def test_all_team_cells_and_dates_and_absent_fuel_groups(self):
   _,maps=e.configuration();data=team_data(('Magna',));base=Path(os.environ['SASISOPA18_BASE'])
   with fitz.open(base/'PROCEDIMIENTO II.pdf') as doc:

@@ -5,6 +5,16 @@ DATES=(('documento.fecha_inicio_estudio','Inicio del proyecto / estudio HAZOP'),
 def initials(name):
  return ''.join(next((letter for letter in word if letter.isalpha()),'').upper() for word in name.split())
 
+def group_initials(data,role):
+ """List each assigned person once, retaining distinct people with equal initials."""
+ person_id=data['roles'].get(role)
+ if not person_id:return ''
+ for previous in ROLES:
+  if previous==role:break
+  if data['roles'].get(previous)==person_id:return ''
+ person=next((p for p in data['people'] if p['id']==person_id),{})
+ return initials(person.get('nombre',''))
+
 def active(data):
  from instalaciones import enabled
  values=data['values'];overrides=data['documents'].get('II',{})
