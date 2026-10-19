@@ -8,6 +8,7 @@ from fontTools.pens.boundsPen import BoundsPen
 from fontTools.cffLib import CFFFontSet
 import fitz
 import instalaciones
+import equipo_hazop
 from personalizacion import validated_image
 from motor import MESES
 ROOT=Path(__file__).resolve().parent
@@ -79,14 +80,20 @@ def validate_project(data,catalog=None,maps=None):
   if b.get('valign','middle') not in ('top','middle','bottom'):raise ValueError('Alineación vertical inválida.')
   if b.get('flow') and not isinstance(b['flow'],str):raise ValueError('Grupo de campo inválido.')
   if b.get('kind','text') not in ('text','image'):raise ValueError('Tipo de campo inválido.')
-  if b.get('replace_id') and not any(s['id']==b['replace_id'] for s in pages[p]['slots']):raise ValueError('La ubicación original de ese campo ya no existe.')
+  if b.get('replace_id') and not any(s['id']==b['replace_id'] for s in pages[p]['slots']):
+   aliases=[s for s in pages[p]['slots'] if s['key']==b['key'] and b['replace_id'] in s.get('legacy_ids',[])]
+   if len(aliases)==1:b['replace_id']=aliases[0]['id']
+   else:raise ValueError('La ubicación original de ese campo ya no existe.')
+ start=resolve(data,'documento.fecha_inicio_estudio','II');end=resolve(data,'documento.fecha_fin_estudio','II')
+ if start and end and datetime.strptime(end,'%d/%m/%Y')<datetime.strptime(start,'%d/%m/%Y'):raise ValueError('El fin del proyecto HAZOP no puede ser anterior al inicio.')
  return data
 
 
 def resolve(data,key,doc_id):
  if key.startswith('rol.'):
   _,role,attribute=key.split('.',2);person_id=data['roles'].get(role)
-  return next((p.get(attribute,'').strip() for p in data['people'] if p['id']==person_id),'')
+  person=next((p for p in data['people'] if p['id']==person_id),{})
+  return equipo_hazop.initials(person.get('nombre','')) if attribute=='iniciales' else person.get(attribute,'').strip()
  if key.startswith('tabla.'):
   row,attribute=key.rsplit('.',1);person_id=data.get('table_people',{}).get(row)
   if person_id:return next((p.get(attribute,'').strip() for p in data['people'] if p['id']==person_id),'')
@@ -103,6 +110,10 @@ def resolve(data,key,doc_id):
 
 def slot_value(data,slot,doc_id):
  key=slot['key']
+ if slot.get('team_member'):
+  value=resolve(data,key,doc_id)
+  if not value and slot.get('fallback_key'):value=resolve(data,slot['fallback_key'],doc_id)
+  return value or ('Pendiente' if equipo_hazop.active(data) else '')
  if key.startswith('instalacion.'):
   value=instalaciones.value(data,key)
   return slot.get('installation_prefix','')+value if value else ''
@@ -387,6 +398,7 @@ def render_page(doc,index,layout,data,id,fonts):
  attendance=[s for s in layout['pages'][index]['slots'] if s['key'].startswith('tabla.')]
  if list(page.rect)!=layout['pages'][index]['size']:raise ValueError('Las dimensiones del PDF no coinciden con la base.')
  for s in slots:
+  if s.get('hazop_product') and instalaciones.enabled(data) and not instalaciones.tanks(data,s['hazop_product']):continue
   if any(fitz.Rect(region).intersects(fitz.Rect(s['rect'])) for region,product in inactive):continue
   if s.get('code_owner') and any(a['id']==s['code_owner'] for a in slots):continue
   value=slot_value(data,s,id)

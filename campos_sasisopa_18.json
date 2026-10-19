@@ -114,7 +114,7 @@
     },
     {
       "id": "persona.iniciales",
-      "label": "Iniciales para matrices, capturadas o confirmadas",
+      "label": "Iniciales automáticas del nombre completo",
       "scope": "persona",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
@@ -246,6 +246,30 @@
       "blank_behavior": "preservar_contenido_de_base_limpia",
       "implementation": "capturable; requiere Ubicar campo en el formato que lo solicite",
       "automatic_slots": 0
+    },
+    {
+      "id": "documento.fecha_inicio_estudio",
+      "label": "Inicio del proyecto / estudio HAZOP",
+      "scope": "proyecto_hazop",
+      "optional": true,
+      "blank_behavior": "preservar_contenido_de_base_limpia",
+      "implementation": "ubicaciones predefinidas del estudio II"
+    },
+    {
+      "id": "documento.fecha_fin_estudio",
+      "label": "Fin del proyecto / estudio HAZOP",
+      "scope": "proyecto_hazop",
+      "optional": true,
+      "blank_behavior": "preservar_contenido_de_base_limpia",
+      "implementation": "ubicaciones predefinidas del estudio II"
+    },
+    {
+      "id": "documento.fecha_sesion_hazop",
+      "label": "Fecha de sesión HAZOP (opcional)",
+      "scope": "proyecto_hazop",
+      "optional": true,
+      "blank_behavior": "preservar_contenido_de_base_limpia",
+      "implementation": "ubicaciones predefinidas del estudio II"
     }
   ],
   "roles": [

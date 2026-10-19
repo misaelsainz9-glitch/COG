@@ -56,3 +56,16 @@ class Editor18Tests(unittest.TestCase):
   with patch.object(ui.filedialog,'askopenfilename',return_value='original.zip'),patch.object(ui,'import_zip',return_value=Path(os.environ['SASISOPA18_BASE'])) as importer,patch.object(ui.messagebox,'showinfo'):
    ed.import_templates();self.wait_for_work();importer.assert_called_once()
   self.assertEqual(ed.templates.get(),os.environ['SASISOPA18_BASE']);self.assertTrue((self.folder/'datos_locales'/'base18.json').is_file())
+ def test_project_dates_and_person_initials_are_editable_through_form(self):
+  ed=self.editor;ed.add_person();self.window.update()
+  dialog=next(w for w in self.window.winfo_children() if isinstance(w,tk.Toplevel))
+  entries=[w for w in descendants(dialog) if isinstance(w,ttk.Entry)]
+  entries[0].insert(0,'Ulises Hernández Cruz');self.window.update()
+  self.assertEqual(entries[2].get(),'UHC');self.assertIn('readonly',entries[2].state())
+  next(w for w in descendants(dialog) if isinstance(w,ttk.Button) and w.cget('text')=='Guardar persona').invoke();self.window.update()
+  person=ed.data['people'][0];ed.role_vars['representante_legal'].set(ed.id_to_choice[person['id']])
+  ed.vars['documento.fecha_inicio_estudio'].set('02/11/2026');ed.vars['documento.fecha_fin_estudio'].set('05/11/2026')
+  ed.doc_selector.set('II');ed.page.set(33);ed.update_preview();self.window.update()
+  self.assertIsNotNone(ed.photo);self.assertNotIn('no cabe',ed.status.get())
+  data=ed.capture();self.assertEqual(engine.resolve(data,'rol.representante_legal.iniciales','II'),'UHC')
+  self.assertEqual(data['values']['documento.fecha_inicio_estudio'],'02/11/2026')

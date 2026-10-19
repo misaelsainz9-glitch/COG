@@ -8,6 +8,7 @@ from PIL import Image,ImageTk
 import fitz
 import sasisopa18 as engine
 import instalaciones
+import equipo_hazop
 from importar18 import import_zip
 from tema import configure_theme,NAVY
 from firma_canvas import signature_dialog
@@ -44,6 +45,9 @@ class Editor:
    row=ttk.Frame(roles);row.pack(fill='x',pady=4);ttk.Label(row,text=spec['label'],width=25).pack(side='left')
    var=tk.StringVar();self.role_vars[spec['id']]=var;combo=ttk.Combobox(row,textvariable=var,state='readonly',width=24);combo.pack(side='left',fill='x',expand=True);var.combo=combo;var.trace_add('write',self.schedule)
   ttk.Label(roles,text='Las funciones se asignan por separado. AUTORIZA no se deduce de otro cargo. Sólo se llenan los espacios que correspondan a cada función.',wraplength=430).pack(anchor='w',pady=9)
+  project=ttk.LabelFrame(docs,text='Proyecto / estudio HAZOP',padding=6);project.pack(fill='x',pady=8)
+  for key,label in equipo_hazop.DATES:self.entry(project,label+' (dd/mm/aaaa)',self.vars,key)
+  ttk.Label(project,text='Se aplican al estudio del procedimiento II. Son independientes de revisión y reuniones. Equipo: captura en Personas y asigna en Funciones; las iniciales se calculan del nombre completo.',wraplength=430).pack(anchor='w',pady=4)
   initial_folder=str(ROOT/'plantillas')
   try:
    saved=json.loads((ROOT/'datos_locales'/'base18.json').read_text());initial_folder=saved['templates'] if Path(saved['templates']).is_dir() else initial_folder
@@ -165,6 +169,9 @@ class Editor:
   win=tk.Toplevel(self.app);win.title('Datos de persona');win.geometry('720x650');win.transient(self.app);box=ttk.Frame(win,padding=15);box.pack(fill='both',expand=True);variables={}
   specs=[s for s in self.inventory['fields'] if s['scope']=='persona']
   for spec in specs:self.entry(box,spec['label'],variables,spec['id'].split('.')[1],(person or {}).get(spec['id'].split('.')[1],''))
+  variables['iniciales'].entry.configure(state='readonly')
+  def update_initials(*args):variables['iniciales'].set(equipo_hazop.initials(variables['nombre'].get()))
+  variables['nombre'].trace_add('write',update_initials);update_initials()
   # Personal record fields can be bound to its existing form just like other data.
   ttk.Label(box,text='CURP, RFC, NSS, estudios y otros datos particulares se agregan en Documentos y se ubican en su ficha.',wraplength=620).pack(anchor='w',pady=8)
   sig=variables['firma'];row=ttk.Frame(box);row.pack(fill='x');ttk.Button(row,text='Subir firma',command=lambda:self.choose_image(sig)).pack(side='left');ttk.Button(row,text='Dibujar firma',command=lambda:signature_dialog(win,sig.set)).pack(side='left',padx=5);ttk.Button(row,text='Quitar firma',command=lambda:sig.set('')).pack(side='left')
