@@ -1,0 +1,26 @@
+[
+  {
+    "procedure": "IV",
+    "physical_page": 13,
+    "issue": "station_in_code_is_3pt_and_separated_from_suffix",
+    "fictional_station": "E-48216"
+  },
+  {
+    "procedure": "XI",
+    "physical_page": 15,
+    "issue": "station_in_code_is_3pt_and_separated_from_suffix",
+    "fictional_station": "E-48216"
+  },
+  {
+    "procedure": "XIII",
+    "physical_page": 16,
+    "issue": "station_in_code_is_3pt_and_separated_from_suffix",
+    "fictional_station": "E-48216"
+  },
+  {
+    "procedure": "IV",
+    "physical_page": 11,
+    "issue": "interior_station_cell_has_no_predefined_binding",
+    "illustration": "synthetic_field_reproduction"
+  }
+]
