@@ -38,6 +38,8 @@ Los controles de texto verifican la presencia del valor esperado en su región, 
 6. **Riesgos y emergencias:** el inventario actualiza sus campos vinculados; no recalcula consecuencias, calificaciones HAZOP ni determina que las medidas y recomendaciones anteriores sean suficientes. Los directorios, recursos y condiciones del sitio requieren revisión real.
 7. **Campos vacíos e imágenes:** los campos opcionales vacíos conservan la base y los faltantes técnicos pueden mostrar «Pendiente». La revisión de texto no lee las letras incrustadas dentro de imágenes; éstas requieren inspección visual adicional.
 
+8. **Fuentes:** el lote avisó que algunos caracteres nuevos requirieron Helvetica o Helvetica-Bold porque no estaban disponibles en la fuente original. Por tanto, no se afirma identidad tipográfica absoluta. Esta revisión se ejecutó en Linux con escritorio virtual; no incluye una nueva prueba nativa de Windows ni del instalador.
+
 ## Cobertura por procedimiento
 
 Todas las filas incluyen los campos generales disponibles: estación, domicilio, empresa, logo, revisión, fecha, referencias y firmas según sus espacios existentes. La columna final indica información particular que no debe inferirse de esos datos generales.
