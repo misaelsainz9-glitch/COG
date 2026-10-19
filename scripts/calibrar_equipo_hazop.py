@@ -1,9 +1,11 @@
 """Measure the existing six-member table and study-date occurrences locally."""
 import re
 import fitz
-from equipo_hazop import ROLES
+from equipo_hazop import ROLES,DATES
 
 def calibrar_equipo(layout,source):
+ date_keys={key for key,label in DATES}
+ for spec in layout['pages']:spec['slots']=[s for s in spec['slots'] if s['key'] not in date_keys]
  page=source[32];spec=layout['pages'][32]
  table=next(t for t in page.find_tables().tables if 'Cargo/especialidad' in str(t.extract()[:2]))
  for role,row in zip(ROLES,table.rows[1:7]):

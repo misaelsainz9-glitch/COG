@@ -4,6 +4,11 @@ on:
     branches: [main]
     tags: ['v*']
     paths:
+      - '*.py'
+      - '*.json'
+      - 'requirements.txt'
+      - 'tests/**'
+      - 'scripts/**'
       - 'packaging/**'
       - 'rutas_app.py'
       - 'lanzamiento.py'

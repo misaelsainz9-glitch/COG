@@ -1,5 +1,5 @@
 """Station inventory shared by storage, dispatch and process-node fields."""
-import re
+import re,textwrap
 from decimal import Decimal,InvalidOperation
 PRODUCTS=('Magna','Premium','Diésel')
 TANK_FIELDS=(('numero','Número / compartimento'),('producto','Producto'),('litros','Capacidad (litros)'),('marca','Marca'),('medidas','Medidas'),('confinamiento','Tipo de confinado'),('pared','Tipo de pared / material'),('cupula','Tipo de cúpula'),('presion_vapor','Presión de vapor (con unidad)'),('temperatura_almacen','Temperatura de almacenamiento'),('presion_operacion','Presión de operación (con unidad)'),('temperatura_operacion','Temperatura de operación'),('flujo','Flujo (con unidad)'),('plano','Plano / referencia'),('deteccion','Detección / monitoreo'))
@@ -37,7 +37,7 @@ def validate(data):
    if inv['enabled'] and product not in active and value and int(value):raise ValueError(f'{product}: hay equipo de despacho pero ningún tanque. Revisa la ficha.')
 
 def enabled(data):return bool(data.get('installation',{} ) and data['installation'].get('enabled'))
-def extra_pages(data,doc_id):return (len(tanks(data))+2)//3 if enabled(data) and doc_id in ('II','XIII') else 0
+def extra_pages(data,doc_id):return len(inventory_batches(data)) if enabled(data) and doc_id in ('II','XIII') else 0
 def tanks(data,product=None):
  rows=data['installation']['tanks']
  return [t for t in rows if product is None or t['producto']==product]
@@ -46,7 +46,7 @@ def number(text):return format(liters(text),',f').rstrip('0').rstrip('.') if '.'
 def pending(text):return text.strip() or 'Pendiente'
 def shared(data,product,key):
  values=list(dict.fromkeys(pending(t.get(key,'')) for t in tanks(data,product)))
- return values[0] if len(values)==1 else 'Ver ficha de instalaciones'
+ return values[0] if len(values)==1 and len(values[0])<=28 else 'Ver ficha de instalaciones'
 
 def value(data,key):
  if not enabled(data):return ''
@@ -55,15 +55,27 @@ def value(data,key):
   index=int(parts[2]);field=parts[3];rows=tanks(data)
   if index>=len(rows):return 'No aplica' if field=='producto' else '—'
   t=rows[index]
-  return number(t['litros']) if field=='litros' else pending(t.get(field,''))
+  if field=='litros':return number(t['litros'])
+  value=pending(t.get(field,''))
+  if field=='numero' and len(value)>6:return textwrap.fill(value,width=6,break_long_words=True,break_on_hyphens=False)
+  return 'Ver ficha' if field in ('cupula','presion_vapor','temperatura_almacen') and len(value)>18 else value
  if parts[1]=='derrame':return '1.- Derrame de '+('Diésel' if tanks(data,'Diésel') else 'combustible')+' en'
  if parts[1]=='lista':return '\n'.join(products(data))
  if parts[1]=='productos':return ', '.join(products(data))
- if parts[1]=='despacho':return 'Se despachan '+', '.join(products(data))+'. Las cantidades de dispensarios y mangueras se detallan en la ficha de instalaciones.'
+ if parts[1]=='despacho':
+  counts=data['installation'].get('equipment',{});ready=[];stopped=[];unknown=[]
+  for product in products(data):
+   values=[counts.get(product,{}).get(k,'') for k in ('dispensarios','mangueras')]
+   (stopped if any(v and int(v)==0 for v in values) else ready if all(v and int(v)>0 for v in values) else unknown).append(product)
+  parts=[]
+  if ready:parts.append('Despacho registrado: '+', '.join(ready)+'.')
+  if stopped:parts.append('Sin despacho: '+', '.join(stopped)+'.')
+  if unknown:parts.append('Equipo por confirmar: '+', '.join(unknown)+'.')
+  return ' '.join(parts)+' Detalle de dispensarios y mangueras en la ficha anexa.'
  if parts[1]=='almacenamiento':
   rows=tanks(data);total=sum(liters(t['litros']) for t in rows)
   text=f'Almacenamiento de {", ".join(products(data))} en {len(rows)} tanques o compartimentos, con capacidad total de {number(str(total))} litros. '
-  if len(rows)<=3:
+  if len(rows)<=3 and all(len(t.get(k,''))<=32 for t in rows for k in ('marca','confinamiento')):
    text+='; '.join(f'TQ {t["numero"]}: {t["producto"]}, {number(t["litros"])} L, marca {pending(t.get("marca",""))}, confinado {pending(t.get("confinamiento",""))}' for t in rows)+'. '
   return text+'Las medidas, materiales y condiciones de cada tanque se detallan en la ficha de instalaciones anexa.'
  if parts[1]=='producto':
@@ -71,9 +83,15 @@ def value(data,key):
   if field=='nombre':return product if rows else '—'
   if field=='no_aplica':return '' if rows else '—'
   if not rows:return 'No aplica'
-  if field=='continuacion':return 'Sistema de bombeo y dispensarios.'
-  if field=='incluye':return 'Tanques / compartimentos '+', '.join(t['numero'] for t in rows)+', bombeo y dispensarios.'
-  if field=='condiciones':return '\n'.join(label+': '+shared(data,product,k) for label,k in [('Presión','presion_operacion'),('Temperatura','temperatura_operacion'),('Flujo','flujo')])
+  if field=='continuacion':return 'Equipos: ver ficha de instalaciones.'
+  if field=='incluye':
+   ids=', '.join(t['numero'] for t in rows)
+   return ('Tanques / compartimentos '+ids+'. Equipos: ver ficha.' if len(ids)<=35 else str(len(rows))+' tanques / compartimentos. Ver ficha anexa.')
+  if field=='condiciones':
+   pairs=[('Presión','presion_operacion'),('Temperatura','temperatura_operacion'),('Flujo','flujo')]
+   values=[shared(data,product,k) for label,k in pairs]
+   if any(v=='Ver ficha de instalaciones' or len(v)>28 for v in values):return 'Condiciones por tanque: ver ficha de instalaciones.'
+   return '\n'.join(label+': '+value for (label,k),value in zip(pairs,values))
   return shared(data,product,field)
  raise ValueError('Campo de instalaciones desconocido: '+key)
 
@@ -88,18 +106,37 @@ def inactive_regions(data,doc_id,index):
  return regions
 
 
+def card_text(t):
+ text=f'TANQUE / COMPARTIMENTO {t["numero"]} — {t["producto"]} — {number(t["litros"])} L\n'
+ text+='\n'.join(label+': '+pending(t.get(key,'')) for key,label in TANK_FIELDS if key not in ('numero','producto','litros'))
+ return '\n'.join(line for paragraph in text.split('\n') for line in textwrap.wrap(paragraph,width=55,break_long_words=True,break_on_hyphens=False))
+
+
+def inventory_batches(data):
+ # Use the same deterministic wrapping for page count, preview and export.
+ batches=[];short=[]
+ for t in tanks(data):
+  if len(card_text(t).splitlines())>17:
+   if short:batches.append(short);short=[]
+   batches.append([t])
+  else:
+   short.append(t)
+   if len(short)==3:batches.append(short);short=[]
+ if short:batches.append(short)
+ return batches
+
+
 def append_inventory(doc,data,station,write,fonts):
- """Add readable continuation sheets; never squeeze extra rows into a 3-row table."""
- for start in range(0,len(tanks(data)),3):
+ """Keep short cards together; give lengthy technical records their own page."""
+ for index,batch in enumerate(inventory_batches(data)):
   page=doc.new_page(width=612,height=792)
   write(page,{'rect':[40,30,572,60],'size':14,'min_size':14,'font':'Arial-BoldMT'},'FICHA DE INSTALACIONES — '+(station or 'ESTACIÓN'),fonts)
   write(page,{'rect':[40,65,572,100],'size':9,'min_size':9},'Datos capturados por la estación. No sustituye la revisión del análisis de riesgos. Las condiciones no capturadas se indican como Pendiente.',fonts)
   y=110
-  for t in tanks(data)[start:start+3]:
-   text=f'TANQUE / COMPARTIMENTO {t["numero"]} — {t["producto"]} — {number(t["litros"])} L\n'
-   text+='\n'.join(label+': '+pending(t.get(key,'')) for key,label in TANK_FIELDS if key not in ('numero','producto','litros'))
-   write(page,{'rect':[40,y,572,y+185],'size':9,'min_size':9,'valign':'top'},text,fonts);y+=190
-  if start==0:
+  for t in batch:
+   bottom=675 if len(batch)==1 and len(card_text(t).splitlines())>17 else y+185
+   write(page,{'rect':[40,y,572,bottom],'size':9,'min_size':9,'valign':'top'},card_text(t),fonts);y+=190
+  if index==0:
    counts=data['installation'].get('equipment',{})
    text='DESPACHO (cantidades por producto; un dispensario multiproducto puede figurar en más de uno)\n'
    text+='\n'.join(p+': dispensarios '+pending(counts.get(p,{}).get('dispensarios',''))+', mangueras '+pending(counts.get(p,{}).get('mangueras','')) if p in products(data) else p+': No aplica' for p in PRODUCTS)

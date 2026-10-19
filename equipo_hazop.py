@@ -5,4 +5,7 @@ DATES=(('documento.fecha_inicio_estudio','Inicio del proyecto / estudio HAZOP'),
 def initials(name):
  return ''.join(next((letter for letter in word if letter.isalpha()),'').upper() for word in name.split())
 
-def active(data):return any(data['roles'].get(role) for role in ROLES)
+def active(data):
+ from instalaciones import enabled
+ values=data['values'];overrides=data['documents'].get('II',{})
+ return any(data['roles'].get(role) for role in ROLES) or enabled(data) or any(overrides.get(key,values.get(key,'')).strip() for key,label in DATES)

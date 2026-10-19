@@ -50,12 +50,11 @@ def validate_project(data,catalog=None,maps=None):
  for doc,values in data['documents'].items():
   if doc not in maps:raise ValueError('Documento desconocido: '+doc)
   check_values(values)
- for key,value in data['values'].items():
-  if key=='estacion.numero' and value.strip() and not re.fullmatch(r'E-\d{5}',value.strip()):raise ValueError('Número de estación: usa E-00000.')
  for values in [data['values']]+list(data['documents'].values()):
   for key,value in values.items():
    value=value.strip()
    if not value:continue
+   if key=='estacion.numero' and not re.fullmatch(r'E-[0-9]{5}',value):raise ValueError('Número de estación: usa E-00000.')
    if key=='documento.revision' and not re.fullmatch(r'\d+',value):raise ValueError('La revisión debe ser un entero no negativo.')
    if key.startswith('documento.fecha_'):
     try:datetime.strptime(value,'%d/%m/%Y')
@@ -156,6 +155,13 @@ def slots_for(layout,data,doc_id,page):
  aliases={}
  for i,binding in enumerate(customs):
   old=by_id.get(binding.get('replace_id'))
+  if old:
+   binding=dict(binding)
+   if old.get('hazop_product'):binding['hazop_product']=old['hazop_product']
+   if old['key']==binding['key']:
+    for name in ('fallback_key','team_member','installation_prefix','erase_full'):
+     if name in old:binding[name]=old[name]
+   customs[i]=binding
   if old and old.get('code_suffix') and binding['key']=='estacion.numero':
    binding=dict(binding)
    for name in ('code_suffix','code_revision','code_members','single_line'):binding[name]=old[name]
@@ -177,6 +183,7 @@ def check_destinations(data,maps,selected):
    if value.strip() and key not in keys:raise ValueError(f'{id}: «{key}» no tiene espacio asignado. Usa Ubicar campo en la vista previa.')
  keys=destination_keys(maps,data,selected)
  for key,value in data['values'].items():
+  if key in {k for k,label in equipo_hazop.DATES} and 'II' not in selected:continue
   if value.strip() and key not in keys and not (key in ('estacion.localidad','estacion.estado','estacion.codigo_postal') and 'estacion.direccion' in keys):raise ValueError(f'«{key}» no aparece en los documentos seleccionados. Usa Ubicar campo o deja ese dato vacío.')
 
 
@@ -451,7 +458,9 @@ def render_page(doc,index,layout,data,id,fonts):
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
   if old.get('kind','text')=='text':
-   r=fitz.Rect(old.get('erase_rect',old['rect']));r+=(.02,r.height*.15,-.02,-r.height*.15);page.add_redact_annot(r,fill=None,cross_out=False)
+   r=fitz.Rect(old.get('erase_rect',old['rect']))
+   r+=(.02,.02,-.02,-.02) if old.get('erase_full') else (.02,r.height*.15,-.02,-r.height*.15)
+   page.add_redact_annot(r,fill=None,cross_out=False)
  for s,value in ops:
   if s.get('kind','text')=='text' and s.get('clear',True):
    # Keep adjacent text: original digit slots use full glyph boxes, but redaction

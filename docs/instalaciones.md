@@ -4,6 +4,8 @@ En **Instalaciones** se captura cada tanque o compartimento una sola vez y se ac
 
 La ficha admite número o identificador, producto, litros, marca, medidas, confinado, material o pared, cúpula, presión de vapor, temperatura de almacenamiento, presión y temperatura de operación, flujo, plano y detección o monitoreo. También permite cantidades de dispensarios y mangueras por producto; un dispensario multiproducto puede figurar en más de un producto y esas cantidades no se suman como equipos únicos.
 
+Si se capturan cero dispensarios o mangueras de un producto, el texto indica «Sin despacho»; si faltan cantidades, indica «Equipo por confirmar».
+
 No se supone que el tanque 2 siempre es Premium: se vincula por el producto y el número capturados. Puede haber varios tanques del mismo producto. Si sus condiciones difieren, el nodo remite a la ficha detallada en lugar de mostrar un único valor incorrecto.
 
 ## Dónde se refleja
@@ -22,7 +24,7 @@ Se revisaron los 18 PDF de la base. Las repeticiones específicas del inventario
 | XIII | 35–36 | Descripción del almacenamiento, tabla de tanques y productos de despacho. |
 | II y XIII | Fichas anexas | Inventario completo, todos los datos técnicos y cantidades de dispensarios y mangueras. |
 
-Las dos tablas originales mantienen sus tres filas y bordes. Las filas no utilizadas indican «No aplica». Con más de tres tanques, las primeras tres filas muestran los primeros tres y la descripción remite al inventario completo anexo. Se admiten hasta 60 tanques o compartimentos, con fichas adicionales de tres por página. Las fichas también pueden verse al final del documento en la vista previa.
+Las dos tablas originales mantienen sus tres filas y bordes. Las filas no utilizadas indican «No aplica». Con más de tres tanques, las primeras tres filas muestran los primeros tres y la descripción remite al inventario completo anexo. Se admiten hasta 60 tanques o compartimentos, con hasta tres fichas cortas por página. Los datos técnicos largos reciben una página propia; el contador y la vista previa utilizan esa misma distribución. Las fichas también pueden verse al final del documento en la vista previa.
 
 Un producto sin tanque no se presenta como existente. Los datos no capturados dicen **Pendiente**: no se copian la marca, los litros ni las condiciones del ejemplo. La presión de vapor y la presión de operación son campos distintos. No se sustituyen capacidades de autotanques proveedores por capacidades de almacenamiento, ni se cambian los nombres de normas que mencionan gasolinas y diésel.
 

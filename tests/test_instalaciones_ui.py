@@ -37,3 +37,17 @@ class InstallationUITests(unittest.TestCase):
     next(w for w in body.winfo_children() if isinstance(w,ttk.Button)).invoke();window.update()
     self.assertEqual(editor.installation_tanks[0]['numero'],'1A');self.assertTrue(editor.installation_enabled.get())
    finally:editor.close()
+ def test_long_inventory_updates_annex_navigation(self):
+  from test_instalaciones import fixture
+  import instalaciones as inv
+  with tempfile.TemporaryDirectory() as folder,patch.object(ui,'ROOT',Path(folder)):
+   window=tk.Tk();editor=ui.Editor(window)
+   try:
+    data=fixture()
+    for key,label in inv.TANK_FIELDS:
+     if key not in ('numero','producto','litros'):data['installation']['tanks'][1][key]='DOCUMENTACION '*7
+    editor.templates.set(os.environ['SASISOPA18_BASE']);editor.installation_load(data)
+    editor.doc_selector.set('II');editor.page.set(60);editor.show_regions.set(True);editor.update_preview();window.update()
+    self.assertIsNotNone(editor.photo);self.assertEqual(editor.preview_page,('II',59));self.assertEqual(editor.page_count.cget('text'),'/ 60')
+    self.assertNotIn('no cabe',editor.status.get())
+   finally:editor.close()

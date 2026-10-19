@@ -255,6 +255,9 @@ for roman,module in zip(ROMANS,META['modules']):
   calibrar_codigos(maps[roman],source,roman)
   from scripts.calibrar_instalaciones import calibrar_instalaciones
   calibrar_instalaciones(maps[roman],source,roman)
+  if roman=='V':
+   from ajustes_cartas_v import ajustar_cartas_v
+   ajustar_cartas_v(maps[roman])
   if roman=='II':
    from scripts.calibrar_equipo_hazop import calibrar_equipo
    calibrar_equipo(maps[roman],source)
