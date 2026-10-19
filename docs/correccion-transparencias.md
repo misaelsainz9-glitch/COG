@@ -13,4 +13,6 @@ La corrección reemplaza **solamente imágenes de 1×1 píxel cuya máscara es t
 - Suite local completa: **122 pruebas, 117 aprobadas y 5 grupos de plantillas retiradas omitidos; ningún fallo**.
 - [Abridor nativo de Windows y extracción normal del ZIP](https://github.com/misaelsainz9-glitch/COG/actions/runs/39321340323): comprobados con PDF sintéticos y una clave pública exclusiva de pruebas. Se verificaron apertura correcta, rechazo de clave equivocada, contenido alterado y componente ausente, conservación de carpetas existentes y limpieza de temporales tras fallos. No se enviaron los documentos privados ni su clave a Windows CI.
 
+En el lote revisado se compararon los píxeles de las **525 páginas** antes y después: sólo cambió I, página física 14, en el área afectada. Las otras **524 páginas quedaron idénticas**. La salida final no conserva imágenes de un píxel; los logos e imágenes reales permanecen. Los 2,104 usos de marcadores en la base se tratan en la copia de trabajo, sin cambiar la base original.
+
 La revisión visual de páginas completas usa láminas de conjunto y ampliaciones de las zonas sospechosas. No equivale a leer y validar técnicamente cada palabra del expediente. Continúan pendientes los datos de proyecto no proporcionados y las discrepancias documentales previamente informadas.
