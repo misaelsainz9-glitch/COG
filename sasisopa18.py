@@ -125,7 +125,8 @@ def slot_value(data,slot,doc_id):
   return (station or 'E-')+slot['code_suffix']+(revision or slot['code_revision'])
  if key=='documento.revision' and slot.get('reference_doc'):
   value=data['documents'].get(slot['reference_doc'],{}).get(key,data['values'].get(key,'')).strip()
- elif key=='documento.revision' and slot.get('revision_scope')=='global_only':value=data['values'].get(key,'').strip()
+ elif slot.get('reference_doc'):value=resolve(data,key,slot['reference_doc'])
+ elif slot.get('revision_scope')=='global_only':value=data['values'].get(key,'').strip()
  else:value=resolve(data,key,doc_id)
  if not value and slot.get('fallback_key'):value=resolve(data,slot['fallback_key'],doc_id)
  return value
@@ -159,7 +160,7 @@ def slots_for(layout,data,doc_id,page):
    binding=dict(binding)
    if old.get('hazop_product'):binding['hazop_product']=old['hazop_product']
    if old['key']==binding['key']:
-    for name in ('fallback_key','team_member','installation_prefix','erase_full'):
+    for name in ('fallback_key','team_member','installation_prefix','erase_full','reference_doc','revision_scope'):
      if name in old:binding[name]=old[name]
    customs[i]=binding
   if old and old.get('code_suffix') and binding['key']=='estacion.numero':
@@ -411,10 +412,12 @@ def render_page(doc,index,layout,data,id,fonts):
   value=slot_value(data,s,id)
   if value:
    s=dict(s);value=_transform(value,s)
+   numeric_revision=s['key']=='documento.revision' and value.isdigit()
+   if numeric_revision:s['single_line']=True
    if s.get('single_line'):
     font,_,_=fonts.get(s.get('font','ArialMT'),value);width,_=_line_width(font,value,s['size']);available=fitz.Rect(s['rect']).width
     if width>available:s['x_scale']=available/width
-    if s.get('x_scale',1)<.7:raise ValueError('El código no cabe en una sola línea. Amplía su espacio en la vista previa.')
+    if s.get('x_scale',1)<(.65 if numeric_revision and len(value)<=2 else .7):raise ValueError('La revisión no cabe en su espacio. Ajusta su ubicación en la vista previa.' if numeric_revision else 'El código no cabe en una sola línea. Amplía su espacio en la vista previa.')
    if s.get('transform')=='digits':
     font,_,_=fonts.get(s.get('font','ArialMT'),value);width,_=_line_width(font,value,s['size']);available=fitz.Rect(s['rect']).width
     if width>available:

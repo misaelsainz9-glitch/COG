@@ -173,7 +173,7 @@
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
       "implementation": "ubicaciones predefinidas y personalizables",
-      "automatic_slots": 1163
+      "automatic_slots": 1182
     },
     {
       "id": "documento.fecha_revision",
@@ -182,7 +182,7 @@
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
       "implementation": "ubicaciones predefinidas y personalizables",
-      "automatic_slots": 983
+      "automatic_slots": 1002
     },
     {
       "id": "documento.fecha_reunion",
@@ -253,7 +253,8 @@
       "scope": "proyecto_hazop",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "ubicaciones predefinidas del estudio II"
+      "implementation": "ubicaciones predefinidas del estudio II",
+      "automatic_slots": 1
     },
     {
       "id": "documento.fecha_fin_estudio",
@@ -261,7 +262,8 @@
       "scope": "proyecto_hazop",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "ubicaciones predefinidas del estudio II"
+      "implementation": "ubicaciones predefinidas del estudio II",
+      "automatic_slots": 1
     },
     {
       "id": "documento.fecha_sesion_hazop",
@@ -269,7 +271,17 @@
       "scope": "proyecto_hazop",
       "optional": true,
       "blank_behavior": "preservar_contenido_de_base_limpia",
-      "implementation": "ubicaciones predefinidas del estudio II"
+      "implementation": "ubicaciones predefinidas del estudio II",
+      "automatic_slots": 35
+    },
+    {
+      "id": "documento.fecha_firmas",
+      "label": "Fecha de firmas / aprobación (independiente de revisión)",
+      "scope": "documento_o_evento",
+      "optional": true,
+      "blank_behavior": "preservar_contenido_de_base_limpia",
+      "implementation": "fecha en los cuadros existentes de firmas; captura por documento",
+      "automatic_slots": 1187
     }
   ],
   "roles": [

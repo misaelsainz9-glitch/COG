@@ -1,6 +1,12 @@
 """Spacing rules inside existing station header cells; no table is resized."""
 def ajustar_encabezados(layout):
     for index, page in enumerate(layout['pages']):
+        for slot in page['slots']:
+            if slot['key'] == 'documento.revision' and slot.get('transform') == 'revision_label':
+                center = (slot['rect'][0] + slot['rect'][2]) / 2
+                slot['rect'][0] = max(0, center - 50)
+                slot['rect'][2] = min(page['size'][2], center + 50)
+                slot['align'] = 1
         if index == 0:
             continue  # Covers retain their own layout.
         slots = page['slots']

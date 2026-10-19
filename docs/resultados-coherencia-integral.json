@@ -1,0 +1,380 @@
+{
+  "scope": "Dos lotes de los 18 procedimientos con datos ficticios, revisados contra la base privada local. No es una certificación técnica.",
+  "base_pages": 523,
+  "batch_a": {
+    "text_fields": 6012,
+    "text_mismatches": 0,
+    "structure": {
+      "counts": {
+        "pages": 523,
+        "attendance_cells": 119,
+        "source_files": 18
+      },
+      "failures": []
+    }
+  },
+  "batch_b": {
+    "documents": [
+      {
+        "id": "I",
+        "pages": 14,
+        "text_fields": 162,
+        "images": 46,
+        "attendance_cells": 60
+      },
+      {
+        "id": "II",
+        "pages": 57,
+        "text_fields": 781,
+        "images": 145
+      },
+      {
+        "id": "III",
+        "pages": 26,
+        "text_fields": 266,
+        "images": 64
+      },
+      {
+        "id": "IV",
+        "pages": 13,
+        "text_fields": 136,
+        "images": 47
+      },
+      {
+        "id": "V",
+        "pages": 21,
+        "text_fields": 238,
+        "images": 72,
+        "text_flows": 4,
+        "attendance_cells": 21
+      },
+      {
+        "id": "VI",
+        "pages": 45,
+        "text_fields": 477,
+        "images": 164
+      },
+      {
+        "id": "VII",
+        "pages": 15,
+        "text_fields": 153,
+        "images": 57
+      },
+      {
+        "id": "VIII",
+        "pages": 18,
+        "text_fields": 395,
+        "images": 59,
+        "attendance_cells": 18
+      },
+      {
+        "id": "IX",
+        "pages": 16,
+        "text_fields": 164,
+        "images": 54,
+        "attendance_cells": 20,
+        "text_flows": 1
+      },
+      {
+        "id": "X",
+        "pages": 24,
+        "text_fields": 225,
+        "images": 92
+      },
+      {
+        "id": "XI",
+        "pages": 33,
+        "text_fields": 315,
+        "images": 119
+      },
+      {
+        "id": "XII",
+        "pages": 44,
+        "text_fields": 424,
+        "images": 135
+      },
+      {
+        "id": "XIII",
+        "pages": 70,
+        "text_fields": 717,
+        "images": 263
+      },
+      {
+        "id": "XIV",
+        "pages": 39,
+        "text_fields": 412,
+        "images": 143
+      },
+      {
+        "id": "XV",
+        "pages": 31,
+        "text_fields": 335,
+        "images": 99
+      },
+      {
+        "id": "XVI",
+        "pages": 39,
+        "text_fields": 399,
+        "images": 154
+      },
+      {
+        "id": "XVII",
+        "pages": 10,
+        "text_fields": 99,
+        "images": 32
+      },
+      {
+        "id": "XVIII",
+        "pages": 8,
+        "text_fields": 82,
+        "images": 28
+      }
+    ],
+    "warnings": [
+      "Algunos textos nuevos usaron Helvetica porque la fuente original no incluye esos caracteres.",
+      "Algunos textos nuevos usaron Helvetica-Bold porque la fuente original no incluye esos caracteres.",
+      "Instalaciones actualizadas: revisar técnicamente HAZOP y escenarios de riesgo con los datos de esta estación; el sistema no recalcula su valoración."
+    ],
+    "failures": [],
+    "limits": [
+      "No valida conclusiones ni valoraciones de riesgo.",
+      "No lee texto incrustado dentro de imágenes.",
+      "Los campos opcionales vacíos conservan la base.",
+      "Los registros particulares requieren captura y revisión expresa."
+    ],
+    "merged_pages": 525,
+    "bookmarks": 18,
+    "optional_fields_preserved": {
+      "instalacion.producto.0.no_aplica": 1
+    },
+    "pending_fields": {},
+    "passed": true,
+    "master_reference_findings": [
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "III",
+        "listed_suffix": ".03.PO.03.R",
+        "procedure_suffixes": [
+          ".03.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "IV",
+        "listed_suffix": ".04.PO.04.R",
+        "procedure_suffixes": [
+          ".04.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "V",
+        "listed_suffix": ".05.PO.05.R",
+        "procedure_suffixes": [
+          ".05.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "VI",
+        "listed_suffix": ".06.PO.06.R",
+        "procedure_suffixes": [
+          ".06.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "VII",
+        "listed_suffix": ".07.PO.07.R",
+        "procedure_suffixes": [
+          ".07.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "VIII",
+        "listed_suffix": ".08.PO.08.R",
+        "procedure_suffixes": [
+          ".08.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "IX",
+        "listed_suffix": ".09.PO.09.R",
+        "procedure_suffixes": [
+          ".09.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "X",
+        "listed_suffix": ".10.PO.10.R",
+        "procedure_suffixes": [
+          ".10.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 11,
+        "reference_document": "XI",
+        "listed_suffix": ".11.PO.11.R",
+        "procedure_suffixes": [
+          ".11.PO.01.R",
+          ".11.PO.02.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XII",
+        "listed_suffix": ".12.PO.12.R",
+        "procedure_suffixes": [
+          ".12.PO.01.R",
+          ".12.PO.02.R",
+          ".12.PO.1.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XIII",
+        "listed_suffix": ".13.PO.13.R",
+        "procedure_suffixes": [
+          ".13.PO.01.R",
+          ".13.PO.02.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XIV",
+        "listed_suffix": ".14.PO.14.R",
+        "procedure_suffixes": [
+          ".14.PO.01.R",
+          ".14.PO.02.R",
+          ".14.PO.03.R",
+          ".14.PO.04.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XV",
+        "listed_suffix": ".15.PO.15.R",
+        "procedure_suffixes": [
+          ".15.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XVI",
+        "listed_suffix": ".16.PO.16.R",
+        "procedure_suffixes": [
+          ".16.PO.01.R",
+          ".16.PO.02.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XVII",
+        "listed_suffix": ".17.PO.17.R",
+        "procedure_suffixes": [
+          ".17.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      },
+      {
+        "document": "VIII",
+        "page": 12,
+        "reference_document": "XVIII",
+        "listed_suffix": ".18.PO.18.R",
+        "procedure_suffixes": [
+          ".18.PO.01.R"
+        ],
+        "status": "confirmar_identificador_documental"
+      }
+    ],
+    "record_index": {
+      "checked": 60,
+      "findings": [
+        {
+          "document": "VIII",
+          "page": 16,
+          "reference_document": "XIII",
+          "listed_suffix": ".13.RE.03.R",
+          "variants": [
+            ".013.RE.03.R"
+          ],
+          "status": "diferencia_de_ceros_en_identificador"
+        },
+        {
+          "document": "VIII",
+          "page": 16,
+          "reference_document": "XIII",
+          "listed_suffix": ".13.RE.04.R",
+          "variants": [
+            ".013.RE.04.R"
+          ],
+          "status": "diferencia_de_ceros_en_identificador"
+        },
+        {
+          "document": "VIII",
+          "page": 16,
+          "reference_document": "XIV",
+          "listed_suffix": ".14.RE.03.R",
+          "variants": [],
+          "status": "identificador_no_localizado_en_mapas"
+        }
+      ]
+    },
+    "passed_scope": "Campos, geometría, imágenes y conservación de originales; no certifica coherencia técnica.",
+    "coherence_status": "requiere_revision_documental_y_tecnica"
+  },
+  "test_suite": {
+    "run": 119,
+    "passed": 114,
+    "skipped": 5,
+    "failures": 0,
+    "scope": "Linux con escritorio virtual y base privada; no se ejecutó Windows en esta revisión"
+  },
+  "old_values_search": {
+    "changed_values": 24,
+    "hits": 0
+  },
+  "narrow_address_test": {
+    "document": "XI",
+    "page": 14,
+    "characters": 57,
+    "result": "error_de_espacio_antes_de_modificar_pagina"
+  },
+  "alignment_followup": {
+    "run": 14,
+    "passed": 14,
+    "failures": 0
+  }
+}
