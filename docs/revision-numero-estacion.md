@@ -1,5 +1,7 @@
 # Errores en el número de estación de los registros
 
+**Actualización:** los problemas de los cuadros de código se corrigieron en el proyecto. [Ver las imágenes del resultado](codigos-corregidos.md). Esta página conserva el diagnóstico anterior. La casilla interior «Estación (1)» es un pendiente distinto.
+
 Estos recortes provienen de los PDF generados con la estación **ficticia E-48216**, no de una ilustración del programa. Se muestran únicamente los cuadros de código: no se publican cuerpos de documentos privados ni datos de personas.
 
 La revisión encontró problemas que las pruebas anteriores de integridad y de presencia del número no detectaron. Que aparezcan los cinco dígitos no basta para validar la apariencia ni el código completo.
@@ -40,4 +42,4 @@ El encabezado recibe la estación, pero la casilla interior **Estación (1)** qu
 
 Se revisó la presencia de los dígitos de prueba en las 1,510 ubicaciones de estación ya mapeadas. Eso no detecta campos que todavía no tienen ubicación, textos rasterizados dañados ni tamaños desiguales. Los ejemplos anteriores son fallos confirmados; no significan que cada uno de los demás registros esté validado visualmente.
 
-Esta página documenta el resultado actual. Las correcciones mostradas como necesarias **todavía no están incorporadas al instalador descargable**.
+Esta página conserva el diagnóstico previo a la corrección. El instalador descargable v0.2.2 todavía contiene la versión anterior.

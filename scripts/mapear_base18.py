@@ -251,6 +251,8 @@ for roman,module in zip(ROMANS,META['modules']):
   from scripts.calibrar_firmas import calibrar_firmas
   calibrar_firmas(maps[roman],cleaned)
   if roman=='II':ajustar_portada_ii(maps[roman])
+  from scripts.calibrar_codigos import calibrar_codigos
+  calibrar_codigos(maps[roman],source,roman)
   print(roman,len(pages),'pages',sum(len(p['slots']) for p in pages),'slots',flush=True)
 (ROOT/'catalogo18.json').write_text(json.dumps({'version':3,'status':'ready_pdf','engine':'sasisopa18','templates':catalog,'message':'Base limpia SASISOPA: 18 PDF, 523 páginas.'},ensure_ascii=False,indent=2)+'\n')
 (ROOT/'mapas_sasisopa18.json').write_text('{\n'+',\n'.join(json.dumps(id)+':{"pages":[\n'+',\n'.join(json.dumps(page,ensure_ascii=False,separators=(',',':')) for page in layout['pages'])+'\n]}' for id,layout in maps.items())+'\n}\n')

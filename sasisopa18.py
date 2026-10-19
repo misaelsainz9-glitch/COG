@@ -101,6 +101,13 @@ def resolve(data,key,doc_id):
 
 def slot_value(data,slot,doc_id):
  key=slot['key']
+ if slot.get('code_suffix'):
+  station=resolve(data,'estacion.numero',doc_id)
+  ref=re.match(r'\.(\d+)',slot['code_suffix'])
+  roman=('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII')[int(ref.group(1))-1] if ref and 1<=int(ref.group(1))<=18 else doc_id
+  revision=slot_value(data,{'key':'documento.revision','reference_doc':roman},doc_id)
+  if not station and not revision:return ''
+  return (station or 'E-')+slot['code_suffix']+(revision or slot['code_revision'])
  if key=='documento.revision' and slot.get('reference_doc'):
   value=data['documents'].get(slot['reference_doc'],{}).get(key,data['values'].get(key,'')).strip()
  elif key=='documento.revision' and slot.get('revision_scope')=='global_only':value=data['values'].get(key,'').strip()
@@ -128,6 +135,18 @@ def slots_for(layout,data,doc_id,page):
  result=[s for s in base if s['id'] not in replaced and s['id'] not in protected]
  for role,name in footer.items():
   result.append({**name,'id':name['id']+'.firma','key':f'rol.{role}.firma','rect':name.get('signature_rect',name['rect']),'kind':'image','clear':False,'locked':True})
+ # A moved station binding still represents the entire header code.
+ by_id={s['id']:s for s in base}
+ aliases={}
+ for i,binding in enumerate(customs):
+  old=by_id.get(binding.get('replace_id'))
+  if old and old.get('code_suffix') and binding['key']=='estacion.numero':
+   binding=dict(binding)
+   for name in ('code_suffix','code_revision','code_members','single_line'):binding[name]=old[name]
+   binding.pop('transform',None)
+   if 'baseline' in old:binding['baseline']=binding['rect'][1]+old['baseline']-old['rect'][1]
+   aliases[old['id']]=binding['id'];customs[i]=binding
+ result=[{**s,'code_owner':aliases[s['code_owner']]} if s.get('code_owner') in aliases else s for s in result]
  return result+customs
 
 
@@ -323,7 +342,7 @@ def _write(page,slot,value,fonts):
  if slot.get('balance_lines'):lines=_balanced_cover_lines(font,value,_logical_rect(slot),size,lines)
  page.insert_font(fontname=alias,fontbuffer=buffer)
  vertical=slot.get('valign','middle')
- y=rect.y0+(rect.height-height)*(0 if vertical=='top' else 1 if vertical=='bottom' else .5)+top*size
+ y=slot.get('baseline',rect.y0+(rect.height-height)*(0 if vertical=='top' else 1 if vertical=='bottom' else .5)+top*size)
  paragraph_ends=set();word_count=0
  for paragraph in value.split('\n'):
   word_count+=len(paragraph.split());paragraph_ends.add(word_count)
@@ -362,9 +381,14 @@ def render_page(doc,index,layout,data,id,fonts):
  attendance=[s for s in layout['pages'][index]['slots'] if s['key'].startswith('tabla.')]
  if list(page.rect)!=layout['pages'][index]['size']:raise ValueError('Las dimensiones del PDF no coinciden con la base.')
  for s in slots:
+  if s.get('code_owner') and any(a['id']==s['code_owner'] for a in slots):continue
   value=slot_value(data,s,id)
   if value:
    s=dict(s);value=_transform(value,s)
+   if s.get('single_line'):
+    font,_,_=fonts.get(s.get('font','ArialMT'),value);width,_=_line_width(font,value,s['size']);available=fitz.Rect(s['rect']).width
+    if width>available:s['x_scale']=available/width
+    if s.get('x_scale',1)<.7:raise ValueError('El código no cabe en una sola línea. Amplía su espacio en la vista previa.')
    if s.get('transform')=='digits':
     font,_,_=fonts.get(s.get('font','ArialMT'),value);width,_=_line_width(font,value,s['size']);available=fitz.Rect(s['rect']).width
     if width>available:
@@ -399,9 +423,10 @@ def render_page(doc,index,layout,data,id,fonts):
    _layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
-  if old.get('kind')=='image':page.add_redact_annot(old['rect'],fill=None,cross_out=False)
+  if old.get('kind')=='image' or old.get('raster_clear'):page.add_redact_annot(old.get('erase_rect',old['rect']),fill=None,cross_out=False)
  for s,value in ops:
-  if s.get('kind')=='image' and s.get('clear',True):page.add_redact_annot(s['rect'],fill=None,cross_out=False)
+  if s.get('raster_clear'):page.add_redact_annot(s.get('erase_rect',s['rect']),fill=None,cross_out=False)
+  elif s.get('kind')=='image' and s.get('clear',True):page.add_redact_annot(s['rect'],fill=None,cross_out=False)
  if page.first_annot:page.apply_redactions(images=2,graphics=0,text=1)
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
