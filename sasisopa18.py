@@ -294,9 +294,33 @@ def _logical_rect(slot):
  r=fitz.Rect(slot['rect']);r.x1=r.x0+r.width/slot.get('x_scale',1);return r
 
 
+def _balanced_cover_lines(font,value,rect,size,lines):
+ # Keep explicit line breaks. Otherwise balance the existing number of lines,
+ # preserving both font size and height and keeping postal labels with numbers.
+ if len(lines)<2 or '\n' in value:return lines
+ words=value.split();count=len(lines);n=len(words)
+ total=font.text_length(' '.join(words),fontsize=size)
+ target=(total-(count-1)*font.text_length(' ',fontsize=size))/count
+ states={(0,0):(0,[])}
+ for k in range(1,count+1):
+  for end in range(k,n+1):
+   if end<n and words[end-1].upper().rstrip('.') in ('C.P','CP','KM','K.M'):continue
+   best=None
+   for start in range(k-1,end):
+    previous=states.get((k-1,start))
+    if previous is None:continue
+    text=' '.join(words[start:end]);width,_=_line_width(font,text,size)
+    if width>rect.width+.05:continue
+    candidate=(previous[0]+(width-target)**2,previous[1]+[text])
+    if best is None or candidate[0]<best[0]:best=candidate
+   if best is not None:states[k,end]=best
+ return states.get((count,n),(0,lines))[1]
+
+
 def _write(page,slot,value,fonts):
  rect=fitz.Rect(slot['rect']);font,buffer,alias=fonts.get(slot.get('font','ArialMT'),value)
  lines,size,top,bottom,height=_layout(font,value,_logical_rect(slot),slot.get('size',9),slot.get('min_size',slot.get('size',9)))
+ if slot.get('balance_lines'):lines=_balanced_cover_lines(font,value,_logical_rect(slot),size,lines)
  page.insert_font(fontname=alias,fontbuffer=buffer)
  vertical=slot.get('valign','middle')
  y=rect.y0+(rect.height-height)*(0 if vertical=='top' else 1 if vertical=='bottom' else .5)+top*size

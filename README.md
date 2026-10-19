@@ -27,6 +27,8 @@ También puedes [ver ocho pruebas con direcciones detalladas y logos FULLOK, Mon
 
 Puedes revisar la [propuesta de ubicación de firmas](docs/ubicacion-firmas.md): portadas, pies, cartas y listas, con espacios marcados y firmas simuladas.
 
+[Revisión de las primeras dos imágenes: portada II](docs/portada-ii-revisada.md). Dirección centrada y espacios editables de firma iguales; cambios en el proyecto pendientes de incluir en una entrega nueva.
+
 ## Capturar los datos
 
 Los proyectos nuevos incluyen el logo PEMEX preparado a partir de la imagen aportada. Puedes sustituirlo desde **Estación → Logo → Subir**. Se coloca sin deformarlo.

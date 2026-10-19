@@ -5,6 +5,7 @@ import fitz
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from ajustes_encabezado import ajustar_encabezados
+from ajustes_portada_ii import ajustar_portada_ii
 BASE=Path(sys.argv[1]);ORIG=BASE/'originales';CLEAN=BASE/'limpios'
 ROMANS=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII']
 META=json.loads((ROOT/'campos_sasisopa_18.json').read_text())
@@ -249,6 +250,7 @@ for roman,module in zip(ROMANS,META['modules']):
   catalog.append(entry);maps[roman]=ajustar_encabezados({'pages':pages})
   from scripts.calibrar_firmas import calibrar_firmas
   calibrar_firmas(maps[roman],cleaned)
+  if roman=='II':ajustar_portada_ii(maps[roman])
   print(roman,len(pages),'pages',sum(len(p['slots']) for p in pages),'slots',flush=True)
 (ROOT/'catalogo18.json').write_text(json.dumps({'version':3,'status':'ready_pdf','engine':'sasisopa18','templates':catalog,'message':'Base limpia SASISOPA: 18 PDF, 523 páginas.'},ensure_ascii=False,indent=2)+'\n')
 (ROOT/'mapas_sasisopa18.json').write_text('{\n'+',\n'.join(json.dumps(id)+':{"pages":[\n'+',\n'.join(json.dumps(page,ensure_ascii=False,separators=(',',':')) for page in layout['pages'])+'\n]}' for id,layout in maps.items())+'\n}\n')

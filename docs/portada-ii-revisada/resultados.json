@@ -1,0 +1,16 @@
+{
+  "scope": "II, primera portada; siguientes imágenes pendientes de revisión",
+  "synthetic_public_illustration": true,
+  "cover_address": "centered_balanced_lines",
+  "address_font_size": 11.04,
+  "left_signature_size": [
+    82.5,
+    63.25
+  ],
+  "right_signature_size": [
+    82.5,
+    63.25
+  ],
+  "same_top_and_bottom": true,
+  "top_station_uses_full_E_hyphen_prefix": true
+}
