@@ -9,6 +9,7 @@ from fontTools.cffLib import CFFFontSet
 import fitz
 import instalaciones
 import equipo_hazop
+import calendarios
 import valores_predeterminados
 from limpieza_transparencias import normalizar_marcadores_vacios
 from personalizacion import validated_image
@@ -91,6 +92,7 @@ def validate_project(data,catalog=None,maps=None):
    aliases=[s for s in pages[p]['slots'] if s['key']==b['key'] and b['replace_id'] in s.get('legacy_ids',[])]
    if len(aliases)==1:b['replace_id']=aliases[0]['id']
    else:raise ValueError('La ubicación original de ese campo ya no existe.')
+ calendarios.period(valores_predeterminados.effective(data))
  start=resolve(data,'documento.fecha_inicio_estudio','II');end=resolve(data,'documento.fecha_fin_estudio','II')
  if start and end and datetime.strptime(end,'%d/%m/%Y')<datetime.strptime(start,'%d/%m/%Y'):raise ValueError('El fin del proyecto HAZOP no puede ser anterior al inicio.')
  return data
@@ -524,6 +526,7 @@ def render_page(doc,index,layout,data,id,fonts):
   r=fitz.Rect(region);r.y1=r.y0+28
   _write(page,{'rect':list(r),'size':10,'min_size':10},'No aplica: '+product+' no se almacena en esta estación.',fonts)
   notes.append({'field':'instalacion.no_aplica','product':product,'lines':1,'size':10})
+ notes.extend(calendarios.apply(page,id,index,data,_write,fonts))
  return notes
 
 
@@ -560,7 +563,7 @@ def generate(templates,out,data,selected=None,merge=False):
   id=meta['id']
   if id not in selected:continue
   blob=_source(templates,meta);layout=maps[id]
-  active=(instalaciones.enabled(data) and id in ('II','III','XIII')) or any(s['key'].startswith('tabla.') for p in layout['pages'] for s in p['slots']) or any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
+  active=calendarios.enabled(data,id) or (instalaciones.enabled(data) and id in ('II','III','XIII')) or any(s['key'].startswith('tabla.') for p in layout['pages'] for s in p['slots']) or any(slot_value(data,s,id) for pi in range(len(layout['pages'])) for s in slots_for(layout,data,id,pi))
   if active:
    with fitz.open(stream=blob,filetype='pdf') as doc:
     fonts=FontBook(doc)

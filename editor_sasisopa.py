@@ -48,9 +48,9 @@ class Editor:
    row=ttk.Frame(roles);row.pack(fill='x',pady=4);ttk.Label(row,text=spec['label'],width=25).pack(side='left')
    var=tk.StringVar();self.role_vars[spec['id']]=var;combo=ttk.Combobox(row,textvariable=var,state='readonly',width=24);combo.pack(side='left',fill='x',expand=True);var.combo=combo;var.trace_add('write',self.schedule)
   ttk.Label(roles,text='Las funciones se asignan por separado. AUTORIZA no se deduce de otro cargo. Sólo se llenan los espacios que correspondan a cada función.',wraplength=430).pack(anchor='w',pady=9)
-  project=ttk.LabelFrame(docs,text='Proyecto / estudio HAZOP',padding=6);project.pack(fill='x',pady=8)
+  project=ttk.LabelFrame(docs,text='Proyecto / calendarios y estudio HAZOP',padding=6);project.pack(fill='x',pady=8)
   for key,label in equipo_hazop.DATES:self.entry(project,label+' (dd/mm/aaaa)',self.vars,key)
-  ttk.Label(project,text='Se aplican al estudio del procedimiento II. Son independientes de revisión y reuniones. Equipo: captura en Personas y asigna en Funciones; las iniciales se calculan del nombre completo.',wraplength=430).pack(anchor='w',pady=4)
+  ttk.Label(project,text='El inicio define los 12 meses de los calendarios y el estudio del procedimiento II. Las fechas de revisión y reuniones son independientes. Equipo: captura en Personas y asigna en Funciones; las iniciales se calculan del nombre completo.',wraplength=430).pack(anchor='w',pady=4)
   initial_folder=str(ROOT/'plantillas')
   try:
    saved=json.loads((ROOT/'datos_locales'/'base18.json').read_text());initial_folder=saved['templates'] if Path(saved['templates']).is_dir() else initial_folder

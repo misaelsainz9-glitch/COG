@@ -8,6 +8,7 @@ from pathlib import Path
 import tempfile
 import zipfile
 import importar_requisitos
+import calendarios
 import tkinter as tk
 from unittest.mock import patch
 import fitz
@@ -95,6 +96,16 @@ def check_installation(progress=lambda stage: None):
                 dialog=next(w for w in window.winfo_children() if isinstance(w,tk.Toplevel))
                 assert 'Revisar' in dialog.title()
                 dialog.destroy()
+                progress('monthly_calendars')
+                calendar_data=engine.empty_project()
+                calendar_data['values']['documento.fecha_inicio_estudio']='01/11/2026'
+                with fitz.open() as calendar_doc:
+                    calendar_page=calendar_doc.new_page(width=792,height=612)
+                    calendar_report=calendarios.apply(calendar_page,'XIV',9,calendar_data,engine._write,engine.FontBook(calendar_doc))
+                    assert calendar_report[0]['months'][0]=='2026-11'
+                    assert calendar_report[0]['months'][-1]=='2027-10'
+                    assert len(calendar_report[0]['months'])==12
+                    assert '2026-2027' in calendar_page.get_text()
                 progress('profile_and_pdf')
                 project = editor.capture()
                 project['people']=[{'id':'DEMO','nombre':'PERSONA NO IMPRIMIR','firma':str(folder/'firma-demo.png')}]
@@ -133,5 +144,5 @@ def check_installation(progress=lambda stage: None):
                 else:
                     window.destroy()
     return {'ok': True, 'python': platform.python_version(), 'system': platform.system(), 'catalog_documents': 18, 'catalog_pages': 523,
-            'word_import_review': True, 'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
+            'monthly_calendars': True, 'word_import_review': True, 'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
             'large_blue_signatures': True, 'manual_attendance': True, 'private_documents_packaged': False, 'data_directory': str(user_root())}
