@@ -182,7 +182,9 @@ def slots_for(layout,data,doc_id,page):
    if 'baseline' in old:binding['baseline']=binding['rect'][1]+old['baseline']-old['rect'][1]
    aliases[old['id']]=binding['id'];customs[i]=binding
  result=[{**s,'code_owner':aliases[s['code_owner']]} if s.get('code_owner') in aliases else s for s in result]
- return result+customs
+ # Cover addresses are centered even in profiles saved with the older right alignment.
+ # Apply after merging custom bindings, without changing saved geometry or profiles.
+ return [{**slot,'align':1} if page==0 and slot['key']=='estacion.direccion' else slot for slot in result+customs]
 
 
 def destination_keys(maps,data,selected):
