@@ -71,7 +71,7 @@ jobs:
             choco install innosetup --yes --no-progress
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.8' }
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.9' }
           & $compiler "/DAppVersion=$version" packaging/instalador.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test install, executable, update and uninstall
@@ -120,7 +120,7 @@ jobs:
       - name: Package installer ZIP for Windows Explorer
         run: |
           @'
-          SASISOPA 0.2.8 - Importacion de requisitos desde Word
+          SASISOPA 0.2.9 - Importacion de requisitos desde Word
           1. Extrae este ZIP con Extraer todo de Windows.
           2. Ejecuta SASISOPA-Instalador-Windows.exe para instalar o actualizar.
           3. Abre SASISOPA y pulsa Importar datos desde Word.

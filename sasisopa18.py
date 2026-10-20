@@ -182,6 +182,14 @@ def slots_for(layout,data,doc_id,page):
    if 'baseline' in old:binding['baseline']=binding['rect'][1]+old['baseline']-old['rect'][1]
    aliases[old['id']]=binding['id'];customs[i]=binding
  result=[{**s,'code_owner':aliases[s['code_owner']]} if s.get('code_owner') in aliases else s for s in result]
+ # The policy signer name belongs below the printed role, leaving the line
+ # above it for the signature. Upgrade this placement in older bindings too.
+ if doc_id=='I' and page==10 and 'I.11.10' in by_id:
+  canonical=by_id['I.11.10']
+  result=[{**slot,**{k:copy.deepcopy(canonical[k]) for k in ('rect','erase_rect','align','min_size')}}
+          if slot['key']=='rol.representante_legal.nombre' and (slot['id']=='I.11.10' or slot.get('replace_id')=='I.11.10') else slot for slot in result]
+  customs=[{**slot,**{k:copy.deepcopy(canonical[k]) for k in ('rect','erase_rect','align','min_size')}}
+           if slot['key']=='rol.representante_legal.nombre' and slot.get('replace_id')=='I.11.10' else slot for slot in customs]
  # Cover addresses are centered even in profiles saved with the older right alignment.
  # Apply after merging custom bindings, without changing saved geometry or profiles.
  return [{**slot,'align':1} if page==0 and slot['key']=='estacion.direccion' else slot for slot in result+customs]
