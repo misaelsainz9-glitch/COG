@@ -9,6 +9,7 @@ import fitz
 import sasisopa18 as engine
 import instalaciones
 import equipo_hazop
+import valores_predeterminados
 from importar18 import import_zip
 from tema import configure_theme,NAVY
 from firma_canvas import signature_dialog
@@ -29,7 +30,7 @@ class Editor:
   self.panes=ttk.Panedwindow(app,orient='horizontal');self.panes.pack(fill='both',expand=True,padx=12,pady=10)
   left=ttk.Frame(self.panes,width=510);right=ttk.Frame(self.panes);self.panes.add(left,weight=2);self.panes.add(right,weight=3)
   self.tabs=ttk.Notebook(left);self.tabs.pack(fill='both',expand=True)
-  station=self.tab('Estación');installation=self.tab('Instalaciones');persons=self.tab('Personas');roles=self.tab('Funciones');docs=self.tab('Documentos');tables=self.tab('Listas')
+  station=self.tab('Estación');self.shared_box=self.tab('Datos comunes');self.shared_keys=set();installation=self.tab('Instalaciones');persons=self.tab('Personas');roles=self.tab('Funciones');docs=self.tab('Documentos');tables=self.tab('Listas')
   for spec in self.inventory['fields']:
    if spec['scope']=='estacion' or spec['id'] in ('documento.revision','documento.fecha_revision'):
     self.entry(station,spec['label'],self.vars,spec['id'])
@@ -60,14 +61,17 @@ class Editor:
    v=tk.BooleanVar(value=True);self.selected[meta['id']]=v;ttk.Checkbutton(docs,text=f"{meta['id']}. {meta['title']} ({meta['pages']} páginas)",variable=v).pack(anchor='w')
   self.merge=tk.BooleanVar(value=True);ttk.Checkbutton(docs,text='Crear también un PDF unido',variable=self.merge).pack(anchor='w',pady=8)
   self.doc_selector=tk.StringVar(value=self.catalog['templates'][0]['id']);self.doc_selector.trace_add('write',self.change_document)
-  ttk.Label(docs,text='Datos particulares del documento visible').pack(anchor='w',pady=(12,4));self.doc_fields_box=ttk.Frame(docs);self.doc_fields_box.pack(fill='x')
+  ttk.Label(docs,text='Datos particulares del documento visible').pack(anchor='w',pady=(12,4));self.only_page=tk.BooleanVar(value=True);ttk.Checkbutton(docs,text='Mostrar sólo campos de la página visible',variable=self.only_page,command=self.page_fields).pack(anchor='w');self.doc_fields_box=ttk.Frame(docs);self.doc_fields_box.pack(fill='x')
   ttk.Button(docs,text='Agregar otro dato al documento',command=self.add_custom_field).pack(anchor='w',pady=8)
+  ttk.Button(docs,text='Usar datos actuales como predeterminados',command=self.set_defaults).pack(anchor='w',pady=4)
+  ttk.Button(docs,text='Quitar valores predeterminados del proyecto',command=self.clear_defaults).pack(anchor='w',pady=4)
+  ttk.Label(docs,text='Un campo vacío usa su predeterminado guardado. Si no existe, conserva la plantilla. Puedes editar los textos y resultados de los espacios marcados; el sistema no calcula riesgos ni acredita actividades.',wraplength=430).pack(anchor='w',pady=6)
   ttk.Label(docs,text='Los campos particulares se aplican sólo a este documento. Si no tienen espacio predefinido, selecciónalos en Ubicar campo y marca su espacio en la página.',wraplength=430).pack(anchor='w')
   self.table_selector=tk.StringVar();self.table_combo=ttk.Combobox(tables,textvariable=self.table_selector,state='readonly');self.table_combo.pack(fill='x');self.table_selector.trace_add('write',self.change_table)
   self.table_box=ttk.Frame(tables);self.table_box.pack(fill='x',pady=8)
   # Preview shows the actual PDF; no web view or simulated document.
   toolbar=ttk.Frame(right);toolbar.pack(fill='x',pady=(0,7));ttk.Label(toolbar,text='Documento').pack(side='left');ttk.Combobox(toolbar,textvariable=self.doc_selector,values=[m['id'] for m in self.catalog['templates']],state='readonly',width=7).pack(side='left',padx=5)
-  self.page=tk.IntVar(value=1);ttk.Label(toolbar,text='Página').pack(side='left');self.page_spin=ttk.Spinbox(toolbar,from_=1,to=14,textvariable=self.page,width=5,command=self.schedule);self.page_spin.pack(side='left',padx=5);self.page.trace_add('write',self.schedule)
+  self.page=tk.IntVar(value=1);ttk.Label(toolbar,text='Página').pack(side='left');self.page_spin=ttk.Spinbox(toolbar,from_=1,to=14,textvariable=self.page,width=5,command=self.schedule);self.page_spin.pack(side='left',padx=5);self.page.trace_add('write',self.page_changed)
   self.page_count=ttk.Label(toolbar,text='/ 14');self.page_count.pack(side='left');self.zoom=tk.StringVar(value='100 %');zoom_combo=ttk.Combobox(toolbar,textvariable=self.zoom,values=['50 %','75 %','100 %','125 %','150 %','200 %'],state='readonly',width=7);zoom_combo.pack(side='left',padx=5);zoom_combo.bind('<<ComboboxSelected>>',self.change_zoom);ttk.Button(toolbar,text='Actualizar vista',command=self.update_preview).pack(side='right')
   locator=ttk.Frame(right);locator.pack(fill='x',pady=5);ttk.Label(locator,text='Campo').grid(row=0,column=0);self.field_choice=tk.StringVar();self.field_combo=ttk.Combobox(locator,textvariable=self.field_choice,state='readonly',width=50);self.field_combo.grid(row=0,column=1,sticky='ew',padx=5)
   self.place_mode=tk.BooleanVar();ttk.Checkbutton(locator,text='Ubicar campo',variable=self.place_mode).grid(row=0,column=2)
@@ -79,7 +83,7 @@ class Editor:
   self.show_regions=tk.BooleanVar(value=False);ttk.Checkbutton(right,text='Mostrar espacios editables',variable=self.show_regions,command=self.update_preview).pack(anchor='w')
   footer=ttk.Frame(app);footer.pack(fill='x',padx=15,pady=(0,12));self.status=tk.StringVar(value='Base completa: 18 PDF, 523 páginas.');ttk.Label(footer,textvariable=self.status,wraplength=950).pack(side='left',fill='x',expand=True);self.generate_button=ttk.Button(footer,text='Generar PDF',style='Primary.TButton',command=self.generate);self.generate_button.pack(side='right')
   app.bind_all('<MouseWheel>',self.wheel);app.bind_all('<Button-4>',self.wheel);app.bind_all('<Button-5>',self.wheel)
-  self.current_slot=None;self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.poll_timer=app.after(100,self.poll);app.protocol('WM_DELETE_WINDOW',self.close);self.schedule()
+  self.current_slot=None;self.refresh_people();self.build_shared_fields();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.poll_timer=app.after(100,self.poll);app.protocol('WM_DELETE_WINDOW',self.close);self.schedule()
  def wheel(self,event):
   direction=-1 if getattr(event,'num',0)==4 else 1 if getattr(event,'num',0)==5 else -int(event.delta/120)
   if not direction:return
@@ -127,7 +131,8 @@ class Editor:
    record={k:v.get().strip() for k,v in values.items()};rows=copy.deepcopy(self.installation_tanks)
    if index is None:rows.append(record)
    else:rows[index]=record
-   try:instalaciones.validate({'installation':{'enabled':True,'tanks':rows,'equipment':{}}})
+   candidate=copy.deepcopy(self.data);candidate['installation']={'enabled':True,'tanks':rows,'equipment':{}}
+   try:instalaciones.validate(valores_predeterminados.effective(candidate))
    except ValueError as exc:messagebox.showerror('Revisa el tanque',str(exc),parent=window);return
    self.installation_tanks=rows;self.installation_enabled.set(True);self.refresh_tanks();window.destroy();self.schedule()
   ttk.Button(body,text='Guardar tanque',command=save).pack(anchor='e',pady=10)
@@ -197,10 +202,12 @@ class Editor:
   self.data['table_people']={row:id for row,id in self.data.get('table_people',{}).items() if id not in ids};self.data['people']=[p for p in self.data['people'] if p['id'] not in ids];self.data['roles']={r:id for r,id in self.data['roles'].items() if id not in ids};self.refresh_people();self.change_table();self.schedule()
  def capture(self):
   self.data['installation']=self.installation_capture()
-  self.data['values']={k:v.get().strip() for k,v in self.vars.items()}
+  self.data['values'].update({k:v.get().strip() for k,v in self.vars.items()})
   self.data['roles']={k:self.choice_to_id.get(v.get(),'') for k,v in self.role_vars.items() if v.get()}
   id=getattr(self,'fields_document',None)
-  if id:self.data['documents'][id]={k:v.get().strip() for k,v in self.doc_vars.items() if v.get().strip()}
+  if id:
+   current=self.data['documents'].setdefault(id,{})
+   current.update({k:v.get().strip() for k,v in self.doc_vars.items()})
   self.data['tables'].update({k:v.get().strip() for k,v in self.table_vars.items() if not self.data.get('table_people',{}).get(k.rsplit('.',1)[0])})
   return copy.deepcopy(self.data)
  def build_doc_fields(self):
@@ -208,8 +215,59 @@ class Editor:
   self.doc_vars={};id=self.doc_selector.get();self.fields_document=id;values=self.data['documents'].get(id,{})
   defaults=[(s['id'],s['label']) for s in self.inventory['fields'] if s['scope']=='documento_o_evento']
   default_ids={key for key,_ in defaults}
-  defaults += [(k,k.split('.',1)[-1]) for k in values if k not in default_ids]
-  for key,label in defaults:self.entry(self.doc_fields_box,label,self.doc_vars,key,values.get(key,''))
+  baseline=(self.data.get('defaults') or {}).get('documents',{}).get(id,{})
+  custom={b['key']:b for b in self.data['bindings'] if b['doc']==id and b['key'].startswith('dato.') and b.get('editable',not b['id'].startswith('TENEX.')) and not b.get('shared')}
+  keys=dict.fromkeys([*values,*baseline,*custom])
+  hidden={b['key'] for b in self.data['bindings'] if b['doc']==id and b['key'].startswith('dato.') and b['key'] not in custom}
+  if self.only_page.get():
+   try:page=int(self.page.get())-1
+   except (AttributeError,tk.TclError,ValueError):page=0
+   visible={b['key'] for b in self.data['bindings'] if b['doc']==id and b['page']==page}
+   hidden.update(key for key in custom if key not in visible)
+  defaults += [(k,custom.get(k,{}).get('label',k.split('.',1)[-1])) for k in keys if k not in default_ids and k not in hidden]
+  for key,label in defaults:
+   if key in custom and custom[key].get('multiline'):
+    self.text_entry(self.doc_fields_box,label,self.doc_vars,key,values.get(key,''))
+   else:self.entry(self.doc_fields_box,label,self.doc_vars,key,values.get(key,''))
+   baseline_text=baseline.get(key,'') or custom.get(key,{}).get('default_text','')
+   if baseline_text:ttk.Label(self.doc_fields_box,text='Si queda vacío: '+baseline_text.replace('\n',' ')[:180],wraplength=430,foreground='#55616b').pack(anchor='w')
+ def build_shared_fields(self):
+  for widget in self.shared_box.winfo_children():widget.destroy()
+  for key in self.shared_keys:self.vars.pop(key,None)
+  fields={b['key']:b for b in self.data['bindings'] if b.get('shared')}
+  labels={s['id']:s['label'] for s in self.inventory['fields']}
+  labels['dato.fecha_actual_operativa']='Fecha general de registros (dd/mm/aaaa)'
+  for key in self.data['values']:
+   if key not in self.vars and key not in fields:fields[key]={'label':labels.get(key,key.split('.',1)[-1])}
+  self.shared_keys=set(fields)
+  ttk.Label(self.shared_box,text='Un dato común se actualiza en todos sus espacios vinculados. Vacío usa el predeterminado del proyecto.',wraplength=430).pack(anchor='w',pady=6)
+  for key,b in fields.items():
+   label=b.get('label',key)
+   if b.get('multiline'):self.text_entry(self.shared_box,label,self.vars,key,self.data['values'].get(key,''))
+   else:self.entry(self.shared_box,label,self.vars,key,self.data['values'].get(key,''))
+ def page_fields(self):
+  self.capture();self.build_doc_fields();self.refresh_field_choices()
+ def page_changed(self,*args):
+  try:
+   if hasattr(self,'doc_fields_box') and hasattr(self,'page') and self.only_page.get():
+    int(self.page.get());self.page_fields()
+  except (tk.TclError,ValueError):pass
+  self.schedule()
+ def text_entry(self,parent,label,store,key,value=''):
+  ttk.Label(parent,text=label,wraplength=430).pack(anchor='w',pady=(8,2))
+  variable=tk.StringVar(value=value);store[key]=variable
+  box=tk.Text(parent,height=5,wrap='word',font=('Segoe UI',10));box.pack(fill='x');box.insert('1.0',value)
+  def changed(event=None):
+   if box.edit_modified():variable.set(box.get('1.0','end-1c'));box.edit_modified(False)
+  box.bind('<<Modified>>',changed);box.edit_modified(False);variable.trace_add('write',self.schedule)
+ def set_defaults(self):
+  data=self.capture()
+  try:engine.validate_project(valores_predeterminados.effective(data))
+  except ValueError as exc:messagebox.showerror('Revisa los datos',str(exc));return
+  self.data['defaults']=valores_predeterminados.snapshot(valores_predeterminados.effective(data))
+  self.status.set('Predeterminados guardados en el proyecto. Vacío usa estos datos; no acredita validación técnica.');self.schedule()
+ def clear_defaults(self):
+  self.data.pop('defaults',None);self.status.set('Predeterminados retirados. Los campos vacíos conservan la plantilla.');self.schedule()
  def add_custom_field(self):
   from tkinter.simpledialog import askstring
   label=askstring('Agregar dato','Nombre del dato, por ejemplo CURP o fecha del incidente:',parent=self.app)
@@ -236,6 +294,7 @@ class Editor:
    for spec in self.inventory['fields']:
     if spec['scope']=='persona':fields[role['label']+' · '+spec['label']]='rol.'+role['id']+'.'+spec['id'].split('.')[1]
   fields.update({k:k for k in self.data['documents'].get(self.doc_selector.get(),{})})
+  fields.update({b.get('label',b['key']):b['key'] for b in self.data['bindings'] if b['doc']==self.doc_selector.get() and b['key'].startswith('dato.') and b.get('editable',not b['id'].startswith('TENEX.')) and not b.get('shared')})
   self.field_keys=fields;self.field_combo.configure(values=list(fields))
   if self.field_choice.get() not in fields:self.field_choice.set(next(iter(fields),''))
  def schedule(self,*args):
@@ -331,7 +390,7 @@ class Editor:
   if not path:return
   try:data=engine.load_project(path)
   except Exception as exc:messagebox.showerror('No se cargó',str(exc));return
-  self.data=data;self.installation_load(data)
+  self.data=data;self.build_shared_fields();self.installation_load(data)
   for key,v in self.vars.items():v.set(data['values'].get(key,''))
   self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.schedule()
  def import_templates(self):
@@ -346,7 +405,7 @@ class Editor:
  def generate(self):
   if self.busy:return
   try:
-   data=self.capture();engine.validate_project(data);selected=[id for id,v in self.selected.items() if v.get()]
+   data=valores_predeterminados.effective(self.capture());engine.validate_project(data);selected=[id for id,v in self.selected.items() if v.get()]
    if not selected:raise ValueError('Selecciona al menos un documento.')
    engine.check_destinations(data,self.maps,selected)
    if not self.output.get().strip() or not self.templates.get().strip():raise ValueError('Selecciona las carpetas de plantillas y salida.')

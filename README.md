@@ -92,3 +92,7 @@ set "SASISOPA18_ZIP=C:\ruta\SASISOPA.zip"
 ```
 
 Los grupos de integración de las bases retiradas se omiten explícitamente. Las pruebas gráficas requieren una pantalla; se omiten si no existe `DISPLAY`. Consulta [el inventario por documento](docs/campos-sasisopa-18.md) y [REVISION.md](REVISION.md). Las imágenes antiguas de propuesta son ilustraciones, no capturas de la versión final.
+
+### Datos editables y predeterminados por proyecto
+
+La captura permite guardar predeterminados, editar textos de varias líneas y compartir un dato entre documentos. Los perfiles pueden incorporar celdas HAZOP y otros espacios de revisión. Consulta [cómo se usan los campos y predeterminados](docs/datos-predeterminados.md).

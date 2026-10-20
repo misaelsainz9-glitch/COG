@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 import sasisopa18 as engine
 import editor_sasisopa as ui
+import valores_predeterminados as defaults
 
 
 def descendants(widget):
@@ -69,3 +70,31 @@ class Editor18Tests(unittest.TestCase):
   self.assertIsNotNone(ed.photo);self.assertNotIn('no cabe',ed.status.get())
   data=ed.capture();self.assertEqual(engine.resolve(data,'rol.representante_legal.iniciales','II'),'UHC')
   self.assertEqual(data['values']['documento.fecha_inicio_estudio'],'02/11/2026')
+
+ def test_project_defaults_multiline_and_hidden_corrections_survive_save_load(self):
+  ed=self.editor;ed.vars['estacion.numero'].set('E-12345');ed.doc_selector.set('I')
+  ed.data['documents']['I']={'dato.editable':'Primera línea\nSegunda línea','dato.interno':'Corrección fija'}
+  ed.data['bindings']=[{'id':'TENEX.editable','doc':'I','page':0,'key':'dato.editable','rect':[85,250,400,300],'size':9,'label':'Información del estudio','multiline':True,'editable':True},{'id':'TENEX.interno','doc':'I','page':0,'key':'dato.interno','rect':[85,310,400,330],'size':9}]
+  ed.build_doc_fields();self.window.update()
+  self.assertIn('dato.editable',ed.doc_vars);self.assertNotIn('dato.interno',ed.doc_vars)
+  ed.set_defaults();ed.vars['estacion.numero'].set('');ed.doc_vars['dato.editable'].set('');data=ed.capture()
+  self.assertEqual(data['documents']['I']['dato.interno'],'Corrección fija');self.assertEqual(defaults.effective(data)['documents']['I']['dato.editable'],'Primera línea\nSegunda línea')
+  project=self.folder/'predeterminados.json';engine.save_project(project,data);loaded=engine.load_project(project)
+  self.assertEqual(engine.resolve(loaded,'estacion.numero','I'),'E-12345')
+  ed.build_doc_fields();self.assertIn('dato.editable',ed.doc_vars);ed.clear_defaults();self.assertNotIn('defaults',ed.capture())
+
+ def test_shared_fields_and_page_filter_keep_values_between_pages(self):
+  ed=self.editor;ed.data['values']['dato.comun']='Texto común'
+  ed.data['bindings']=[{'id':'Bshared','doc':'I','page':0,'key':'dato.comun','rect':[85,250,400,275],'size':9,'shared':True,'label':'Normativa compartida'}, {'id':'Blater','doc':'I','page':1,'key':'dato.otro','rect':[85,250,400,275],'size':9,'label':'Página dos'}]
+  ed.data['documents']['I']={'dato.otro':'Texto de página dos'};ed.build_shared_fields();ed.build_doc_fields();self.window.update()
+  self.assertIn('dato.comun',ed.vars);self.assertNotIn('dato.comun',ed.doc_vars);self.assertNotIn('dato.otro',ed.doc_vars)
+  ed.vars['dato.comun'].set('Nuevo texto común');ed.page.set(2);self.window.update();self.assertEqual(ed.doc_vars['dato.otro'].get(),'Texto de página dos')
+  ed.doc_vars['dato.otro'].set('Cambio conservado');ed.page.set(1);self.window.update();self.assertNotIn('dato.otro',ed.doc_vars)
+  self.assertEqual(ed.capture()['documents']['I']['dato.otro'],'Cambio conservado');self.assertEqual(ed.capture()['values']['dato.comun'],'Nuevo texto común')
+
+ def test_loaded_global_dates_remain_editable_and_are_not_lost_on_capture(self):
+  ed=self.editor;ed.data['values']['documento.fecha_firmas']='19/10/2026';ed.data['values']['dato.fecha_actual_operativa']='19/10/2026';ed.build_shared_fields()
+  self.assertIn('documento.fecha_firmas',ed.vars);self.assertIn('dato.fecha_actual_operativa',ed.vars)
+  ed.vars['dato.fecha_actual_operativa'].set('20/10/2026');data=ed.capture();self.assertEqual(data['values']['documento.fecha_firmas'],'19/10/2026');self.assertEqual(data['values']['dato.fecha_actual_operativa'],'20/10/2026')
+  ed.vars['dato.fecha_actual_operativa'].set('31/02/2026')
+  with self.assertRaises(ValueError):engine.validate_project(ed.capture())

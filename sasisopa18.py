@@ -1,5 +1,5 @@
 """Llenado de los 18 PDF limpios con campos por función y regiones reutilizables."""
-from pathlib import Path
+from pathlib import Path,PureWindowsPath
 from datetime import datetime
 import json,hashlib,re,os,shutil,copy,io
 from functools import lru_cache
@@ -9,6 +9,7 @@ from fontTools.cffLib import CFFFontSet
 import fitz
 import instalaciones
 import equipo_hazop
+import valores_predeterminados
 from limpieza_transparencias import normalizar_marcadores_vacios
 from personalizacion import validated_image
 from motor import MESES
@@ -30,7 +31,6 @@ def validate_project(data,catalog=None,maps=None):
   if not isinstance(data.get(k),kind):raise ValueError('Datos de proyecto inválidos: '+k)
  data.setdefault('table_people',{})
  if not isinstance(data['table_people'],dict):raise ValueError('Asignaciones de listas inválidas.')
- instalaciones.validate(data)
  ids=[]
  for person in data['people']:
   if not isinstance(person,dict) or not isinstance(person.get('id'),str) or not person['id']:raise ValueError('Cada persona necesita un identificador.')
@@ -46,18 +46,25 @@ def validate_project(data,catalog=None,maps=None):
   for key,value in values.items():
    if not isinstance(key,str) or not isinstance(value,str):raise ValueError('Los valores de captura deben ser textos.')
    if len(value)>12000 or any(ord(c)<32 and c!='\n' for c in value):raise ValueError('Hay un texto demasiado largo o con caracteres de control.')
+ if data.get('defaults') is not None:
+  defaults=data['defaults']
+  if not isinstance(defaults,dict) or set(defaults)-set(valores_predeterminados.SECTIONS):raise ValueError('Valores predeterminados inválidos.')
+  baseline=empty_project()
+  baseline.update(copy.deepcopy(defaults));baseline['bindings']=copy.deepcopy(data['bindings'])
+  validate_project(baseline,catalog,maps)
  check_values(data['values']);check_values(data['tables'])
  for person in data['people']:check_values(person)
  for doc,values in data['documents'].items():
   if doc not in maps:raise ValueError('Documento desconocido: '+doc)
   check_values(values)
+ instalaciones.validate(valores_predeterminados.effective(data))
  for values in [data['values']]+list(data['documents'].values()):
   for key,value in values.items():
    value=value.strip()
    if not value:continue
    if key=='estacion.numero' and not re.fullmatch(r'E-[0-9]{5}',value):raise ValueError('Número de estación: usa E-00000.')
    if key=='documento.revision' and not re.fullmatch(r'\d+',value):raise ValueError('La revisión debe ser un entero no negativo.')
-   if key.startswith('documento.fecha_'):
+   if key.startswith('documento.fecha_') or key=='dato.fecha_actual_operativa':
     try:datetime.strptime(value,'%d/%m/%Y')
     except ValueError:raise ValueError(key+': usa una fecha real con formato dd/mm/aaaa.') from None
  all_keys={s['key'] for layout in maps.values() for p in layout['pages'] for s in p['slots']}
@@ -98,7 +105,8 @@ def resolve(data,key,doc_id):
   row,attribute=key.rsplit('.',1);person_id=data.get('table_people',{}).get(row)
   if person_id:return next((p.get(attribute,'').strip() for p in data['people'] if p['id']==person_id),'')
   return str(data['tables'].get(key,'')).strip()
- value=data['documents'].get(doc_id,{}).get(key,data['values'].get(key,'')).strip()
+ defaults=data.get('defaults') or {}
+ value=data['documents'].get(doc_id,{}).get(key,'').strip() or (defaults.get('documents') or {}).get(doc_id,{}).get(key,'').strip() or data['values'].get(key,'').strip() or (defaults.get('values') or {}).get(key,'').strip()
  if key=='estacion.direccion':
   parts=[value] if value else []
   for subkey in ('estacion.localidad','estacion.estado','estacion.codigo_postal'):
@@ -132,7 +140,8 @@ def slot_value(data,slot,doc_id):
  elif slot.get('revision_scope')=='global_only':value=data['values'].get(key,'').strip()
  else:value=resolve(data,key,doc_id)
  if not value and slot.get('fallback_key'):value=resolve(data,slot['fallback_key'],doc_id)
- return value
+ if not value and slot.get('preserve_default'):value=slot.get('default_text','')
+ return slot.get('text_prefix','')+value if value else ''
 
 
 def slots_for(layout,data,doc_id,page):
@@ -488,6 +497,7 @@ def render_page(doc,index,layout,data,id,fonts):
 
 
 def preview(templates,data,id,page_index,scale=1.0):
+ data=valores_predeterminados.effective(data)
  catalog,maps=configuration();validate_project(data,catalog,maps)
  meta=next((m for m in catalog['templates'] if m['id']==id),None)
  if meta is None:raise ValueError('Selecciona un documento válido.')
@@ -503,6 +513,7 @@ def preview(templates,data,id,page_index,scale=1.0):
 
 
 def generate(templates,out,data,selected=None,merge=False):
+ data=valores_predeterminados.effective(data)
  catalog,maps=configuration();validate_project(data,catalog,maps)
  ids=[m['id'] for m in catalog['templates']];selected=ids if selected is None else list(selected)
  if not selected or len(set(selected))!=len(selected) or any(id not in ids for id in selected):raise ValueError('Selecciona al menos un documento válido, sin duplicados.')
@@ -566,4 +577,14 @@ def load_project(path):
   if path.stat().st_size>8*1024*1024:raise ValueError('El archivo de datos es demasiado grande.')
   data=json.loads(path.read_text(encoding='utf-8'))
  except (OSError,json.JSONDecodeError) as exc:raise ValueError('No se pudo leer el archivo de datos SASISOPA 18.') from exc
+ validate_project(data)
+ # Resolve project-relative image assets for portable project folders.
+ for section in [data,data.get('defaults') or {}]:
+  stores=[section.get('values',{})]+list(section.get('documents',{}).values())
+  for store in stores:
+   for key,value in store.items():
+    if key.endswith(('.logo','.firma')) and value and not Path(value).is_absolute() and not PureWindowsPath(value).is_absolute():store[key]=str((path.parent/value).resolve())
+  for person in section.get('people',[]):
+   value=person.get('firma','')
+   if value and not Path(value).is_absolute() and not PureWindowsPath(value).is_absolute():person['firma']=str((path.parent/value).resolve())
  return validate_project(data)
