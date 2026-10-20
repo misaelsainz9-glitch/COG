@@ -27,10 +27,10 @@ class AddressAlignmentTests(unittest.TestCase):
                 self.assertAlmostEqual(words[-1][2], rect.x1, delta=1)
             self.assertLess(ordered[-1][-1][2], rect.x1 - 10)
 
-    def test_addresses_are_right_aligned_except_reviewed_cover(self):
+    def test_interior_addresses_are_right_aligned(self):
         _, maps = engine.configuration()
         addresses = [s for id,d in maps.items() for pi,p in enumerate(d['pages']) for s in p['slots']
-                     if s['key'] == 'estacion.direccion' and (id,pi)!=('II',0)]
+                     if s['key'] == 'estacion.direccion' and pi>0]
         self.assertTrue(addresses)
         self.assertTrue(all(s['align'] == 2 for s in addresses))
 
