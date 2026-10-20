@@ -194,10 +194,13 @@ def check_destinations(data,maps,selected):
   keys=destination_keys(maps,data,[id])
   for key,value in data['documents'].get(id,{}).items():
    if value.strip() and key not in keys:raise ValueError(f'{id}: «{key}» no tiene espacio asignado. Usa Ubicar campo en la vista previa.')
- keys=destination_keys(maps,data,selected)
+ keys=destination_keys(maps,data,selected);available=None
  for key,value in data['values'].items():
   if key in {k for k,label in equipo_hazop.DATES} and 'II' not in selected:continue
-  if value.strip() and key not in keys and not (key in ('estacion.localidad','estacion.estado','estacion.codigo_postal') and 'estacion.direccion' in keys):raise ValueError(f'«{key}» no aparece en los documentos seleccionados. Usa Ubicar campo o deja ese dato vacío.')
+  if value.strip() and key not in keys and not (key in ('estacion.localidad','estacion.estado','estacion.codigo_postal') and 'estacion.direccion' in keys):
+   if available is None:available=destination_keys(maps,data,list(maps))
+   if key in available:continue
+   raise ValueError(f'«{key}» no aparece en los documentos seleccionados. Usa Ubicar campo o deja ese dato vacío.')
 
 
 def _source(templates,meta):

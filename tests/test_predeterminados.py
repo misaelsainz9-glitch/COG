@@ -62,3 +62,11 @@ class CorrectedDefaultsTests(unittest.TestCase):
   self.assertEqual(e.slot_value(d,slot,'XIII'),'Texto corregido de la plantilla')
   d['documents']['XIII']={'dato.protocolo':'Protocolo capturado'};self.assertEqual(e.slot_value(d,slot,'XIII'),'Protocolo capturado')
   d['documents']['XIII']['dato.protocolo']='';self.assertEqual(e.slot_value(d,slot,'XIII'),'Texto corregido de la plantilla')
+
+class PartialProjectDefaultsTests(unittest.TestCase):
+ def test_known_shared_fields_in_other_documents_do_not_block_partial_generation(self):
+  d=e.empty_project();_,maps=e.configuration();d['values']={'dato.comun':'REFERENCIA'}
+  d['bindings']=[{'id':'Bshared','doc':'III','page':0,'key':'dato.comun','rect':[85,250,400,275],'size':9,'shared':True}]
+  e.check_destinations(d,maps,['I'])
+  d['values']['dato.sin_ubicacion']='NO PERDER'
+  with self.assertRaisesRegex(ValueError,'Ubicar campo'):e.check_destinations(d,maps,['I'])
