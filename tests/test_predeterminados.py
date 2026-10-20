@@ -54,7 +54,7 @@ class PortableDefaultsTests(unittest.TestCase):
   d=e.empty_project();d['values']['estacion.logo']='assets/logo.png';d['defaults']=defaults.snapshot(d)
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp)/'proyecto.json';e.save_project(p,d);loaded=e.load_project(p)
-   self.assertEqual(loaded['values']['estacion.logo'],str(Path(tmp)/'assets/logo.png'));self.assertEqual(loaded['defaults']['values']['estacion.logo'],str(Path(tmp)/'assets/logo.png'))
+   self.assertEqual(loaded['values']['estacion.logo'],str((Path(tmp)/'assets/logo.png').resolve()));self.assertEqual(loaded['defaults']['values']['estacion.logo'],str((Path(tmp)/'assets/logo.png').resolve()))
 
 class CorrectedDefaultsTests(unittest.TestCase):
  def test_clearing_project_defaults_does_not_restore_an_unsafe_source_passage(self):

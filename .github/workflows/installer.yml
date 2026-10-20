@@ -71,7 +71,7 @@ jobs:
             choco install innosetup --yes --no-progress
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.3' }
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.4' }
           & $compiler "/DAppVersion=$version" packaging/instalador.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test install, executable, update and uninstall
