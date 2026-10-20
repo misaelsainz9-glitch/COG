@@ -116,3 +116,13 @@ class DeepPDFTests(unittest.TestCase):
      if pi==15:self.assertIn('Ulises Hernández Cruz',text)
      drawings=lambda p:[{k:v for k,v in d.items() if k!='seqno'} for d in p.get_drawings()]
      self.assertEqual(drawings(doc[pi]),drawings(original[pi]))
+
+ def test_long_imported_station_data_fits_special_register_headers(self):
+  data=e.empty_project();data['values']={'estacion.numero':'E-99999','estacion.razon_social':'ESTACION LAS PALMAS AUTO SERVICIO SA DE CV','estacion.direccion':'CARRETERA FEDERAL 123 KM 108.5, COLONIA CENTRO, MUNICIPIO DE EJEMPLO, PUEBLA. CP. 72000'}
+  _,maps=e.configuration()
+  for doc_id,pi in [('XI',13),('XI',14),('XI',16),('XIII',15)]:
+   with fitz.open(self.base/f'PROCEDIMIENTO {doc_id}.pdf') as doc,fitz.open(self.base/f'PROCEDIMIENTO {doc_id}.pdf') as original:
+    e.render_page(doc,pi,maps[doc_id],data,doc_id,e.FontBook(doc))
+    self.assertIn('72000',doc[pi].get_text());self.assertEqual(doc[pi].rect,original[pi].rect)
+    drawings=lambda p:[{k:v for k,v in d.items() if k!='seqno'} for d in p.get_drawings()]
+    self.assertEqual(drawings(doc[pi]),drawings(original[pi]))

@@ -199,7 +199,7 @@ def check_destinations(data,maps,selected):
   if key in {k for k,label in equipo_hazop.DATES} and 'II' not in selected:continue
   if value.strip() and key not in keys and not (key in ('estacion.localidad','estacion.estado','estacion.codigo_postal') and 'estacion.direccion' in keys):
    if available is None:available=destination_keys(maps,data,list(maps))
-   if key in available:continue
+   if key in available or key in ('estacion.telefono','estacion.correo'):continue
    raise ValueError(f'«{key}» no aparece en los documentos seleccionados. Usa Ubicar campo o deja ese dato vacío.')
 
 
@@ -456,6 +456,17 @@ def render_page(doc,index,layout,data,id,fonts):
     try:_layout(font,' '.join(words[:n]),slot['rect'],slot['size'],slot['min_size'])
     except ValueError:break
     count=n
+   # A final surname may be slightly wider than its original fragment.
+   # Keep the physical box and font-size floor; allow at most 15% horizontal
+   # compression, rather than clipping or dropping part of a person's name.
+   if i==indexes[-1] and count<len(words) and slot['key'].startswith('rol.') and slot['key'].endswith('.nombre'):
+    width,_=_line_width(font,' '.join(words),slot['min_size'])
+    ratio=min(1,fitz.Rect(slot['rect']).width/max(width,.001))
+    if ratio>=.85:
+     trial=dict(slot,x_scale=ratio)
+     try:_layout(font,' '.join(words),_logical_rect(trial),trial['size'],trial['min_size'])
+     except ValueError:pass
+     else:slot=trial;count=len(words)
    ops[i]=(slot,' '.join(words[:count]));words=words[count:]
   if words:raise ValueError('El nombre o dato no cabe en los espacios originales. Acórtalo o ajusta la ubicación: '+' '.join(words))
  ops=[(s,v) for s,v in ops if v]
@@ -464,7 +475,14 @@ def render_page(doc,index,layout,data,id,fonts):
   if s.get('kind')=='image':validated_image(value,'la imagen')
   else:
    font,_,_=fonts.get(s.get('font','ArialMT'),value)
-   _layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
+   try:_layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
+   except ValueError:
+    if not (s['key'].startswith('rol.') and s['key'].endswith('.nombre')):raise
+    width,_=_line_width(font,value,s.get('min_size',s.get('size',9)))
+    ratio=min(1,fitz.Rect(s['rect']).width/max(width,.001))
+    if ratio<.85:raise
+    s['x_scale']=ratio
+    _layout(font,value,_logical_rect(s),s.get('size',9),s.get('min_size',s.get('size',9)))
  normalizar_marcadores_vacios(doc,page)
  for cell in attendance:page.add_redact_annot(cell['rect'],fill=None,cross_out=False)
  for old in extra_erases:
@@ -524,6 +542,10 @@ def generate(templates,out,data,selected=None,merge=False):
  out=Path(out)
  if out.exists():raise ValueError('La carpeta del lote ya existe. No se sobrescribirán archivos.')
  prepared=[];warnings=set();report=[]
+ available=destination_keys(maps,data,list(maps))
+ for key in ('estacion.telefono','estacion.correo'):
+  if data['values'].get(key,'').strip() and key not in available:
+   warnings.add(f'{key}: guardado en la ficha; sin espacio asignado en las plantillas. Usa Ubicar campo si debe imprimirse.')
  for meta in catalog['templates']:
   id=meta['id']
   if id not in selected:continue

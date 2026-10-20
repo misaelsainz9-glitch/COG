@@ -96,3 +96,5 @@ Los grupos de integración de las bases retiradas se omiten explícitamente. Las
 ### Datos editables y predeterminados por proyecto
 
 La captura permite guardar predeterminados, editar textos de varias líneas y compartir un dato entre documentos. Los perfiles pueden incorporar celdas HAZOP y otros espacios de revisión. Consulta [cómo se usan los campos y predeterminados](docs/datos-predeterminados.md).
+
+Importa fichas de requisitos desde Word con revisión previa: [instrucciones](docs/importar-word.md).

@@ -1,0 +1,11 @@
+# Importar una ficha de requisitos de Word
+
+En la versión 0.2.6, pulsa **Importar datos desde Word** y selecciona un `.docx` local. No requiere Microsoft Word ni envía el archivo a un servicio externo. Se reconocen tablas con las etiquetas de la ficha de requisitos: razón social, número de estación, dirección, teléfono, correo, representantes, encargado, jefe de operaciones, tanques, dispensarios y mangueras. No es un lector universal de cualquier diseño de Word; las filas sin etiquetas reconocibles se omiten.
+
+La revisión muestra el valor actual, la propuesta editable y el texto del Word como evidencia. Los valores actuales distintos quedan desmarcados, incluidos los predeterminados del proyecto. Marca expresamente los que quieras sustituir. **Cancelar** cierra la revisión sin aplicar propuestas. **Aplicar seleccionados** valida y modifica la captura en memoria; después guarda el proyecto desde **Guardar datos**.
+
+Si el número de estación contiene una razón social, se deja pendiente. No se obtiene del correo ni de otro documento. Los tanques requieren número, producto y capacidad; las capacidades escritas con espacios entre cifras se normalizan a litros. Los campos técnicos ausentes no se inventan. Los tanques existentes se identifican por su número: la importación actualiza los seleccionados y conserva los demás, no elimina tanques o combustibles de otra captura. Para una estación distinta revisa o retira el inventario anterior en Instalaciones antes de generar.
+
+Las personas con el mismo nombre se reutilizan para sus diferentes cargos. Si ya existen personas duplicadas con ese nombre, se solicita resolver la duplicidad. No se importan firmas, logos, fechas ni se llenan listas de asistencia. Un permiso CRE no se asigna al campo CURR. El teléfono y correo quedan guardados en la ficha; si no hay un espacio asignado en las plantillas, se informa en la revisión del lote y puedes asignarlo mediante **Ubicar campo**.
+
+La importación no modifica el Word, las plantillas, los predeterminados guardados ni los archivos de proyectos anteriores. Tampoco elimina excepciones específicas de cada documento; revisa esas excepciones si cambias datos generales. Las condiciones y valoraciones técnicas del HAZOP requieren revisión del responsable; la importación no las calcula.

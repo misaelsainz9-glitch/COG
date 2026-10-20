@@ -71,7 +71,7 @@ jobs:
             choco install innosetup --yes --no-progress
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.5' }
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.6' }
           & $compiler "/DAppVersion=$version" packaging/instalador.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test install, executable, update and uninstall
@@ -117,6 +117,25 @@ jobs:
       - name: Record checksums
         run: |
           (Get-FileHash release/SASISOPA-Instalador-Windows.exe -Algorithm SHA256).Hash.ToLower() + '  SASISOPA-Instalador-Windows.exe' | Set-Content release/SHA256SUMS.txt
+      - name: Package installer ZIP for Windows Explorer
+        run: |
+          @'
+          SASISOPA 0.2.6 - Importacion de requisitos desde Word
+          1. Extrae este ZIP con Extraer todo de Windows.
+          2. Ejecuta SASISOPA-Instalador-Windows.exe para instalar o actualizar.
+          3. Abre SASISOPA y pulsa Importar datos desde Word.
+          4. Revisa, corrige y marca los datos que deseas aplicar.
+          5. Pulsa Aplicar seleccionados y despues Guardar datos.
+          Las plantillas y tus proyectos se conservan al actualizar.
+          Este instalador no incluye documentos ni datos personales.
+          Si es tu primera instalacion, importa tu SASISOPA.zip desde Documentos.
+          Un numero de estacion ambiguo queda pendiente. No se importan firmas ni fechas.
+          Telefono y correo se guardan en la ficha; requieren un espacio asignado para imprimirse.
+          '@ | Set-Content -Encoding UTF8 release/LEEME_IMPORTAR_WORD.txt
+          Compress-Archive -Path release/SASISOPA-Instalador-Windows.exe,release/SHA256SUMS.txt,release/LEEME_IMPORTAR_WORD.txt -DestinationPath release/SASISOPA-Windows.zip
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path release/SASISOPA-Windows.zip))
+          try { if ($zip.Entries.Count -ne 3) { throw 'Installer ZIP is incomplete' } } finally { $zip.Dispose() }
       - uses: actions/upload-artifact@v4
         with:
           name: SASISOPA-Windows

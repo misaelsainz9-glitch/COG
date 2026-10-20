@@ -98,3 +98,17 @@ class Editor18Tests(unittest.TestCase):
   ed.vars['dato.fecha_actual_operativa'].set('20/10/2026');data=ed.capture();self.assertEqual(data['values']['documento.fecha_firmas'],'19/10/2026');self.assertEqual(data['values']['dato.fecha_actual_operativa'],'20/10/2026')
   ed.vars['dato.fecha_actual_operativa'].set('31/02/2026')
   with self.assertRaises(ValueError):engine.validate_project(ed.capture())
+
+ def test_word_review_cancel_conflict_and_apply(self):
+  import importar_requisitos
+  ed=self.editor;ed.vars['estacion.numero'].set('E-22222')
+  proposals=[{'key':'estacion.numero','label':'Número','value':'E-12345','evidence':'Número: E-12345'},{'key':'estacion.razon_social','label':'Razón','value':'EMPRESA IMPORTADA','evidence':'Razón: EMPRESA IMPORTADA'}]
+  def open_dialog():
+   with patch.object(ui.filedialog,'askopenfilename',return_value='requisitos.docx'),patch.object(importar_requisitos,'read_candidates',return_value=(proposals,[])):ed.import_requirements()
+   self.window.update();return next(w for w in self.window.winfo_children() if isinstance(w,tk.Toplevel))
+  dialog=open_dialog();next(w for w in descendants(dialog) if isinstance(w,ttk.Button) and w.cget('text')=='Cancelar').invoke()
+  self.assertEqual(ed.vars['estacion.numero'].get(),'E-22222');self.assertEqual(ed.vars['estacion.razon_social'].get(),'')
+  dialog=open_dialog();checks=[w for w in descendants(dialog) if isinstance(w,ttk.Checkbutton)]
+  self.assertFalse(checks[0].instate(['selected']));self.assertTrue(checks[1].instate(['selected']))
+  next(w for w in descendants(dialog) if isinstance(w,ttk.Button) and w.cget('text')=='Aplicar seleccionados').invoke();self.window.update()
+  self.assertEqual(ed.vars['estacion.numero'].get(),'E-22222');self.assertEqual(ed.vars['estacion.razon_social'].get(),'EMPRESA IMPORTADA')

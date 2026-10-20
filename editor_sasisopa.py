@@ -10,6 +10,7 @@ import sasisopa18 as engine
 import instalaciones
 import equipo_hazop
 import valores_predeterminados
+import importar_requisitos
 from importar18 import import_zip
 from tema import configure_theme,NAVY
 from firma_canvas import signature_dialog
@@ -27,6 +28,7 @@ class Editor:
   self.vars={};self.role_vars={};self.doc_vars={};self.table_vars={};self.custom_doc_fields={};self.field_keys={};self.tab_canvases={};self.drag=None;self.rect_item=None
   bar=tk.Frame(app,bg=NAVY);bar.pack(fill='x');tk.Label(bar,text='SASISOPA · Datos y documentos',font=('Segoe UI',19,'bold'),bg=NAVY,fg='white').pack(side='left',padx=18,pady=14)
   ttk.Button(bar,text='Cargar datos',command=self.load).pack(side='right',padx=8);ttk.Button(bar,text='Guardar datos',command=self.save).pack(side='right',padx=4)
+  ttk.Button(bar,text='Importar datos desde Word',command=self.import_requirements).pack(side='right',padx=4)
   self.panes=ttk.Panedwindow(app,orient='horizontal');self.panes.pack(fill='both',expand=True,padx=12,pady=10)
   left=ttk.Frame(self.panes,width=510);right=ttk.Frame(self.panes);self.panes.add(left,weight=2);self.panes.add(right,weight=3)
   self.tabs=ttk.Notebook(left);self.tabs.pack(fill='both',expand=True)
@@ -393,6 +395,40 @@ class Editor:
   self.data=data;self.build_shared_fields();self.installation_load(data)
   for key,v in self.vars.items():v.set(data['values'].get(key,''))
   self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.schedule()
+ def import_requirements(self):
+  if self.busy:return
+  path=filedialog.askopenfilename(title='Importar requisitos de estación',filetypes=[('Word (.docx)','*.docx')])
+  if not path:return
+  try:proposals,warnings=importar_requisitos.read_candidates(path)
+  except Exception as exc:messagebox.showerror('No se pudo importar',str(exc));return
+  current=self.capture()
+  win=tk.Toplevel(self.app);win.title('Revisar datos del Word');win.geometry('1000x720');win.transient(self.app);win.grab_set()
+  ttk.Label(win,text='Revisa y corrige cada propuesta. Los valores existentes distintos quedan desmarcados. Solo se aplican las filas marcadas.',wraplength=950).pack(anchor='w',padx=12,pady=8)
+  ttk.Label(win,text='\n'.join(warnings),wraplength=950).pack(anchor='w',padx=12,pady=5)
+  area=ttk.Frame(win);area.pack(fill='both',expand=True,padx=12)
+  canvas=tk.Canvas(area,highlightthickness=0);scroll=ttk.Scrollbar(area,orient='vertical',command=canvas.yview);canvas.configure(yscrollcommand=scroll.set);scroll.pack(side='right',fill='y');canvas.pack(side='left',fill='both',expand=True)
+  rows=ttk.Frame(canvas);item=canvas.create_window((0,0),window=rows,anchor='nw');rows.bind('<Configure>',lambda event:canvas.configure(scrollregion=canvas.bbox('all')));canvas.bind('<Configure>',lambda event:canvas.itemconfigure(item,width=event.width))
+  fields=[]
+  for proposal in proposals:
+   key=proposal['key'];old=importar_requisitos.current_value(valores_predeterminados.effective(current),key);selected=tk.BooleanVar(value=not old or old==proposal['value']);value=tk.StringVar(value=proposal['value'])
+   row=ttk.LabelFrame(rows,text=proposal['label']);row.pack(fill='x',pady=4)
+   ttk.Checkbutton(row,text='Aplicar',variable=selected).grid(row=0,column=0,padx=5)
+   ttk.Entry(row,textvariable=value,width=70).grid(row=0,column=1,sticky='ew',padx=5,pady=4);row.columnconfigure(1,weight=1)
+   ttk.Label(row,text='Actual: '+(old or '(vacío)'),wraplength=850).grid(row=1,column=1,sticky='w',padx=5)
+   ttk.Label(row,text='Word: '+proposal['evidence'],wraplength=850).grid(row=2,column=1,sticky='w',padx=5,pady=(0,5))
+   fields.append((key,selected,value))
+  buttons=ttk.Frame(win);buttons.pack(fill='x',padx=12,pady=10)
+  def apply():
+   selected={key:value.get() for key,checked,value in fields if checked.get()}
+   if not selected:messagebox.showinfo('Sin cambios','Selecciona al menos un campo.',parent=win);return
+   try:data=importar_requisitos.apply_candidates(current,selected)
+   except Exception as exc:messagebox.showerror('Revisa los datos',str(exc)+'\nLos tanques nuevos requieren número, producto y capacidad. No se aplicó ningún cambio.',parent=win);return
+   self.data=data;self.build_shared_fields();self.installation_load(data)
+   for key,var in self.vars.items():var.set(data['values'].get(key,''))
+   self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.schedule()
+   self.status.set(f'Word importado: {len(selected)} campos aplicados. Revisa la vista previa y guarda el proyecto.');win.destroy()
+  ttk.Button(buttons,text='Cancelar',command=win.destroy).pack(side='right',padx=5)
+  ttk.Button(buttons,text='Aplicar seleccionados',command=apply).pack(side='right')
  def import_templates(self):
   if self.busy:return
   path=filedialog.askopenfilename(title='Importar tu ZIP original o limpio',filetypes=[('Archivo ZIP','*.zip')])

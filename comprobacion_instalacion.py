@@ -6,6 +6,8 @@ import sys
 import platform
 from pathlib import Path
 import tempfile
+import zipfile
+import importar_requisitos
 import tkinter as tk
 from unittest.mock import patch
 import fitz
@@ -81,6 +83,18 @@ def check_installation(progress=lambda stage: None):
                 progress('preview')
                 editor.update_preview()
                 assert editor.photo is not None
+                progress('import_word')
+                word=folder/'requisitos-demo.docx'
+                xml='<w:document xmlns:w="'+importar_requisitos.NS['w']+'"><w:body><w:tbl><w:tr><w:tc><w:p><w:r><w:t>Nombre o razón social: EMPRESA DEMO</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>'
+                with zipfile.ZipFile(word,'w') as archive:archive.writestr('word/document.xml',xml)
+                proposals,_=importar_requisitos.read_candidates(word)
+                assert proposals[0]['value']=='EMPRESA DEMO'
+                with patch.object(ui.filedialog,'askopenfilename',return_value=str(word)):
+                    editor.import_requirements()
+                window.update()
+                dialog=next(w for w in window.winfo_children() if isinstance(w,tk.Toplevel))
+                assert 'Revisar' in dialog.title()
+                dialog.destroy()
                 progress('profile_and_pdf')
                 project = editor.capture()
                 project['people']=[{'id':'DEMO','nombre':'PERSONA NO IMPRIMIR','firma':str(folder/'firma-demo.png')}]
@@ -119,5 +133,5 @@ def check_installation(progress=lambda stage: None):
                 else:
                     window.destroy()
     return {'ok': True, 'python': platform.python_version(), 'system': platform.system(), 'catalog_documents': 18, 'catalog_pages': 523,
-            'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
+            'word_import_review': True, 'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
             'large_blue_signatures': True, 'manual_attendance': True, 'private_documents_packaged': False, 'data_directory': str(user_root())}
