@@ -16,6 +16,7 @@ class CalendarModelTests(unittest.TestCase):
  def test_blank_override_and_invalid_dates(self):
   self.assertEqual(c.period(self.data('')),[])
   data=self.data('01/11/2026');data['documents']['II']={'documento.fecha_inicio_estudio':'01/01/2027'};self.assertEqual(c.period(data)[-1],(2027,12))
+  data['documents']['II']['documento.fecha_inicio_estudio']='';self.assertEqual(c.period(data)[0],(2026,11))
   for date in ('31/02/2026','01/11/9999'):
    with self.assertRaises(ValueError):c.period(self.data(date))
  def test_all_seven_locations_and_duplicated_simulacros(self):

@@ -53,7 +53,7 @@ class CoherencePDFTests(unittest.TestCase):
      self.assertIn('12',doc[6].get_textbox(fitz.Rect(s['rect'])+(-1,-1,1,1)))
  def test_compact_equipment_header_reports_overflow_instead_of_clipping(self):
   _,maps=e.configuration();data=e.empty_project()
-  data['values']['estacion.direccion']='CALLE PRUEBA 851, COL. NUEVA, MERIDA, YUCATAN, C.P. 97000'
+  data['values']['estacion.direccion']='CALLE PRUEBA 851, COL. NUEVA, MERIDA, YUCATAN, C.P. 97000 '*8
   with fitz.open(Path(os.environ['SASISOPA18_BASE'])/'PROCEDIMIENTO XI.pdf') as doc:
    before=doc[13].get_text()
    with self.assertRaisesRegex(ValueError,'no cabe'):e.render_page(doc,13,maps['XI'],data,'XI',e.FontBook(doc))

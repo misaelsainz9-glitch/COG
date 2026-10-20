@@ -183,7 +183,8 @@ REGIONS={('VI', 29): {'format': 'initial',
 
 def period(data):
  # Use the same project start as the HAZOP study, including its document override.
- value=data.get('documents',{}).get('II',{}).get('documento.fecha_inicio_estudio',data.get('values',{}).get('documento.fecha_inicio_estudio','')).strip()
+ from sasisopa18 import resolve
+ value=resolve(data,'documento.fecha_inicio_estudio','II')
  if not value:return []
  try:start=datetime.strptime(value,'%d/%m/%Y')
  except ValueError:raise ValueError('Inicio del proyecto: usa una fecha válida dd/mm/aaaa.') from None
