@@ -112,3 +112,23 @@ class Editor18Tests(unittest.TestCase):
   self.assertFalse(checks[0].instate(['selected']));self.assertTrue(checks[1].instate(['selected']))
   next(w for w in descendants(dialog) if isinstance(w,ttk.Button) and w.cget('text')=='Aplicar seleccionados').invoke();self.window.update()
   self.assertEqual(ed.vars['estacion.numero'].get(),'E-22222');self.assertEqual(ed.vars['estacion.razon_social'].get(),'EMPRESA IMPORTADA')
+
+ def test_new_project_clears_station_and_defaults_and_preserves_saved_file(self):
+  ed=self.editor;ed.vars['estacion.numero'].set('E-12345');ed.vars['estacion.razon_social'].set('EMPRESA ANTERIOR');ed.data['people']=[{'id':'old','nombre':'PERSONA ANTERIOR','firma':''}];ed.data['roles']={'representante_legal':'old'};ed.data['defaults']={'values':{'estacion.numero':'E-12345'}};ed.refresh_people()
+  saved=self.folder/'anterior.sasisopa18.json';engine.save_project(saved,ed.capture());original=saved.read_bytes()
+  ed.doc_selector.set('II');ed.page.set(33);self.window.update()
+  with patch.object(ui.messagebox,'askyesnocancel',return_value=False):self.assertTrue(ed.new_project())
+  data=ed.capture();self.assertTrue(data['fresh_project']);self.assertNotIn('defaults',data);self.assertFalse(data['people']);self.assertFalse(data['roles']);self.assertFalse(data['values']['estacion.numero']);self.assertFalse(data['values']['estacion.razon_social']);self.assertFalse(data['installation']['tanks']);self.assertEqual(ed.doc_selector.get(),'I');self.assertEqual(ed.page.get(),1);self.assertEqual(saved.read_bytes(),original)
+  newfile=self.folder/'nuevo.sasisopa18.json'
+  with patch.object(ui.filedialog,'asksaveasfilename',return_value=str(newfile)):self.assertTrue(ed.save())
+  self.assertTrue(engine.load_project(newfile)['fresh_project']);ed.update_preview();self.assertIsNotNone(ed.photo)
+ def test_new_project_cancel_save_cancel_busy_and_bad_recipe_preserve_capture(self):
+  ed=self.editor;ed.vars['estacion.numero'].set('E-12345');before=ed.capture()
+  with patch.object(ui.messagebox,'askyesnocancel',return_value=None):self.assertFalse(ed.new_project())
+  self.assertEqual(ed.capture(),before)
+  with patch.object(ui.messagebox,'askyesnocancel',return_value=True),patch.object(ui.filedialog,'asksaveasfilename',return_value=''):self.assertFalse(ed.new_project())
+  self.assertEqual(ed.capture(),before)
+  with patch.object(engine,'new_project',side_effect=ValueError('Plantilla dañada')),patch.object(ui.messagebox,'showerror'):self.assertFalse(ed.new_project())
+  self.assertEqual(ed.capture(),before);ed.busy=True
+  try:self.assertFalse(ed.new_project());self.assertEqual(ed.capture(),before)
+  finally:ed.busy=False

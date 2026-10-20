@@ -29,6 +29,7 @@ class Editor:
   bar=tk.Frame(app,bg=NAVY);bar.pack(fill='x');tk.Label(bar,text='SASISOPA · Datos y documentos',font=('Segoe UI',19,'bold'),bg=NAVY,fg='white').pack(side='left',padx=18,pady=14)
   ttk.Button(bar,text='Cargar datos',command=self.load).pack(side='right',padx=8);ttk.Button(bar,text='Guardar datos',command=self.save).pack(side='right',padx=4)
   ttk.Button(bar,text='Importar datos desde Word',command=self.import_requirements).pack(side='right',padx=4)
+  ttk.Button(bar,text='Nuevo proyecto',command=self.new_project).pack(side='right',padx=4)
   self.panes=ttk.Panedwindow(app,orient='horizontal');self.panes.pack(fill='both',expand=True,padx=12,pady=10)
   left=ttk.Frame(self.panes,width=510);right=ttk.Frame(self.panes);self.panes.add(left,weight=2);self.panes.add(right,weight=3)
   self.tabs=ttk.Notebook(left);self.tabs.pack(fill='both',expand=True)
@@ -385,8 +386,9 @@ class Editor:
  def save(self):
   path=filedialog.asksaveasfilename(defaultextension='.sasisopa18.json',filetypes=[('Datos SASISOPA 18','*.sasisopa18.json')])
   if path:
-   try:engine.save_project(path,self.capture());self.status.set('Datos y ubicaciones guardados. Conserva las imágenes en sus rutas actuales.')
+   try:engine.save_project(path,self.capture());self.status.set('Datos y ubicaciones guardados. Conserva las imágenes en sus rutas actuales.');return True
    except Exception as exc:messagebox.showerror('No se guardó',str(exc))
+  return False
  def load(self):
   path=filedialog.askopenfilename(filetypes=[('Datos SASISOPA 18','*.sasisopa18.json')])
   if not path:return
@@ -395,6 +397,33 @@ class Editor:
   self.data=data;self.build_shared_fields();self.installation_load(data)
   for key,v in self.vars.items():v.set(data['values'].get(key,''))
   self.refresh_people();self.build_doc_fields();self.refresh_tables();self.refresh_field_choices();self.schedule()
+ def new_project(self):
+  if self.busy:return False
+  try:candidate=engine.new_project()
+  except Exception as exc:messagebox.showerror('No se pudo iniciar el proyecto',str(exc));return False
+  current=self.capture()
+  inv=current.get('installation') or {}
+  dirty=bool(current.get('people') or current.get('roles') or current.get('defaults') or current.get('tables') or current.get('table_people') or current.get('source_information') or inv.get('tanks') or inv.get('enabled') or any(v for counts in inv.get('equipment',{}).values() for v in counts.values()))
+  dirty=dirty or any(v.strip() and v!=candidate['values'].get(k,'') for k,v in current['values'].items())
+  dirty=dirty or any(v.strip() and v!=candidate['documents'].get(doc,{}).get(k,'') for doc,values in current['documents'].items() for k,v in values.items())
+  dirty=dirty or bool(current['bindings'] and current['bindings']!=candidate['bindings'])
+  if dirty:
+   answer=messagebox.askyesnocancel('Nuevo proyecto','¿Quieres guardar el proyecto actual antes de iniciar otra estación?\nSí: guardar primero. No: empezar sin guardar. Cancelar: continuar aquí.',parent=self.app)
+   if answer is None:return False
+   if answer and not self.save():return False
+  if self.timer:self.app.after_cancel(self.timer);self.timer=None
+  self.busy=True
+  try:
+   self.doc_vars={};self.table_vars={};self.fields_document=None;self.custom_doc_fields={};self.current_slot=None;self.drag=None;self.place_mode.set(False)
+   self.canvas.delete('all');self.photo=None
+   self.data=candidate;self.build_shared_fields();self.installation_load(candidate)
+   for key,var in self.vars.items():var.set(candidate['values'].get(key,''))
+   self.refresh_people()
+   for var in self.selected.values():var.set(True)
+   self.doc_selector.set(self.catalog['templates'][0]['id']);self.page.set(1)
+   self.build_doc_fields();self.refresh_tables();self.refresh_field_choices()
+  finally:self.busy=False
+  self.schedule();self.status.set('Proyecto nuevo: captura o importa los datos de otra estación y guárdalo con un nombre nuevo.');return True
  def import_requirements(self):
   if self.busy:return
   path=filedialog.askopenfilename(title='Importar requisitos de estación',filetypes=[('Word (.docx)','*.docx')])

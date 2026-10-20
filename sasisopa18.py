@@ -25,9 +25,19 @@ def empty_project():
  return {'version':1,'installation':None,'values':{},'people':[],'roles':{},'documents':{},'tables':{},'table_people':{},'bindings':[]}
 
 
+def new_project():
+ """Neutral editable template, independent of the currently loaded station."""
+ data=json.loads((ROOT/'plantilla_nueva.json').read_text(encoding='utf-8'))
+ validate_project(data)
+ logo=ROOT/'assets'/'logo-pemex.png'
+ if logo.is_file():data['values']['estacion.logo']=str(logo)
+ return data
+
+
 def validate_project(data,catalog=None,maps=None):
  if catalog is None:catalog,maps=configuration()
  if not isinstance(data,dict) or data.get('version')!=1:raise ValueError('El archivo no es un proyecto SASISOPA 18 válido.')
+ if type(data.get('fresh_project',False)) is not bool:raise ValueError('Indicador de proyecto nuevo inválido.')
  for k,kind in [('values',dict),('people',list),('roles',dict),('documents',dict),('tables',dict),('bindings',list)]:
   if not isinstance(data.get(k),kind):raise ValueError('Datos de proyecto inválidos: '+k)
  data.setdefault('table_people',{})
@@ -131,6 +141,7 @@ def slot_value(data,slot,doc_id):
   return slot.get('installation_prefix','')+value if value else ''
  if slot.get('code_suffix'):
   station=resolve(data,'estacion.numero',doc_id)
+  if data.get('fresh_project') and not station:return ''
   ref=re.match(r'\.(\d+)',slot['code_suffix'])
   roman=('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII')[int(ref.group(1))-1] if ref and 1<=int(ref.group(1))<=18 else doc_id
   revision=slot_value(data,{'key':'documento.revision','reference_doc':roman},doc_id)
@@ -142,6 +153,7 @@ def slot_value(data,slot,doc_id):
  elif slot.get('revision_scope')=='global_only':value=data['values'].get(key,'').strip()
  else:value=resolve(data,key,doc_id)
  if not value and slot.get('fallback_key'):value=resolve(data,slot['fallback_key'],doc_id)
+ if not value and key=='documento.revision' and data.get('fresh_project'):value='0'
  if not value and slot.get('preserve_default'):value=slot.get('default_text','')
  return slot.get('text_prefix','')+value if value else ''
 
@@ -437,6 +449,13 @@ def render_page(doc,index,layout,data,id,fonts):
   if any(fitz.Rect(region).intersects(fitz.Rect(s['rect'])) for region,product in inactive):continue
   if s.get('code_owner') and any(a['id']==s['code_owner'] for a in slots):continue
   value=slot_value(data,s,id)
+  if not value and data.get('fresh_project') and s.get('kind','text')=='text' and not s.get('preserve_source_empty'):
+   old=dict(s)
+   if s.get('code_suffix'):old.update(erase_rect=s['rect'],erase_full=True)
+   extra_erases.append(old)
+   if s.get('replace_id'):
+    original=next(a for a in layout['pages'][index]['slots'] if a['id']==s['replace_id'])
+    extra_erases.append(original)
   if value:
    s=dict(s);value=_transform(value,s)
    numeric_revision=s['key']=='documento.revision' and value.isdigit()
@@ -549,6 +568,7 @@ def preview(templates,data,id,page_index,scale=1.0):
 def generate(templates,out,data,selected=None,merge=False):
  data=valores_predeterminados.effective(data)
  catalog,maps=configuration();validate_project(data,catalog,maps)
+ if data.get('fresh_project') and not resolve(data,'estacion.numero','I'):raise ValueError('Captura el número de la nueva estación antes de generar los PDF.')
  ids=[m['id'] for m in catalog['templates']];selected=ids if selected is None else list(selected)
  if not selected or len(set(selected))!=len(selected) or any(id not in ids for id in selected):raise ValueError('Selecciona al menos un documento válido, sin duplicados.')
  check_destinations(data,maps,selected)

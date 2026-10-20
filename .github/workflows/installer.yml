@@ -71,7 +71,7 @@ jobs:
             choco install innosetup --yes --no-progress
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.11' }
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.2.12' }
           & $compiler "/DAppVersion=$version" packaging/instalador.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test install, executable, update and uninstall
@@ -120,10 +120,11 @@ jobs:
       - name: Package installer ZIP for Windows Explorer
         run: |
           @'
-          SASISOPA 0.2.11 - Importacion Word y calendarios de 12 meses
+          SASISOPA 0.2.12 - Nuevo proyecto, Word y calendarios
           1. Extrae este ZIP con Extraer todo de Windows.
           2. Ejecuta SASISOPA-Instalador-Windows.exe para instalar o actualizar.
-          3. Abre SASISOPA y pulsa Importar datos desde Word.
+          3. Abre SASISOPA y pulsa Nuevo proyecto para iniciar otra estacion.
+          Despues puedes pulsar Importar datos desde Word.
           4. Revisa, corrige y marca los datos que deseas aplicar.
           5. Pulsa Aplicar seleccionados y despues Guardar datos.
           6. En Documentos, Inicio del proyecto define los 12 meses de los calendarios.

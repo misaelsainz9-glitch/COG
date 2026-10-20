@@ -2,7 +2,7 @@
 from pathlib import Path
 repo = Path(SPECPATH).parent
 resources = ['catalogo18.json', 'catalogo_activo.json', 'campos_sasisopa_18.json',
-             'mapas_sasisopa18.json', 'limpieza18.json', 'LEEME.txt']
+             'mapas_sasisopa18.json', 'plantilla_nueva.json', 'limpieza18.json', 'LEEME.txt']
 a = Analysis([str(repo / 'lanzamiento.py')], pathex=[str(repo)],
              binaries=[], datas=[(str(repo / name), '.') for name in resources]+[(str(repo/'assets'/'logo-pemex.png'),'assets')],
              hiddenimports=[], hookspath=[], hooksconfig={}, runtime_hooks=[],

@@ -100,3 +100,5 @@ La captura permite guardar predeterminados, editar textos de varias líneas y co
 Importa fichas de requisitos desde Word con revisión previa: [instrucciones](docs/importar-word.md).
 
 [Calendarios de 12 meses desde el inicio del proyecto](docs/calendarios.md).
+
+[Empezar una estación con Nuevo proyecto](docs/nuevo-proyecto.md).

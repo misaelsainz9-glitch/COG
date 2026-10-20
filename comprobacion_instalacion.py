@@ -31,6 +31,9 @@ def check_installation(progress=lambda stage: None):
     assert len(json.loads((RESOURCE_ROOT / 'campos_sasisopa_18.json').read_text(encoding='utf-8'))['roles']) > 0
     if getattr(sys, 'frozen', False):
         assert not any(RESOURCE_ROOT.rglob('*.pdf')), 'Private PDF unexpectedly packaged'
+    neutral = engine.new_project()
+    assert neutral['fresh_project'] and not neutral['people'] and not neutral['roles']
+    assert not neutral.get('defaults') and len(neutral['bindings']) > 3000
     data = engine.empty_project()
     data['values'] = {'estacion.numero': 'E-99999'}
     progress('synthetic_document')
@@ -138,11 +141,17 @@ def check_installation(progress=lambda stage: None):
                         assert fitz.Rect(image['bbox']).height>20
                         with Image.open(io.BytesIO(result.extract_image(image['xref'])['image'])) as ink:
                             assert any(color==INK_BLUE and count>10 for count,color in ink.convert('RGB').getcolors(ink.width*ink.height))
+                progress('new_project')
+                neutral_demo=engine.empty_project();neutral_demo['fresh_project']=True
+                with patch.object(engine,'new_project',return_value=neutral_demo),patch.object(ui.messagebox,'askyesnocancel',return_value=False):
+                    assert editor.new_project()
+                assert editor.data['fresh_project'] and not editor.data['people']
+                assert not editor.vars['estacion.numero'].get()
             finally:
                 if editor is not None:
                     editor.close()
                 else:
                     window.destroy()
     return {'ok': True, 'python': platform.python_version(), 'system': platform.system(), 'catalog_documents': 18, 'catalog_pages': 523,
-            'monthly_calendars': True, 'word_import_review': True, 'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
+            'new_project': True, 'neutral_template': True, 'monthly_calendars': True, 'word_import_review': True, 'window': True, 'preview': True, 'save_load': True, 'synthetic_pdf': True,
             'large_blue_signatures': True, 'manual_attendance': True, 'private_documents_packaged': False, 'data_directory': str(user_root())}
